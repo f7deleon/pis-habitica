@@ -15,7 +15,7 @@ Para hacer tags se utilizara el formato con un prefijo `v` y luego el numero de 
 
 La guía de estilo para los pull request se encuentra el la carpeta `.github` en el archivo `PULL_REQUEST_TEMPLATE.md`
 
-Cada pull request debe ser aprobado por al menos 1 integrante del equipo y el servidor de integración continua `CircleCi` antes de ser mergeado a `master`. Para mergear a `master` debe seleccionarse la opción `squash and merge` y borrar la descripción auto generada por github
+Cada pull request debe ser aprobado por al menos 1 integrante del equipo y el servidor de integración continua `CircleCi` antes de ser mergeado a `master`. Para mergear a `master` debe seleccionarse la opción `squash and merge` y borrar la descripción auto generada por github. La persona que creea el pull request es la encargada de mergear el mismo.
 
 
 ## Configuración
@@ -50,11 +50,6 @@ ruby -v
 ```
 
 * Instalar Bundler `gem install bundler`
-```
-curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-sudo apt-get install -y nodejs
-gem install rails -v 5.2.0	
-```
 
 * Instalar Rails
 ```
