@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  frecuency: 1
+  difficulty: MyString
+  hasEnd: false
+  privacy: MyString
+  endDate: 2018-08-28
+
+two:
+  name: MyString
+  frecuency: 1
+  difficulty: MyString
+  hasEnd: false
+  privacy: MyString
+  endDate: 2018-08-28
