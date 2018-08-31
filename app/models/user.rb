@@ -1,5 +1,8 @@
 class User < ApplicationRecord
-	has_and_belongs_to_many :habits
-	has_and_belongs_to_many :categories
-	has_and_belongs_to_many :characters
+ has_many :user_habits
+ has_many :user_characters
+ has_many :user_categories
+ has_many :habits, through: :user_habits
+ has_many :categories, through: :user_categories
+ has_many :characters, through: :user_characters
 end

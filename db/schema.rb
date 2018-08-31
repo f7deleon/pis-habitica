@@ -29,6 +29,15 @@ ActiveRecord::Schema.define(version: 2018_08_30_012023) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "habit_categories", primary_key: ["habit_id", "category_id"], force: :cascade do |t|
+    t.bigint "habit_id", null: false
+    t.bigint "category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_habit_categories_on_category_id"
+    t.index ["habit_id"], name: "index_habit_categories_on_habit_id"
+  end
+
   create_table "habits", force: :cascade do |t|
     t.string "name"
     t.integer "frecuency"
@@ -40,13 +49,32 @@ ActiveRecord::Schema.define(version: 2018_08_30_012023) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "habits_and_categories", primary_key: ["habit_id", "category_id"], force: :cascade do |t|
-    t.bigint "habit_id", null: false
+  create_table "user_categories", primary_key: ["user_id", "category_id"], force: :cascade do |t|
+    t.bigint "user_id", null: false
     t.bigint "category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["category_id"], name: "index_habits_and_categories_on_category_id"
-    t.index ["habit_id"], name: "index_habits_and_categories_on_habit_id"
+    t.index ["category_id"], name: "index_user_categories_on_category_id"
+    t.index ["user_id"], name: "index_user_categories_on_user_id"
+  end
+
+  create_table "user_characters", primary_key: ["user_id", "character_id"], force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "character_id", null: false
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["character_id"], name: "index_user_characters_on_character_id"
+    t.index ["user_id"], name: "index_user_characters_on_user_id"
+  end
+
+  create_table "user_habits", primary_key: ["user_id", "habit_id"], force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "habit_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["habit_id"], name: "index_user_habits_on_habit_id"
+    t.index ["user_id"], name: "index_user_habits_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -57,40 +85,12 @@ ActiveRecord::Schema.define(version: 2018_08_30_012023) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "users_and_categories", primary_key: ["user_id", "category_id"], force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "category_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["category_id"], name: "index_users_and_categories_on_category_id"
-    t.index ["user_id"], name: "index_users_and_categories_on_user_id"
-  end
-
-  create_table "users_and_characters", primary_key: ["user_id", "character_id"], force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "character_id", null: false
-    t.boolean "active"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["character_id"], name: "index_users_and_characters_on_character_id"
-    t.index ["user_id"], name: "index_users_and_characters_on_user_id"
-  end
-
-  create_table "users_and_habits", primary_key: ["user_id", "habit_id"], force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "habit_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["habit_id"], name: "index_users_and_habits_on_habit_id"
-    t.index ["user_id"], name: "index_users_and_habits_on_user_id"
-  end
-
-  add_foreign_key "habits_and_categories", "categories"
-  add_foreign_key "habits_and_categories", "habits"
-  add_foreign_key "users_and_categories", "categories"
-  add_foreign_key "users_and_categories", "users"
-  add_foreign_key "users_and_characters", "characters"
-  add_foreign_key "users_and_characters", "users"
-  add_foreign_key "users_and_habits", "habits"
-  add_foreign_key "users_and_habits", "users"
+  add_foreign_key "habit_categories", "categories"
+  add_foreign_key "habit_categories", "habits"
+  add_foreign_key "user_categories", "categories"
+  add_foreign_key "user_categories", "users"
+  add_foreign_key "user_characters", "characters"
+  add_foreign_key "user_characters", "users"
+  add_foreign_key "user_habits", "habits"
+  add_foreign_key "user_habits", "users"
 end

@@ -1,4 +1,6 @@
 class Category < ApplicationRecord
-	has_and_belongs_to_many :users
-	has_and_belongs_to_many :habits
+ has_many :user_categories
+ has_many :habit_categories
+ has_many :users, through: :user_categories
+ has_many :habits, through: :habit_categories
 end

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class CharacterUserTest < ActiveSupport::TestCase
+class HabitControllerTest < ActionDispatch::IntegrationTest
   # test "the truth" do
   #   assert true
   # end
