@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 1
+  group_habit_id: 1
+  date: 2018-09-01 20:33:43
+
+two:
+  user_id: 1
+  group_habit_id: 2
+  date: 2018-09-01 20:33:43

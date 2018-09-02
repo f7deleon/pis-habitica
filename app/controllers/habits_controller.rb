@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class HabitsController < ApplicationController
-  before_action :set_habit, only: [:show, :update, :destroy]
+  before_action :set_habit, only: %i[show update destroy]
 
   # GET /habits
   def index
@@ -48,13 +50,14 @@ class HabitsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_habit
-      @habit = Habit.find(params[:id])
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def habit_params
-      params.require(:habit).permit(:name, :frecuency, :difficulty, :hasEnd, :privacy, :endDate)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_habit
+    @habit = Habit.find(params[:id])
+  end
+
+  # Only allow a trusted parameter "white list" through.
+  def habit_params
+    params.require(:habit).permit(:name, :frecuency, :difficulty, :hasEnd, :privacy, :endDate)
+  end
 end

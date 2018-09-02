@@ -1,4 +1,12 @@
+# frozen_string_literal: true
+
 class Character < ApplicationRecord
- has_many :user_characters
- has_many :users, through: :user_characters
+  # Relationships
+  has_many :user_characters
+  has_many :users, through: :user_characters
+
+  # Validatons
+  self.primary_key = :id
+  validates :name, presence: true # string
+  validates :description, presence: true # string
 end

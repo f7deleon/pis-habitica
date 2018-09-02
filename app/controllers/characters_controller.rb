@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class CharactersController < ApplicationController
-  before_action :set_character, only: [:show, :update, :destroy]
+  before_action :set_character, only: %i[show update destroy]
 
   # GET /characters
   def index
@@ -39,13 +41,14 @@ class CharactersController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_character
-      @character = Character.find(params[:id])
-    end
 
-    # Only allow a trusted parameter "white list" through.
-    def character_params
-      params.require(:character).permit(:name, :description)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_character
+    @character = Character.find(params[:id])
+  end
+
+  # Only allow a trusted parameter "white list" through.
+  def character_params
+    params.require(:character).permit(:name, :description)
+  end
 end
