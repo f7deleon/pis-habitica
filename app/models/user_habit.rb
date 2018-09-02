@@ -1,4 +1,5 @@
 class UserHabit < ApplicationRecord
-	belongs_to :users
-	belongs_to :habits
+	self.primary_keys = :user_id, :habit_id
+	belongs_to :user
+	belongs_to :habit
 end

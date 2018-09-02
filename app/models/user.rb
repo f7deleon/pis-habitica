@@ -1,6 +1,6 @@
 class User < ApplicationRecord
-	validates :nickname, uniqueness: true
-	validates :mail, uniqueness: true
+  validates :nickname, uniqueness: true
+  validates :mail, uniqueness: true
   has_many :user_habits
   has_many :user_characters
   has_many :user_categories

@@ -16,7 +16,16 @@ class HabitsController < ApplicationController
   # POST /habits
   def create
     @habit = Habit.new(habit_params)
+    habit_params = JSON.parse(params[:habit])
+    us_id = habit_params[:user_id]
 
+    #FIXME: Preguntar Users.exists?(id)
+    @user = Users.find(us_id)
+
+    @user_habit = UserHabit.new(habit_id: @habit.id, user_id: @user.id)
+    @user.user_habits << @user_habit
+    @habit.user_habits << @user_habit
+    
     if @habit.save
       render json: @habit, status: :created, location: @habit
     else

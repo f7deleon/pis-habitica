@@ -1,4 +1,4 @@
 class HabitCategorie < ApplicationRecord
-	belongs_to :habits
-	belongs_to :categories
+	belongs_to :habit
+	belongs_to :categorie
 end
