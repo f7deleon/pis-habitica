@@ -2,7 +2,7 @@
 
 class Group < ApplicationRecord
   has_many :group_types
-  
+
   has_many :group_habits
   has_many :track_group_habits, through: :group_habits
   has_many :user_groups

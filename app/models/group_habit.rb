@@ -10,7 +10,7 @@ class GroupHabit < ApplicationRecord
   self.primary_key = :id
   validates :name, presence: true # string
   validates :description, presence: true # string
-  validates :dificulty, presence: true, :inclusion => 1..3 # easy, medium,hard
-  validates :privacy, presence: true, :inclusion => 1..3 # public, private, protected
-  validates :frecuency, presence: true, :inclusion => 1..2 # default, daily
+  validates :dificulty, presence: true, inclusion: 1..3 # easy, medium,hard
+  validates :privacy, presence: true, inclusion: 1..3 # public, private, protected
+  validates :frecuency, presence: true, inclusion: 1..2 # default, daily
 end

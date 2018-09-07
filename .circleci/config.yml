@@ -42,12 +42,19 @@ jobs:
             - vendor/bundle
 
       - run:
+          name: rubocop
+          command: |
+            bundle exec rubocop
+      - run:
           name: Database Setup
           command: |
             bundle exec rake db:create
             bundle exec rake db:migrate
+           
+      - run: 
+          name: Tests
+          command: |
             bundle exec rake test
-
      # - run:
      #     name: Parallel RSpec
      #     command: bin/rails test
