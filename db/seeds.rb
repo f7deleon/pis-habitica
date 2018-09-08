@@ -5,8 +5,6 @@
 #
 # Examples:
 
-movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-Character.create(name: 'Luke', movie: movies.first)
 User.create([
   { nickname: 'Feli', mail: 'felipe@habitica.com', password: '12341234' },
   { nickname: 'Pai', mail: 'paiadmin@habitica.com', password: '12341234' },
@@ -16,4 +14,12 @@ User.create([
   { nickname: 'Santos', mail: 'santos@habitica.com', password: '12341234' },
   { nickname: 'Marco', mail: 'marcopablo@habitica.com', password: '12341234' },
   { nickname: 'Berna', mail: 'bernardo@habitica.com', password: '12341234' }
+])
+
+Type.create([
+	{name: 'Ejercicio', description: 'Hacer ejercicio'},
+	{name: 'Nutricion', description: 'Seguir determinada dieta'},
+	{name: 'Estudio', description: 'Estudiar por mas de 1 hora'},
+	{name: 'Social', description: 'Ir al bar'},
+	{name: 'Ocio', description: 'Jugar a la switch'}
 ])
