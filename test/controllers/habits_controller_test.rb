@@ -32,7 +32,7 @@ class HabitssControllerTest < ActionDispatch::IntegrationTest
 
   test 'Get an individual habit from a non existing user id' do
     result = get "/habits/#{@individual_habit.id}?token=555"
-    assert result == 400
+    assert result == 403
   end
 
   test 'Get an individual habit from another user id' do

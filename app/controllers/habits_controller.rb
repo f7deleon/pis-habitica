@@ -173,9 +173,9 @@ class HabitsController < ApplicationController
     begin
       user = User.find(params[:token])
     rescue StandardError
-      render json: { "errors": [{ "status": 400,
-                                  "title": 'Bad request',
-                                  "details": 'User not found' }] }, status: :bad_request
+      render json: { "errors": [{ "status": 403,
+                                  "title": 'Forbidden',
+                                  "details": 'User not allowed' }] }, status: :forbidden
       return
     end
 
