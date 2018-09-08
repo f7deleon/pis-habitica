@@ -24,5 +24,5 @@ class User < ApplicationRecord
 end
 
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :nickname, :mail
+  attributes :nickname, :mail
 end

@@ -2,6 +2,7 @@
 
 class HabitsController < ApplicationController
   before_action :set_habit, only: %i[show update destroy]
+  before_action :create_habit, only: %i[create]
   # GET /habits
   def index
     @habits = IndividualHabit.all
@@ -175,6 +176,11 @@ class HabitsController < ApplicationController
     Time.iso8601(date)
   rescue ArgumentError
     nil
+  end
+
+  def create_habit
+    params.require(:data).require(:attributes).require(%i[name description frequency difficulty privacy])
+    params.require(:data).require(:relationships).require(:types)
   end
 
   # Use callbacks to share common setup or constraints between actions.
