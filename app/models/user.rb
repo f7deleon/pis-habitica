@@ -17,4 +17,12 @@ class User < ApplicationRecord
   validates :password, presence: true, length: { minimum: 8 }
 
   has_secure_password
+
+  def serialized
+    UserSerializer.new(self)
+  end
+end
+
+class UserSerializer < ActiveModel::Serializer
+  attributes :id, :nickname, :mail
 end
