@@ -2,6 +2,7 @@
 
 class CharactersController < ApplicationController
   before_action :set_character, only: %i[show update destroy]
+  before_action :check_user, only: %(index)
 
   # GET /characters
   def index
@@ -45,6 +46,14 @@ class CharactersController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_character
     @character = Character.find(params[:id])
+  end
+
+  def check_user
+    @user = User.find(params[:token])
+  rescue StandardError
+    render json: { "errors": [{ "status": 403,
+                                "title": 'Forbidden',
+                                "details": 'Invalid token' }] }, status: :forbidden
   end
 
   # Only allow a trusted parameter "white list" through.
