@@ -26,9 +26,9 @@ class ExampleTest < ActiveSupport::TestCase
       user_id: @user.id,
       name: 'Example',
       description: 'Example',
-      dificulty: 3,
+      difficulty: 3,
       privacy: 1,
-      frecuency: 1
+      frequency: 1
     )
 
     @user.individual_habits << @individual_habit
@@ -42,7 +42,7 @@ class ExampleTest < ActiveSupport::TestCase
       group_id: @group.id,
       name: 'Example',
       description: 'Example',
-      dificulty: 2,
+      difficulty: 2,
       privacy: 1,
       frecuency: 1
     )

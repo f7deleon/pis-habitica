@@ -7,9 +7,9 @@ class CreateIndividualHabits < ActiveRecord::Migration[5.2]
       t.belongs_to :user, index: true, foreign_key: true
       t.string :name
       t.string :description
-      t.integer :dificulty
+      t.integer :difficulty
       t.integer :privacy
-      t.integer :frecuency
+      t.integer :frequency
 
       t.timestamps
     end

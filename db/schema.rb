@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 2018_09_01_192429) do
     t.bigint "group_id", null: false
     t.string "name"
     t.string "description"
-    t.integer "dificulty"
+    t.integer "difficulty"
     t.integer "privacy"
     t.integer "frecuency"
     t.datetime "created_at", null: false
@@ -67,9 +67,9 @@ ActiveRecord::Schema.define(version: 2018_09_01_192429) do
     t.bigint "user_id", null: false
     t.string "name"
     t.string "description"
-    t.integer "dificulty"
+    t.integer "difficulty"
     t.integer "privacy"
-    t.integer "frecuency"
+    t.integer "frequency"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["id"], name: "index_individual_habits_on_id"
