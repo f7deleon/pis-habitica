@@ -2,7 +2,7 @@
 
 class UsersController < ApplicationController
   before_action :set_user, only: %i[show update destroy]
-
+  before_action :create_user, only: %i[create]
   # GET /users
   def index
     @users = User.all
@@ -17,65 +17,51 @@ class UsersController < ApplicationController
 
   # POST /users
   def create
-    if json_invalid?
+    user_params = params[:data][:attributes]
+    user = User.new(
+      nickname: user_params[:nickname],
+      mail: user_params[:email],
+      password: user_params[:password]
+    )
+
+    if user.save
       render json: {
-        'errors': [
+        "data": {
+          "id": user.id,
+          "type": 'users',
+          "attributes": user.serialized
+        },
+        "included": [
           {
-            'status': 400,
-            'title': 'Bad request',
-            'details': 'Invalid request format'
+            "type": 'session',
+            "attributes": {
+              "token": user.id.to_s
+            }
           }
         ]
-      }, status: :bad_request
+      }, status: :created
     else
-      user_params = params[:data][:attributes]
-      user = User.new(
-        nickname: user_params[:nickname],
-        mail: user_params[:email],
-        password: user_params[:password]
-      )
+      nickname = if User.find_by_nickname(user.nickname)
+                   {
+                     "status": 409,
+                     "code": 1,
+                     "title": 'Nickname taken',
+                     "details": 'There is already an user with that nickname'
+                   }
+                 end
 
-      if user.save
-        render json: {
-          "data": {
-            "id": user.id,
-            "type": 'users',
-            "attributes": user.serialized,
-            "included": [
-              {
-                "type": 'session',
-                "attributes": {
-                  "token": user.id.to_s
+      email = if User.find_by_mail(user.mail)
+                {
+                  "status": 409,
+                  "code": 2,
+                  "title": 'Email taken',
+                  "details": 'There is already an user with that email'
                 }
-              }
-            ]
-          }
-        }, status: :created
-      else
-        nickname = if User.find_by_nickname(user.nickname)
-                     {
-                       "status": 409,
-                       "code": 1,
-                       "title": 'Nickname taken',
-                       "details": 'There is already an user with that nickname'
-                     }
-                   end
-
-        email = if User.find_by_mail(user.mail)
-                  {
-                    "status": 409,
-                    "code": 2,
-                    "title": 'Email taken',
-                    "details": 'There is already an user with that email'
-                  }
-                end
-        errors = [nickname, email].compact
-        render json: {
-          "errors": [
-            errors
-          ]
-        }, status: :conflict
-      end
+              end
+      errors = [nickname, email].compact
+      render json: {
+        "errors": errors
+      }, status: :conflict
     end
   end
 
@@ -95,11 +81,8 @@ class UsersController < ApplicationController
 
   private
 
-  def json_invalid?
-    !(params[:data][:attributes] &&
-      params[:data][:attributes][:nickname] &&
-      params[:data][:attributes][:email] &&
-      params[:data][:attributes][:password])
+  def create_user
+    params.require(:data).require(:attributes).require(%i[nickname email password])
   end
 
   # Use callbacks to share common setup or constraints between actions.
