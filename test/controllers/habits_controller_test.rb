@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class HabitssControllerTest < ActionDispatch::IntegrationTest
+class HabitsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create(nickname: 'showHabitsTest',
                         mail: 'showHabitsTest@showHabitsTest.com',
@@ -21,22 +21,22 @@ class HabitssControllerTest < ActionDispatch::IntegrationTest
 
   ### Ver Habito
   test 'Get an existing individual habit' do
-    result = get "/habits/#{@individual_habit.id}?token=#{@user.id}"
+    result = get "/me/habits/#{@individual_habit.id}?token=#{@user.id}"
     assert result == 200
   end
 
   test 'Get a non existent individual habit' do
-    result = get "/habits/555?token=#{@user.id}"
+    result = get "/me/habits/555?token=#{@user.id}"
     assert result == 400
   end
 
   test 'Get an individual habit from a non existing user id' do
-    result = get "/habits/#{@individual_habit.id}?token=555"
+    result = get "/me/habits/#{@individual_habit.id}?token=555"
     assert result == 403
   end
 
   test 'Get an individual habit from another user id' do
-    result = get "/habits/#{@individual_habit.id}?token=#{@user2.id}"
+    result = get "/me/habits/#{@individual_habit.id}?token=#{@user2.id}"
     assert result == 400
   end
 end

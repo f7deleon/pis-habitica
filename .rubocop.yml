@@ -99,6 +99,9 @@ Metrics/MethodLength:
 Metrics/AbcSize:
   Enabled: false
 
+Style/ClassAndModuleChildren:
+  Enabled: false
+  
 Metrics/ClassLength:
   Max: 250
 

@@ -62,7 +62,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert @individual_type2.valid?
   end
   test 'CumplirHabito: should track habit' do
-    post '/habits/fulfill?token=' + @user.id.to_s, params: {
+    post '/me/habits/fulfill?token=' + @user.id.to_s, params: {
       'data': {
         'id': @individual_habit_to_track.id,
         'type': 'habits',
@@ -83,7 +83,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert_equal 201, status # Created
   end
   test 'CumplirHabito: User should exist' do
-    post '/habits/fulfill?token=999999999', params: {
+    post '/me/habits/fulfill?token=999999999', params: {
       'data': {
         'id': @individual_habit_to_track.id,
         'type': 'habits',
@@ -104,7 +104,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert_equal 403, status # Forbbiden
   end
   test 'CumplirHabito: User should have this habit' do
-    post '/habits/fulfill?token=' + @user2.id.to_s, params: {
+    post '/me/habits/fulfill?token=' + @user2.id.to_s, params: {
       'data': {
         'id': @individual_habit_to_track.id,
         'type': 'habits',
@@ -122,10 +122,10 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
         ]
       }
     }
-    assert_equal 404, status # :not_found
+    assert_equal 404, status # :bad_request
   end
   test 'CumplirHabito: If Habit frequency is daily habit must not have been fulfilled today' do
-    post '/habits/fulfill?token=' + @user3.id.to_s, params: {
+    post '/me/habits/fulfill?token=' + @user3.id.to_s, params: {
       'data': {
         'id': @individual_habit_already_tracked.id,
         'type': 'habits',
@@ -146,7 +146,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert_equal 409, status # :conflict
   end
   test 'CumplirHabito: Date should be in ISO 8601' do
-    post '/habits/fulfill?token=' + @user.id.to_s, params: {
+    post '/me/habits/fulfill?token=' + @user.id.to_s, params: {
       'data': {
         'id': @individual_habit_to_track.id,
         'type': 'habits',

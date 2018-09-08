@@ -32,7 +32,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   # Alta Personaje
   test 'AltaPersonaje: add character id 4 to user
                         id 1 user already have an is_alive character' do
-    url = "/users/#{@user.id}/add_character"
+    url = '/me/characters?token=' + @user.id.to_s
 
     result0 = post url, params: @parameters
     assert result0 == 200 # :created
@@ -41,8 +41,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'AltaPersonaje:  user id do not exists' do
-    result = post '/users/100/add_character', params: @parameters
-    assert result == 404 # :not_found
+    result = post '/me/characters?token=9999', params: @parameters
+    assert result == 403 # :forbidden
   end
 
   test 'AltaPersonaje: char_id do not exists' do
@@ -52,7 +52,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                              "description": 'Una descripcion de mago' } },
                    "included": [{ "type": 'date',
                                   "attributes": { "date": '2018-09-07T12:00:00Z' } }] }
-    result = post "/users/#{@user.id}/add_character", params: parameters
+    result = post '/me/characters?token=' + @user.id.to_s, params: parameters
     assert result == 400 # :bad_request
   end
 
@@ -63,7 +63,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                              "description": 'Una descripcion de mago' } },
                    "included": [{ "type": 'date',
                                   "attributes": { "date": '2018-2:00:00Z' } }] }
-    result = post "/users/#{@user.id}/add_character", params: parameters
+    result = post '/me/characters?token=' + @user.id.to_s, params: parameters
     assert result == 400 # :bad_request
   end
 end

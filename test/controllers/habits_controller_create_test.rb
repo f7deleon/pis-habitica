@@ -37,7 +37,7 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
     assert @individual_type2.valid?
   end
   test 'AltaHabito: should create habit' do
-    post '/habits?token=' + @user.id.to_s, params: {
+    post '/me/habits?token=' + @user.id.to_s, params: {
       'data': {
         'type': 'habit',
         'attributes': {
@@ -58,7 +58,7 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
     assert_equal 201, status # Created
   end
   test 'AltaHabito: User should exist' do
-    post '/habits?token=999999999', params: {
+    post '/me/habits?token=999999999', params: {
       'data': {
         'type': 'habit',
         'attributes': {
@@ -79,7 +79,7 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
     assert_equal 403, status # Forbbiden
   end
   test 'AltaHabito: Type should exist' do
-    post '/habits?token=' + @user.id.to_s, params: {
+    post '/me/habits?token=' + @user.id.to_s, params: {
       'data': {
         'type': 'habit',
         'attributes': {
