@@ -102,11 +102,11 @@ ActiveRecord::Schema.define(version: 2018_09_01_192429) do
     t.string "description"
   end
 
-  create_table "user_characters", primary_key: ["user_id", "character_id"], force: :cascade do |t|
+  create_table "user_characters", primary_key: ["user_id", "character_id", "creation_date"], force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "character_id", null: false
     t.boolean "is_alive"
-    t.datetime "creation_date"
+    t.datetime "creation_date", null: false
     t.index ["character_id"], name: "index_user_characters_on_character_id"
     t.index ["user_id"], name: "index_user_characters_on_user_id"
   end

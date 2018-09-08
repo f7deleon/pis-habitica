@@ -7,7 +7,7 @@ class CharactersController < ApplicationController
   def index
     @characters = Character.all
 
-    render json: @characters
+    render json: @characters, each_serializer: CharacterSerializer
   end
 
   # GET /characters/1

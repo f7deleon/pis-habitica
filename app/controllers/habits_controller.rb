@@ -1,17 +1,15 @@
 # frozen_string_literal: true
 
 class HabitsController < ApplicationController
-  before_action :set_habit, only: %i[show update destroy]
+  before_action :set_habit, only: %i[update destroy]
   before_action :create_habit, only: %i[create]
+  before_action :show_habit, only: %i[show]
+
   # GET /habits
   def index
     @habits = IndividualHabit.all
-    render json: @habits
-  end
 
-  # GET /habits/1
-  def show
-    render json: @habit
+    render json: @habits
   end
 
   # POST /habits
@@ -163,6 +161,33 @@ class HabitsController < ApplicationController
     @habit.destroy
   end
 
+  def show
+    begin
+      @habit = IndividualHabit.find(params[:id])
+    rescue StandardError
+      render json: { "errors": [{ "status": 400,
+                                  "title": 'Bad request',
+                                  "details": 'Habit does not exists' }] }, status: :bad_request
+      return
+    end
+    begin
+      user = User.find(params[:token])
+    rescue StandardError
+      render json: { "errors": [{ "status": 400,
+                                  "title": 'Bad request',
+                                  "details": 'User not found' }] }, status: :bad_request
+      return
+    end
+
+    if user.individual_habits.include?(@habit)
+      render json: @habit
+    else
+      render json: { "errors": [{ "status": 400,
+                                  "title": 'Bad request',
+                                  "details": 'Habit does not belong to this user' }] }, status: :bad_request
+    end
+  end
+
   private
 
   def habit_has_been_tracked_today(habit, date)
@@ -176,6 +201,10 @@ class HabitsController < ApplicationController
     Time.iso8601(date)
   rescue ArgumentError
     nil
+  end
+
+  def show_habit
+    params.require(:token)
   end
 
   def create_habit

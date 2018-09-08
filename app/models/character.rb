@@ -10,3 +10,7 @@ class Character < ApplicationRecord
   validates :name, presence: true # string
   validates :description, presence: true # string
 end
+
+class CharacterSerializer < ActiveModel::Serializer
+  attributes :id, :name, :description
+end

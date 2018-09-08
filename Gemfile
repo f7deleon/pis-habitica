@@ -22,6 +22,7 @@ gem 'composite_primary_keys', '=11.0'
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
 gem 'rubocop', require: false
+# Active model serializer gem
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development

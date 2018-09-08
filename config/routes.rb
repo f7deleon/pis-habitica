@@ -4,7 +4,11 @@ Rails.application.routes.draw do
   resources :groups
   resources :types
   resources :characters
-  resources :users
+  resources :users do
+    member do
+      post 'add_character', to: 'users#add_character'
+    end
+  end
   resources :habits do
     collection do
       post 'fulfill', to: 'habits#fulfill_habit'
