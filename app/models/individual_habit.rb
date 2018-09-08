@@ -13,3 +13,13 @@ class IndividualHabit < ApplicationRecord
   validates :privacy, presence: true, inclusion: 1..3 # public, protected, private
   validates :frequency, presence: true, inclusion: 1..2 # default, daily
 end
+
+class IndividualHabitSerializer < ActiveModel::Serializer
+  attributes :id, :name, :description, :difficulty, :privacy, :frequency, :count_track
+
+  has_many :types
+
+  def count_track
+    object.track_individual_habits.length.to_s
+  end
+end

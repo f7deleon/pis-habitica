@@ -4,7 +4,7 @@ class HabitsController < ApplicationController
   before_action :set_habit, only: %i[show update destroy]
   # GET /habits
   def index
-    @habits = Habit.all
+    @habits = IndividualHabit.all
     render json: @habits
   end
 
@@ -33,7 +33,7 @@ class HabitsController < ApplicationController
       }, status: :forbidden
       return
     end
-    unless type_ids.all? { |type| user.individual_types.exists?(type) }
+    unless type_ids.all? { |type| Type.exists?(type) }
       # Type does not exist
       render json: {
         'errors': [
@@ -63,22 +63,7 @@ class HabitsController < ApplicationController
         habit.individual_habit_has_types << individual_habit_has_type
         type.individual_habit_has_types << individual_habit_has_type
       end
-      render json: {
-        'data': {
-          'id': habit.id,
-          'type': 'habit',
-          'attributes': {
-            'name': habit.name,
-            'description': habit.description,
-            'frequency': habit.frequency,
-            'difficulty': habit.difficulty,
-            'privacy': habit.privacy
-          },
-          'relationships': {
-            'types': [type_ids_params]
-          }
-        }
-      }, status: :created
+      render json: habit, status: :created
     else
       render json: {
         'errors': [
@@ -90,7 +75,7 @@ class HabitsController < ApplicationController
 
   # POST habits/fulfill
   def fulfill_habit
-    habit_params = params[:included][0][:attributes]
+    habit_params = params[:data][:relationships][0][:"track-individual-habits"][:data][:attributes]
     user_id = params[:token]
     habit_id = params[:data][:id]
     unless (user = User.find_by(id: user_id))
@@ -152,20 +137,7 @@ class HabitsController < ApplicationController
     track_individual_habit = TrackIndividualHabit.new(individual_habit_id: habit.id, date: date_passed)
     if track_individual_habit.save
       habit.track_individual_habits << track_individual_habit
-      render json: {
-        'data': {
-          'id': habit.id,
-          'type': 'habit'
-        },
-        'included': [
-          {
-            'type': 'date',
-            'attributes': {
-              'date': habit_params[:date]
-            }
-          }
-        ]
-      }, status: :created
+      render json: habit, status: :created
       return
     end
 

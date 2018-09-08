@@ -11,3 +11,7 @@ class Type < ApplicationRecord
   validates :name, presence: true # string
   validates :description, presence: true # string
 end
+
+class TypeSerializer < ActiveModel::Serializer
+  attributes :name, :description
+end

@@ -65,16 +65,20 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     post '/habits/fulfill?token=' + @user.id.to_s, params: {
       'data': {
         'id': @individual_habit_to_track.id,
-        'type': 'habit'
-      },
-      'included': [
-        {
-          'type': 'date',
-          'attributes': {
-            'date': '2018-09-05T21:39:27+00:00'
+        'type': 'habits',
+        'relationships': [
+          {
+            'track-individual-habits': {
+              'data': {
+                'type': 'track-individual-habits',
+                'attributes': {
+                  'date': '2018-09-05T21:39:27+00:00'
+                }
+              }
+            }
           }
-        }
-      ]
+        ]
+      }
     }
     assert_equal 201, status # Created
   end
@@ -82,16 +86,20 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     post '/habits/fulfill?token=999999999', params: {
       'data': {
         'id': @individual_habit_to_track.id,
-        'type': 'habit'
-      },
-      'included': [
-        {
-          'type': 'date',
-          'attributes': {
-            'date': '2018-09-05T21:39:27+00:00'
+        'type': 'habits',
+        'relationships': [
+          {
+            'track-individual-habits': {
+              'data': {
+                'type': 'track-individual-habits',
+                'attributes': {
+                  'date': '2018-09-05T21:39:27+00:00'
+                }
+              }
+            }
           }
-        }
-      ]
+        ]
+      }
     }
     assert_equal 403, status # Forbbiden
   end
@@ -99,16 +107,20 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     post '/habits/fulfill?token=' + @user2.id.to_s, params: {
       'data': {
         'id': @individual_habit_to_track.id,
-        'type': 'habit'
-      },
-      'included': [
-        {
-          'type': 'date',
-          'attributes': {
-            'date': '2018-09-05T21:39:27+00:00'
+        'type': 'habits',
+        'relationships': [
+          {
+            'track-individual-habits': {
+              'data': {
+                'type': 'track-individual-habits',
+                'attributes': {
+                  'date': '2018-09-05T21:39:27+00:00'
+                }
+              }
+            }
           }
-        }
-      ]
+        ]
+      }
     }
     assert_equal 404, status # :not_found
   end
@@ -116,16 +128,20 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     post '/habits/fulfill?token=' + @user3.id.to_s, params: {
       'data': {
         'id': @individual_habit_already_tracked.id,
-        'type': 'habit'
-      },
-      'included': [
-        {
-          'type': 'date',
-          'attributes': {
-            'date': '2018-09-05T21:39:27+00:00'
+        'type': 'habits',
+        'relationships': [
+          {
+            'track-individual-habits': {
+              'data': {
+                'type': 'track-individual-habits',
+                'attributes': {
+                  'date': '2018-09-05T21:39:27+00:00'
+                }
+              }
+            }
           }
-        }
-      ]
+        ]
+      }
     }
     assert_equal 409, status # :conflict
   end
@@ -133,16 +149,20 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     post '/habits/fulfill?token=' + @user.id.to_s, params: {
       'data': {
         'id': @individual_habit_to_track.id,
-        'type': 'habit'
-      },
-      'included': [
-        {
-          'type': 'date',
-          'attributes': {
-            'date': Time.now.rfc2822
+        'type': 'habits',
+        'relationships': [
+          {
+            'track-individual-habits': {
+              'data': {
+                'type': 'track-individual-habits',
+                'attributes': {
+                  'date': Time.now.rfc2822
+                }
+              }
+            }
           }
-        }
-      ]
+        ]
+      }
     }
     assert_equal 400, status # :bad_request
   end
