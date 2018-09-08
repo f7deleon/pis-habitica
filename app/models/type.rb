@@ -13,5 +13,5 @@ class Type < ApplicationRecord
 end
 
 class TypeSerializer < ActiveModel::Serializer
-  attributes :name, :description
+  attributes :id, :name, :description
 end
