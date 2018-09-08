@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :types
   resources :users
   resources :habits
+  resources :characters
 
   namespace :me do
     resources :characters
