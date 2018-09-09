@@ -9,9 +9,5 @@ class TrackIndividualHabit < ApplicationRecord
 end
 
 class TrackIndividualHabitSerializer < ActiveModel::Serializer
-  attributes :id, :date
-
-  def id
-    [object.individual_habit_id, object.date.to_s]
-  end
+  attributes :individual_habit_id, :date
 end
