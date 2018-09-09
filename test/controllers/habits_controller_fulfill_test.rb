@@ -135,7 +135,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
               'data': {
                 'type': 'track-individual-habits',
                 'attributes': {
-                  'date': '2018-09-05T21:39:27+00:00'
+                  'date': Time.zone.now.iso8601
                 }
               }
             }

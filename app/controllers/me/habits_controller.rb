@@ -91,7 +91,7 @@ class Me::HabitsController < Me::ApplicationController
     end
 
     date_passed = Time.zone.parse(habit_params[:date])
-    unless habit.frequency == 1 || habit_has_been_tracked_today(habit, date_passed).nil?
+    if habit.frequency == 2 && !habit_has_been_tracked_today(habit, date_passed).empty?
       # Habit frequency is daily and it has been fulfilled today
       render json: {
         'errors': [

@@ -28,7 +28,7 @@ class Me::CharactersController < Me::ApplicationController
     user_character = @user.add_character(params[:data][:id], params[:included][0][:attributes][:date])
     if user_character
       character_chosen.user_characters << user_character
-      render json: character_chosen
+      render json: character_chosen, status: :created
     else
       render json: { "errors": [{ "status": 400,
                                   "title": 'Bad request',
@@ -41,6 +41,5 @@ class Me::CharactersController < Me::ApplicationController
   def check_params
     params.require(:data).require(:id)
     params.require(:included)
-    params.require(:token)
   end
 end

@@ -27,3 +27,4 @@ Character.create([
                      { name: 'Llama de Fortnite', description: 'Descripcion Llama' },
                      { name: 'Castor', description: 'Descripcion Castors' },
                  ])
+

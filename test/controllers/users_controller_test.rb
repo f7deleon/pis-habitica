@@ -35,7 +35,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     url = '/me/characters?token=' + @user.id.to_s
 
     result0 = post url, params: @parameters
-    assert result0 == 200 # :created
+    assert result0 == 201 # :created
     result = post url, params: @parameters2
     assert result == 400 # :bad_request
   end
