@@ -16,18 +16,9 @@ end
 
 class IndividualHabitSerializer < ActiveModel::Serializer
   attributes :id, :name, :description, :difficulty, :privacy, :frequency, :count_track
-
-  has_many :type_list
+  has_many :types
 
   def count_track
     object.track_individual_habits.length.to_s
-  end
-
-  def type_list
-    name_list = []
-    object.types.each do |type_record|
-      name_list << type_record.name
-    end
-    name_list
   end
 end

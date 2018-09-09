@@ -42,3 +42,13 @@ end
 class UserSerializer < ActiveModel::Serializer
   attributes :nickname, :mail
 end
+
+class UserHomeSerializer < ActiveModel::Serializer
+  attributes :nickname
+  has_many :individual_habits
+  has_one :character
+
+  def character
+    object.user_characters.find_by_is_alive(true).character
+  end
+end

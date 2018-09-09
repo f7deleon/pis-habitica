@@ -130,7 +130,7 @@ class Me::HabitsController < Me::ApplicationController
     end
 
     if @user.individual_habits.include?(@habit)
-      render json: @habit
+      render json: @habit, include: ['types']
     else
       render json: { "errors": [{ "status": 400,
                                   "title": 'Bad request',
