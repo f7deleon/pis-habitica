@@ -5,10 +5,10 @@ require 'test_helper'
 class HabitsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create(nickname: 'showHabitsTest',
-                        mail: 'showHabitsTest@showHabitsTest.com',
+                        email: 'showHabitsTest@showHabitsTest.com',
                         password: 'showHabitsTest123')
     @user2 = User.create(nickname: 'test_habit',
-                         mail: 'test_habit@test_habit.com',
+                         email: 'test_habit@test_habit.com',
                          password: 'test_habit1234')
     @individual_habit = IndividualHabit.create(user_id: @user.id,
                                                name: 'showHabitsTest',

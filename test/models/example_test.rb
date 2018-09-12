@@ -8,7 +8,7 @@ class ExampleTest < ActiveSupport::TestCase
   # end
 
   def setup
-    @user = User.create(nickname: 'Example', mail: 'example@example.com', password: 'Example123')
+    @user = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
 
     @group = Group.create(name: 'Example', description: 'Example')
 
@@ -17,9 +17,7 @@ class ExampleTest < ActiveSupport::TestCase
     @user.user_groups << @user_group
     @group.user_groups << @user_group
 
-    @user_type = Type.create(name: 'Example', description: 'Example')
-    @individual_type = IndividualType.create(user_id: @user.id, type_id: @user_type.id)
-
+    @individual_type = IndividualType.create(user_id: @user.id, name: 'Example', description: 'Example')
     @user.individual_types << @individual_type
 
     @individual_habit = IndividualHabit.create(
@@ -33,9 +31,7 @@ class ExampleTest < ActiveSupport::TestCase
 
     @user.individual_habits << @individual_habit
 
-    @type_group = Type.create(name: 'example', description: 'example')
-    @group_type = GroupType.create(group_id: @group.id, type_id: @type_group.id)
-
+    @group_type = GroupType.create(group_id: @group.id, name: 'example', description: 'example')
     @group.group_types << @group_type
 
     @group_habit = GroupHabit.create(
@@ -44,36 +40,36 @@ class ExampleTest < ActiveSupport::TestCase
       description: 'Example',
       difficulty: 2,
       privacy: 1,
-      frecuency: 1
+      frequency: 1
     )
 
     @group.group_habits << @group_habit
 
     @individual_habit_has_type = IndividualHabitHasType.create(
-      individual_habit_id: @individual_habit.id,
-      type_id: @individual_type.type_id
+      habit_id: @individual_habit.id,
+      type_id: @individual_type.id
     )
 
     @group_habit_has_type = GroupHabitHasType.create(
-      group_habit_id: @group_habit.id,
-      type_id: @group_type.type_id
+      habit_id: @group_habit.id,
+      type_id: @group_type.id
     )
 
     @group_habit.group_habit_has_types << @group_habit_has_type
-    @type_group.group_habit_has_types << @group_habit_has_type
+    @group_type.group_habit_has_types << @group_habit_has_type
 
     @individual_habit.individual_habit_has_types << @individual_habit_has_type
-    @user_type.individual_habit_has_types << @individual_habit_has_type
+    @individual_type.individual_habit_has_types << @individual_habit_has_type
 
     @track_individual_habit = TrackIndividualHabit.create(
-      individual_habit_id: @individual_habit.id,
+      habit_id: @individual_habit.id,
       date: Time.zone.now
     )
     @individual_habit.track_individual_habits << @track_individual_habit
 
     @track_group_habit = TrackGroupHabit.create(
       user_id: @user.id,
-      group_habit_id: @individual_habit.id,
+      habit_id: @individual_habit.id,
       date: Time.zone.now
     )
     @user.track_group_habits << @track_group_habit

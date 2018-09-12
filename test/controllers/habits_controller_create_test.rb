@@ -6,33 +6,29 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create(
       nickname: 'Example',
-      mail: 'example@example.com',
+      email: 'example@example.com',
       password: 'Example123'
     )
     @user2 = User.create(
       nickname: 'Example12',
-      mail: 'example12@example.com',
+      email: 'example12@example.com',
       password: 'Example123'
     )
-    @user_type = Type.create(name: 'Example', description: 'Example')
-    @user_type2 = Type.create(name: '2', description: '2')
+
     @individual_type = IndividualType.create(
       user_id: @user.id,
-      type_id: @user_type.id
+      name: 'Example',
+      description: 'Example'
     )
     @individual_type2 = IndividualType.create(
       user_id: @user.id,
-      type_id: @user_type2.id
+      name: 'Example',
+      description: 'Example'
     )
-
-    @user.individual_types << @individual_type
-    @user.individual_types << @individual_type2
   end
 
   test 'should be valid' do
     assert @user.valid?
-    assert @user_type.valid?
-    assert @user_type2.valid?
     assert @individual_type.valid?
     assert @individual_type2.valid?
   end
@@ -49,8 +45,8 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
         },
         'relationships': {
           'types': [
-            { 'data': { 'id': @user_type.id, 'type': 'type' } },
-            { 'data': { 'id': @user_type2.id, 'type': 'type' } }
+            { 'data': { 'id': @individual_type.id, 'type': 'type' } },
+            { 'data': { 'id': @individual_type2.id, 'type': 'type' } }
           ]
         }
       }
@@ -70,8 +66,8 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
         },
         'relationships': {
           'types': [
-            { 'data': { 'id': @user_type.id, 'type': 'type' } },
-            { 'data': { 'id': @user_type2.id, 'type': 'type' } }
+            { 'data': { 'id': @individual_type.id, 'type': 'type' } },
+            { 'data': { 'id': @individual_type2.id, 'type': 'type' } }
           ]
         }
       }

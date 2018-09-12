@@ -5,7 +5,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby '2.5.1'
 
-gem 'active_model_serializers', '~> 0.10.2'
+gem 'fast_jsonapi'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 5.2.1'
 # Use postgresql as the database for Active Record
@@ -23,7 +23,7 @@ gem 'composite_primary_keys', '=11.0'
 # gem 'mini_magick', '~> 4.8'
 gem 'rubocop', require: false
 # Active model serializer gem
-
+gem 'knock'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 

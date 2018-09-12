@@ -4,9 +4,9 @@ require 'test_helper'
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @user = User.create(nickname: 'Example', mail: 'example@example.com', password: 'Example123')
-    @user1 = User.create(nickname: 'Example2', mail: 'example2@example.com', password: 'Example123')
-    @user2 = User.create(nickname: 'Example12', mail: 'example12@example.com', password: 'Example123')
+    @user = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
+    @user1 = User.create(nickname: 'Example2', email: 'example2@example.com', password: 'Example123')
+    @user2 = User.create(nickname: 'Example12', email: 'example12@example.com', password: 'Example123')
     ### Characters creation
     @character = Character.create(name: 'Humano',
                                   description: 'Descripcion humano')
@@ -53,9 +53,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       privacy: 2,
       frequency: 2
     )
-    @user_type = Type.create(name: 'Example_seed', description: 'Example_seed')
-    @individual_type = IndividualType.create(user_id: @user1.id, type_id: @user_type.id)
-    @habit_type = IndividualHabitHasType.create(individual_habit_id: @individual_habit.id, type_id: @user_type.id)
+    @individual_type = IndividualType.create(user_id: @user1.id, name: 'Example_seed', description: 'Example_seed')
+    @habit_type = IndividualHabitHasType.create(habit_id: @individual_habit.id, type_id: @individual_type.id)
 
     @user1.individual_types << @individual_type
     @individual_habit.individual_habit_has_types << @habit_type
@@ -68,7 +67,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert @user1.valid?
     assert @character.valid?
     assert @user_character.valid?
-    assert @user_type.valid?
     assert @individual_type.valid?
     assert @habit_type.valid?
     assert @individual_habit.valid?

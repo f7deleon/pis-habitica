@@ -4,14 +4,10 @@ require 'test_helper'
 
 class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
   def setup
-    @user = User.create(nickname: 'Example', mail: 'example@example.com', password: 'Example123')
-    @user2 = User.create(nickname: 'Example12', mail: 'example12@example.com', password: 'Example123')
-    @user_type = Type.create(name: 'Example', description: 'Example')
-    @user_type2 = Type.create(name: '2', description: '2')
-    @individual_type = IndividualType.create(user_id: @user.id, type_id: @user_type.id)
-    @individual_type2 = IndividualType.create(user_id: @user.id, type_id: @user_type2.id)
-    @user.individual_types << @individual_type
-    @user.individual_types << @individual_type2
+    @user = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
+    @user2 = User.create(nickname: 'Example12', email: 'example12@example.com', password: 'Example123')
+    @individual_type = IndividualType.create(user_id: @user.id, name: 'Example', description: 'Example')
+    @individual_type2 = IndividualType.create(user_id: @user.id, name: '2', description: '2')
     @individual_habit_to_track = IndividualHabit.create(
       user_id: @user.id,
       name: 'Example',
@@ -22,15 +18,14 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     )
     @user.individual_habits << @individual_habit_to_track
     @individual_habit_has_type = IndividualHabitHasType.create(
-      individual_habit_id: @individual_habit_to_track.id,
-      type_id: @individual_type.type_id
+      habit_id: @individual_habit_to_track.id,
+      type_id: @individual_type.id
     )
     @individual_habit_to_track.individual_habit_has_types << @individual_habit_has_type
-    @user_type.individual_habit_has_types << @individual_habit_has_type
+    @individual_type.individual_habit_has_types << @individual_habit_has_type
     # If Habit frequency is daily habit must not have been fulfilled today
-    @user3 = User.create(nickname: 'Example123', mail: 'example123@example.com', password: '112312312323')
-    @user_type3 = Type.create(name: 'Example', description: 'Example')
-    @individual_type3 = IndividualType.create(user_id: @user3.id, type_id: @user_type3.id)
+    @user3 = User.create(nickname: 'Example123', email: 'example123@example.com', password: '112312312323')
+    @individual_type3 = IndividualType.create(user_id: @user3.id, name: 'Example', description: 'Example')
     @user3.individual_types << @individual_type3
 
     @individual_habit_already_tracked = IndividualHabit.create(
@@ -43,21 +38,19 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     )
     @user3.individual_habits << @individual_habit_already_tracked
     @individual_habit_has_type3 = IndividualHabitHasType.create(
-      individual_habit_id: @individual_habit_already_tracked.id,
-      type_id: @individual_type3.type_id
+      habit_id: @individual_habit_already_tracked.id,
+      type_id: @individual_type3.id
     )
     @individual_habit_already_tracked.individual_habit_has_types << @individual_habit_has_type3
-    @user_type3.individual_habit_has_types << @individual_habit_has_type3
+    @individual_type3.individual_habit_has_types << @individual_habit_has_type3
     @track_individual_habit3 = TrackIndividualHabit.create(
-      individual_habit_id: @individual_habit_already_tracked.id,
+      habit_id: @individual_habit_already_tracked.id,
       date: Time.zone.now
     )
     @individual_habit_already_tracked.track_individual_habits << @track_individual_habit3
   end
   test 'should be valid' do
     assert @user.valid?
-    assert @user_type.valid?
-    assert @user_type2.valid?
     assert @individual_type.valid?
     assert @individual_type2.valid?
   end

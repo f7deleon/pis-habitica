@@ -160,6 +160,7 @@ class Me::HabitsController < Me::ApplicationController
   def create_habit
     params.require(:data).require(:attributes).require(%i[name description frequency difficulty privacy])
     params.require(:data).require(:relationships).require(:types)
+    raise ActionController::ParameterMissing
   end
 
   # Use callbacks to share common setup or constraints between actions.

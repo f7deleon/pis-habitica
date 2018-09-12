@@ -13,7 +13,7 @@ class User < ApplicationRecord
 
   self.primary_key = :id
   validates :nickname, presence: true, uniqueness: true # string
-  validates :mail, presence: true, uniqueness: true # string
+  validates :email, presence: true, uniqueness: true # string
   validates :password, presence: true, length: { minimum: 8 }
 
   has_secure_password
@@ -21,6 +21,7 @@ class User < ApplicationRecord
   def add_character(char_id, creation_d)
     # check if the user already have a character with is_alive in true
     return nil if user_characters.find_by_is_alive(true)
+
     # add new UserCharacter record
     user_character = UserCharacter.new(character_id: char_id,
                                        user_id: id,
@@ -36,19 +37,5 @@ class User < ApplicationRecord
 
   def serialized
     UserSerializer.new(self)
-  end
-end
-
-class UserSerializer < ActiveModel::Serializer
-  attributes :nickname, :mail
-end
-
-class UserHomeSerializer < ActiveModel::Serializer
-  attributes :nickname
-  has_many :individual_habits
-  has_one :character
-
-  def character
-    object.user_characters.find_by_is_alive(true).character
   end
 end

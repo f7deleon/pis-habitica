@@ -6,15 +6,13 @@ class IndividualHabitTest < ActiveSupport::TestCase
   def setup
     @user = User.create(
       nickname: 'Example',
-      mail: 'example@example.com',
+      email: 'example@example.com',
       password: 'Example123'
     )
-    @user_type = Type.create(name: 'Example', description: 'Example')
     @individual_type = IndividualType.create(
       user_id: @user.id,
-      type_id: @user_type.id
+      name: 'Example', description: 'Example'
     )
-    @user.individual_types << @individual_type
     @individual_habit = IndividualHabit.create(
       user_id: @user.id,
       name: 'Example',
@@ -25,13 +23,13 @@ class IndividualHabitTest < ActiveSupport::TestCase
     )
     @user.individual_habits << @individual_habit
     @individual_habit_has_type = IndividualHabitHasType.create(
-      individual_habit_id: @individual_habit.id,
-      type_id: @individual_type.type_id
+      habit_id: @individual_habit.id,
+      type_id: @individual_type.id
     )
     @individual_habit.individual_habit_has_types << @individual_habit_has_type
-    @user_type.individual_habit_has_types << @individual_habit_has_type
+    @individual_type.individual_habit_has_types << @individual_habit_has_type
     @track_individual_habit = TrackIndividualHabit.create(
-      individual_habit_id: @individual_habit.id,
+      habit_id: @individual_habit.id,
       date: Time.zone.now
     )
     @individual_habit.track_individual_habits << @track_individual_habit

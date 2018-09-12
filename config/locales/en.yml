@@ -30,4 +30,17 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  bad_request: "Bad request"
+  bad_request_details: "Invalid request format"
+  not_found: "Not found"
+  unauthorized: "Unauthorized"
+  unauthorized_details: "Invalid token"
+  standard_error: "Internal error"
+  standard_error_details: "Something went wrong"
+  conflict: "conflict"
+  taken_string: "There is already an user with that "
+  errors:
+    messages:
+      blank: "%{attribute} is required"
+      taken: "There is already an %{model} with that %{attribute}"
+

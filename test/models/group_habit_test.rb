@@ -6,7 +6,7 @@ class GroupHabitTest < ActiveSupport::TestCase
   def setup
     @user = User.create(
       nickname: 'Example',
-      mail: 'example@example.com',
+      email: 'example@example.com',
       password: 'Example123'
     )
     @group = Group.create(
@@ -19,31 +19,29 @@ class GroupHabitTest < ActiveSupport::TestCase
     )
     @user.user_groups << @user_group
     @group.user_groups << @user_group
-    @user_type = Type.create(name: 'Example', description: 'Example')
-    @type_group = Type.create(name: 'example', description: 'example')
     @group_type = GroupType.create(
       group_id: @group.id,
-      type_id: @type_group.id
+      name: 'Example',
+      description: 'Example'
     )
-    @group.group_types << @group_type
     @group_habit = GroupHabit.create(
       group_id: @group.id,
       name: 'Example',
       description: 'Example',
       difficulty: 2,
       privacy: 1,
-      frecuency: 1
+      frequency: 1
     )
     @group.group_habits << @group_habit
     @group_habit_has_type = GroupHabitHasType.create(
-      group_habit_id: @group_habit.id,
-      type_id: @group_type.type_id
+      habit_id: @group_habit.id,
+      type_id: @group_type.id
     )
     @group_habit.group_habit_has_types << @group_habit_has_type
-    @type_group.group_habit_has_types << @group_habit_has_type
+    @group_type.group_habit_has_types << @group_habit_has_type
     @track_group_habit = TrackGroupHabit.create(
       user_id: @user.id,
-      group_habit_id: @group_habit.id,
+      habit_id: @group_habit.id,
       date: Time.zone.now
     )
     @user.track_group_habits << @track_group_habit
@@ -67,16 +65,16 @@ class GroupHabitTest < ActiveSupport::TestCase
     @group_habit.name = ''
     assert_not @group_habit.valid?
   end
-  test 'frecuency should be present' do
-    @group_habit.frecuency = nil
+  test 'frequency should be present' do
+    @group_habit.frequency = nil
     assert_not @group_habit.valid?
   end
-  test 'frecuency should be > 0' do
-    @group_habit.frecuency = 0
+  test 'frequency should be > 0' do
+    @group_habit.frequency = 0
     assert_not @group_habit.valid?
   end
-  test 'frecuency should be < 3' do
-    @group_habit.frecuency = 3
+  test 'frequency should be < 3' do
+    @group_habit.frequency = 3
     assert_not @group_habit.valid?
   end
   test 'difficulty should be present' do
