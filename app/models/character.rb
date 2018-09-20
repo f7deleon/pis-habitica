@@ -9,4 +9,8 @@ class Character < ApplicationRecord
   self.primary_key = :id
   validates :name, presence: true # string
   validates :description, presence: true # string
+
+  def serialized
+    CharacterSerializer.new(self)
+  end
 end

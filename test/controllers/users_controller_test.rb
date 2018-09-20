@@ -5,8 +5,32 @@ require 'test_helper'
 class UsersControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user.email,
+        "password": @user.password
+      }
+    }
+    @user_token = JSON.parse(response.body)['jwt']
+
     @user1 = User.create(nickname: 'Example2', email: 'example2@example.com', password: 'Example123')
-    @user2 = User.create(nickname: 'Example12', email: 'example12@example.com', password: 'Example123')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user1.email,
+        "password": @user1.password
+      }
+    }
+    @user1_token = JSON.parse(response.body)['jwt']
+
+    @user2 = User.create(nickname: 'Example3', email: 'example3@example.com', password: 'Example123')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user2.email,
+        'password': @user2.password
+      }
+    }
+    @user2_token = JSON.parse(response.body)['jwt']
+
     ### Characters creation
     @character = Character.create(name: 'Humano',
                                   description: 'Descripcion humano')
@@ -28,7 +52,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                     "attributes": { "date": '2018-09-07T12:00:00Z' } }] }
 
     # Add character to user
-    @user_character = UserCharacter.create(user_id: @user.id,
+    @user_character = UserCharacter.create(user_id: @user1.id,
                                            character_id: @character.id,
                                            creation_date: '2018-09-07T12:00:00Z',
                                            is_alive: true)
@@ -63,66 +87,44 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user1.individual_habits << @individual_habit2
   end
 
-  test 'should be valid' do
-    assert @user1.valid?
-    assert @character.valid?
-    assert @user_character.valid?
-    assert @individual_type.valid?
-    assert @habit_type.valid?
-    assert @individual_habit.valid?
-    assert @individual_habit2.valid?
-  end
-
   test 'should get home' do
-    get '/me/home?token=' + @user1.id.to_s, params: {
-      "data": {
-        "id": @user1.id.to_s,
-        "type": 'users',
-        "attributes": {
-          "nickname": @user1.nickname
-        },
-        "relationships": {
-          "character": {
-            "data": {
-              "type": 'characters',
-              "id": @user1.user_characters.to_s
-            }
-          },
-          "habits": @user1.individual_habits
-        }
-      }
-    }
+    get '/me/home', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                    params: {
+                      "data": {
+                        "id": @user1.id.to_s,
+                        "type": 'users',
+                        "attributes": {
+                          "nickname": @user1.nickname
+                        },
+                        "relationships": {
+                          "character": {
+                            "data": {
+                              "type": 'characters',
+                              "id": @user1.user_characters.to_s
+                            }
+                          },
+                          "habits": @user1.individual_habits
+                        }
+                      }
+                    }
     assert_equal 200, status
-  end
-
-  test 'get home without alive character' do
-    get '/me/home?token=' + @user2.id.to_s, params: {
-      "errors": [
-        {
-          "status": 404,
-          "code": 1,
-          "title": 'No character',
-          "detail": 'User has no character alive'
-        }
-      ]
-    }
-    assert_equal 404, status
   end
 
   # Alta Personaje
   test 'AltaPersonaje: add character id 4 to user
                         id 1 user already have an is_alive character' do
-    url = '/me/characters?token=' + @user.id.to_s
-
-    result0 = post url, params: @parameters
+    url = '/me/characters'
+    result0 = post url, headers: { 'Authorization': 'Bearer ' + @user_token },
+                        params: @parameters
     assert result0 == 201 # :created
-    result = post url, params: @parameters2
+    result = post url, headers: { 'Authorization': 'Bearer ' + @user_token },
+                       params: @parameters2
     assert result == 400 # :bad_request
   end
 
-  test 'AltaPersonaje:  user id do not exists' do
-    result = post '/me/characters?token=9999', params: @parameters
-    assert result == 403 # :forbidden
+  test 'AltaPersonaje:  request without jwt' do
+    result = post '/me/characters', params: @parameters
+    assert result == 401 # :forbidden
   end
 
   test 'AltaPersonaje: char_id do not exists' do
@@ -132,7 +134,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                              "description": 'Una descripcion de mago' } },
                    "included": [{ "type": 'date',
                                   "attributes": { "date": '2018-09-07T12:00:00Z' } }] }
-    result = post '/me/characters?token=' + @user.id.to_s, params: parameters
+    result = post '/me/characters', headers: { 'Authorization': 'Bearer ' + @user_token },
+                                    params: parameters
     assert result == 400 # :bad_request
   end
 
@@ -143,7 +146,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                              "description": 'Una descripcion de mago' } },
                    "included": [{ "type": 'date',
                                   "attributes": { "date": '2018-2:00:00Z' } }] }
-    result = post '/me/characters?token=' + @user.id.to_s, params: parameters
+    result = post '/me/characters', headers: { 'Authorization': 'Bearer ' + @user_token },
+                                    params: parameters
     assert result == 400 # :bad_request
   end
 end

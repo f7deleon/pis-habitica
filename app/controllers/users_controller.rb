@@ -3,19 +3,20 @@
 require 'time'
 
 class UsersController < ApplicationController
+  before_action :authenticate_user, except: %i[create]
   before_action :create_user, only: %i[create]
-  before_action :set_user, only: %i[show update destroy add_character]
+  before_action :set_user, only: %i[show update destroy]
 
   # GET /users
   def index
     @users = User.all
 
-    render json: @users
+    render json: UserSerializer.new(@users).serialized_json, status: :ok
   end
 
   # GET /users/1
   def show
-    render json: @user
+    render json: UserSerializer.new(@user).serialized_json, status: :ok
   end
 
   # POST /users
@@ -47,7 +48,7 @@ class UsersController < ApplicationController
   # PATCH/PUT /users/1
   def update
     if @user.update(user_params)
-      render json: @user
+      render json: UserSerializer.new(@user).serialized_json, status: :ok
     else
       render json: @user.errors, status: :unprocessable_entity
     end
@@ -66,11 +67,7 @@ class UsersController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_user
-    @user = User.find(params[:token])
-  rescue StandardError
-    render json: { "errors": [{ "status": 404,
-                                "title": 'Not Found',
-                                "details": 'User not found.' }] }, status: :not_found
+    @user = User.find(params[:id])
   end
 
   # Only allow a trusted parameter "white list" through.

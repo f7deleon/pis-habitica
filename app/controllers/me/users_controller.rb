@@ -3,7 +3,7 @@
 class Me::UsersController < Me::ApplicationController
   def home
     # There is no home if user has no character alive
-    if !@user.user_characters.find_by_is_alive(true)
+    if !current_user.user_characters.find_by_is_alive(true)
       render json: {
         "errors": [
           {
@@ -15,7 +15,7 @@ class Me::UsersController < Me::ApplicationController
         ]
       }, status: :not_found
     else
-      render json: @user, serializer: UserHomeSerializer, include: ['individual_habits']
+      render json: UserHomeSerializer.new(current_user).serialized_json
     end
   end
 end

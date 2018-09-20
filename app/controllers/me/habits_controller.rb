@@ -77,7 +77,6 @@ class Me::HabitsController < Me::ApplicationController
   # PATCH/PUT /me/habits/id
   def update
     params_update = params[:data][:attributes]
-
     if params_update[:active].to_i.zero?
       # Borrado
       @habit.active = 0

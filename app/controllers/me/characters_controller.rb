@@ -25,7 +25,7 @@ class Me::CharactersController < Me::ApplicationController
       return
     end
 
-    user_character = @user.add_character(params[:data][:id], params[:included][0][:attributes][:date])
+    user_character = current_user.add_character(params[:data][:id], params[:included][0][:attributes][:date])
     if user_character
       character_chosen.user_characters << user_character
       render json: character_chosen, status: :created
