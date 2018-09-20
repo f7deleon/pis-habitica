@@ -1,144 +1,109 @@
 # frozen_string_literal: true
 
 class Me::HabitsController < Me::ApplicationController
-  before_action :set_habit, only: %i[update destroy]
   before_action :create_habit, only: %i[create]
-  before_action :show_habit, only: %i[show]
+  before_action :update_habit, only: %i[update]
+  before_action :fulfill_habit, only: %i[fulfill]
+  before_action :set_habit, only: %i[update destroy fulfill show]
 
-  # GET /habits
+  # GET /me/habits
   def index
-    @habits = @user.individual_habits
-
-    render json: @habits
+    habits = current_user.individual_habits
+    render json: IndividualHabitSerializer.new(habits).serialized_json
   end
 
-  # POST /habits
+  # POST /me/habits
   def create
     habit_params = params[:data][:attributes]
     type_ids_params = params[:data][:relationships][:types]
+
+    # At least one type
+    if type_ids_params[0].blank?
+      raise Error::CustomError.new(I18n.t('bad_request'), :bad_request, I18n.t('errors.messages.typeless_habit'))
+    end
+
     type_ids = []
     type_ids_params.each { |type| type_ids << type[:data][:id] }
-    unless type_ids.all? { |type| Type.exists?(type) }
-      # Type does not exist
-      render json: {
-        'errors': [
-          {
-            'status': 404,
-            'title': 'Type not found',
-            'details': 'Type does not exist'
-          }
-        ]
-      }, status: :not_found
-      return
-    end
-    individual_types = Type.find(type_ids)
 
+    # Type does not exist
+    raise Error::NotFoundError unless type_ids.all? { |type| DefaultType.exists?(type) }
+
+    individual_types = Type.find(type_ids)
     habit = IndividualHabit.new(
-      user_id: @user.id,
+      user_id: current_user.id,
       name: habit_params[:name],
       description: habit_params[:description],
       difficulty: habit_params[:difficulty],
       privacy: habit_params[:privacy],
-      frequency: habit_params[:frequency]
+      frequency: habit_params[:frequency],
+      active: true
     )
-    if habit.save
-      @user.individual_habits << habit
-      individual_types.each do |type|
-        individual_habit_has_type = IndividualHabitHasType.create(individual_habit_id: habit.id, type_id: type.id)
-        habit.individual_habit_has_types << individual_habit_has_type
-        type.individual_habit_has_types << individual_habit_has_type
-      end
-      render json: habit, status: :created
-    else
-      render json: {
-        'errors': [
-          {}
-        ]
-      }
+
+    raise ActiveRecord::RecordInvalid unless habit.save!
+
+    current_user.individual_habits << habit
+    individual_types.each do |type|
+      individual_habit_has_type = IndividualHabitHasType.create(habit_id: habit.id, type_id: type.id)
+      habit.individual_habit_has_types << individual_habit_has_type
+      type.individual_habit_has_types << individual_habit_has_type
     end
+    render json: IndividualHabitSerializer.new(habit).serialized_json, status: :created
   end
 
-  # POST habits/fulfill
-  def fulfill_habit
-    habit_params = params[:data][:relationships][0][:"track-individual-habits"][:data][:attributes]
-    habit_id = params[:data][:id]
-    unless @user.individual_habits.exists?(habit_id)
-      # User does not have this habit
-      render json: {
-        'errors': [
-          {
-            'status': 404,
-            'title': 'Not found',
-            'details': 'User does not have this habit'
-          }
-        ]
-      }, status: :not_found
-      return
-    end
-    habit = IndividualHabit.find(habit_id)
-    unless check_iso8601(habit_params[:date])
-      # date is not in ISO 8601
-      render json: {
-        'errors': [
-          {
-            'status': 400,
-            'title': 'Bad request',
-            'details': 'Date is not in ISO 8601'
-          }
-        ]
-      }, status: :bad_request
-      return
+  # POST /me/habits/fulfill
+  def fulfill
+    date_params = params[:data][:attributes][:date]
+
+    # date is not in ISO 8601
+    unless check_iso8601(date_params)
+      raise Error::CustomError.new(I18n.t('bad_request'), :bad_request, I18n.t('errors.messages.date_formatting'))
     end
 
-    date_passed = Time.zone.parse(habit_params[:date])
-    if habit.frequency == 2 && !habit_has_been_tracked_today(habit, date_passed).empty?
-      # Habit frequency is daily and it has been fulfilled today
-      render json: {
-        'errors': [
-          {
-            'status': 409,
-            'title': 'Conflict',
-            'details': 'Habit frequency is daily and it has been fulfilled today'
-          }
-        ]
-      }, status: :conflict
-      return
+    date_passed = Time.zone.parse(date_params)
+
+    # Habit frequency is daily and it has been fulfilled today
+    if @habit.frequency == 2 && !habit_has_been_tracked_today(@habit, date_passed).empty?
+      raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.daily_fulfilled'))
     end
+
     # If frequency = default || has not been fullfilled
-    track_individual_habit = TrackIndividualHabit.new(individual_habit_id: habit.id, date: date_passed)
-    if track_individual_habit.save
-      habit.track_individual_habits << track_individual_habit
-      render json: habit, status: :created
-      return
-    end
+    track_individual_habit = TrackIndividualHabit.new(habit_id: @habit.id, date: date_passed)
+    raise ActiveRecord::RecordInvalid unless track_individual_habit.save!
 
-    render json: {
-      'errors': [
-        {}
-      ]
-    }
+    @habit.track_individual_habits << track_individual_habit
+    render json: IndividualHabitSerializer.new(@habit).serialized_json, status: :created
   end
 
-  def show
-    begin
-      @habit = IndividualHabit.find(params[:id])
-    rescue StandardError
-      render json: { "errors": [{ "status": 400,
-                                  "title": 'Bad request',
-                                  "details": 'Habit does not exists' }] }, status: :bad_request
-      return
-    end
+  # PATCH/PUT /me/habits/id
+  def update
+    params_update = params[:data][:attributes]
 
-    if @user.individual_habits.include?(@habit)
-      render json: @habit, include: ['types']
+    if params_update[:active].to_i.zero?
+      # Borrado
+      @habit.active = 0
+      @habit.save
+      render json: {}, status: :no_content
     else
-      render json: { "errors": [{ "status": 400,
-                                  "title": 'Bad request',
-                                  "details": 'Habit does not belong to this user' }] }, status: :bad_request
+      # Modificar
+      raise ActiveRecord::RecordInvalid unless @habit.update(params_update)
+
+      render json: IndividualHabitSerializer.new(@habit).serialized_json, status: :ok
     end
+  end
+
+  # GET /me/habits/id
+  def show
+    # Los checkeos que esto hacia se hace en set_habit
+    render json: IndividualHabitSerializer.new(@habit).serialized_json, status: :ok
   end
 
   private
+
+  # Use callbacks to share common setup or constraints between actions.
+  def set_habit
+    # Se busca solo en los habitos individuales del usuario logueado.
+    raise Error::NotFoundError unless (@habit = current_user.individual_habits.find_by(id: params[:id], active: true))
+  end
 
   def habit_has_been_tracked_today(habit, date)
     habit.track_individual_habits.created_between(
@@ -153,19 +118,18 @@ class Me::HabitsController < Me::ApplicationController
     nil
   end
 
-  def show_habit
-    params.require(:token)
+  def update_habit
+    params.require(:data).require(:attributes)
   end
 
   def create_habit
     params.require(:data).require(:attributes).require(%i[name description frequency difficulty privacy])
+    # Esto no controla que types sea un array ni que sea no vacio, esa verificacion se hace internamente en creates.
     params.require(:data).require(:relationships).require(:types)
-    raise ActionController::ParameterMissing
   end
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_habit
-    @habit = IndividualHabit.find(params[:id])
+  def fulfill_habit
+    params.require(:data).require(:attributes).require(:date)
   end
 
   # Only allow a trusted parameter 'white list' through.

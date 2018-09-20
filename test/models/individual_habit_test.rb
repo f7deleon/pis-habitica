@@ -11,7 +11,8 @@ class IndividualHabitTest < ActiveSupport::TestCase
     )
     @individual_type = IndividualType.create(
       user_id: @user.id,
-      name: 'Example', description: 'Example'
+      name: 'Example',
+      description: 'Example'
     )
     @individual_habit = IndividualHabit.create(
       user_id: @user.id,
@@ -19,6 +20,7 @@ class IndividualHabitTest < ActiveSupport::TestCase
       description: 'Example',
       difficulty: 3,
       privacy: 1,
+      active: true,
       frequency: 1
     )
     @user.individual_habits << @individual_habit
@@ -47,10 +49,17 @@ class IndividualHabitTest < ActiveSupport::TestCase
     @individual_habit.user_id = nil
     assert_not @individual_habit.valid?
   end
-
+  test 'active should be present' do
+    @individual_habit.active = nil
+    assert_not @individual_habit.valid?
+  end
   test 'name should be present' do
     @individual_habit.name = ''
     assert_not @individual_habit.valid?
+  end
+  test 'description is optional' do
+    @individual_habit.description = ''
+    assert @individual_habit.valid?
   end
 
   test 'frequency should be present' do

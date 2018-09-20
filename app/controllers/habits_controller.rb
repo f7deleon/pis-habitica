@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class HabitsController < ApplicationController
-  before_action :set_habit, only: %i[update destroy]
+  before_action :set_habit, only: %i[update]
 
   # GET /habits
   def index
@@ -10,16 +10,7 @@ class HabitsController < ApplicationController
     render json: @habits
   end
 
-  # PATCH/PUT /habits/1
-  def update
-    if @habit.update(params)
-      render json: @habit
-    else
-      render json: @habit.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /habits/1
+  # DELETE habits/id
   def destroy
     @habit.destroy
   end

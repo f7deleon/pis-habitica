@@ -9,52 +9,63 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
       email: 'example@example.com',
       password: 'Example123'
     )
-    @user2 = User.create(
-      nickname: 'Example12',
-      email: 'example12@example.com',
-      password: 'Example123'
-    )
 
-    @individual_type = IndividualType.create(
+    post '/user_token', params: {
+      'auth': {
+        'email': @user.email,
+        'password': @user.password
+      }
+    }
+    @user_token = JSON.parse(response.body)['jwt']
+
+    @default_type = DefaultType.create(
       user_id: @user.id,
       name: 'Example',
       description: 'Example'
     )
-    @individual_type2 = IndividualType.create(
+    @default_type2 = DefaultType.create(
       user_id: @user.id,
-      name: 'Example',
-      description: 'Example'
+      name: 'Example2',
+      description: 'Example2'
     )
   end
 
   test 'should be valid' do
     assert @user.valid?
-    assert @individual_type.valid?
-    assert @individual_type2.valid?
+    assert @default_type.valid?
+    assert @default_type2.valid?
   end
   test 'AltaHabito: should create habit' do
-    post '/me/habits?token=' + @user.id.to_s, params: {
+    post '/me/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
       'data': {
         'type': 'habit',
-        'attributes': {
-          'name': 'Example',
-          'description': 'Example',
-          'frequency': 1,
-          'difficulty': 1,
-          'privacy': 1
-        },
+        'attributes': { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
         'relationships': {
           'types': [
-            { 'data': { 'id': @individual_type.id, 'type': 'type' } },
-            { 'data': { 'id': @individual_type2.id, 'type': 'type' } }
+            { 'data': { 'id': @default_type.id, 'type': 'type' } },
+            { 'data': { 'id': @default_type2.id, 'type': 'type' } }
           ]
+        }
+      }
+    }
+    expected = {
+      'data': {
+        'id': JSON.parse(response.body)['data']['id'], 'type': 'habit', 'attributes': {
+          'name': 'Example', 'description': 'Example', 'difficulty': 1, 'privacy': 1, 'frequency': 1, 'count_track': 0
+        }, 'relationships': {
+          'types': {
+            'data': [{ 'id': @default_type.id.to_s, 'type': 'type' }, { 'id': @default_type2.id.to_s, 'type': 'type' }]
+          }
         }
       }
     }
     assert_equal 201, status # Created
+    assert expected.to_json == response.body
   end
   test 'AltaHabito: User should exist' do
-    post '/me/habits?token=999999999', params: {
+    post '/me/habits', headers: {
+      'Authorization': 'Bearer asdasd'
+    }, params: {
       'data': {
         'type': 'habit',
         'attributes': {
@@ -66,16 +77,18 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
         },
         'relationships': {
           'types': [
-            { 'data': { 'id': @individual_type.id, 'type': 'type' } },
-            { 'data': { 'id': @individual_type2.id, 'type': 'type' } }
+            { 'data': { 'id': @default_type.id, 'type': 'type' } },
+            { 'data': { 'id': @default_type2.id, 'type': 'type' } }
           ]
         }
       }
     }
-    assert_equal 403, status # Forbbiden
+    assert_equal 401, status # Unauthorized
   end
   test 'AltaHabito: Type should exist' do
-    post '/me/habits?token=' + @user.id.to_s, params: {
+    post '/me/habits', headers: {
+      'Authorization': 'Bearer ' + @user_token
+    }, params: {
       'data': {
         'type': 'habit',
         'attributes': {
@@ -87,14 +100,55 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
         },
         'relationships': {
           'types': [
-            'data': {
-              'id': 99_999_999,
-              'type': 'type'
-            }
+            { 'data': { 'id': 999_999_999, 'type': 'type' } }
           ]
         }
       }
     }
     assert_equal 404, status # Not Found
+  end
+
+  test 'AltaHabito: should have correct Format' do
+    post '/me/habits', headers: {
+      'Authorization': 'Bearer ' + @user_token
+    }, params: {
+      'data': {
+        'type': 'habit',
+        'attributes': {
+          'title': 'Example',
+          'description': 'Example',
+          'frequency': 1,
+          'difficulty': 1,
+          'privacy': 1
+        },
+        'relationships': {
+          'types': [
+            { 'data': { 'id': @default_type.id, 'type': 'type' } },
+            { 'data': { 'id': @default_type2.id, 'type': 'type' } }
+          ]
+        }
+      }
+    }
+    assert_equal 400, status # Bad Request
+  end
+  test 'AltaHabito: at least 1 type' do
+    post '/me/habits', headers: {
+      'Authorization': 'Bearer ' + @user_token
+    }, params: {
+      'data': {
+        'type': 'habit',
+        'attributes': {
+          'name': 'Example',
+          'description': 'Example',
+          'frequency': 1,
+          'difficulty': 1,
+          'privacy': 1
+        },
+        'relationships': {
+          'types': []
+        }
+      }
+    }
+    assert_equal 400, status # Bad Request
   end
 end

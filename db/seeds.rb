@@ -6,17 +6,17 @@
 # Examples
 
 User.create([
-  { nickname: 'Feli', mail: 'felipe@habitica.com', password: '12341234' },
-  { nickname: 'Pai', mail: 'paiadmin@habitica.com', password: '12341234' },
-  { nickname: 'Lala', mail: 'lala@habitica.com', password: '12341234' },
-  { nickname: 'Seba', mail: 'sebastian@habitica.com', password: '12341234' },
-  { nickname: 'Leo', mail: 'Leosqa@habitica.com', password: '12341234' },
-  { nickname: 'Santos', mail: 'santos@habitica.com', password: '12341234' },
-  { nickname: 'Marco', mail: 'marcopablo@habitica.com', password: '12341234' },
-  { nickname: 'Berna', mail: 'bernardo@habitica.com', password: '12341234' }
+  { nickname: 'Feli', email: 'felipe@habitica.com', password: '12341234' },
+  { nickname: 'Pai', email: 'paiadmin@habitica.com', password: '12341234' },
+  { nickname: 'Lala', email: 'lala@habitica.com', password: '12341234' },
+  { nickname: 'Seba', email: 'sebastian@habitica.com', password: '12341234' },
+  { nickname: 'Leo', email: 'Leosqa@habitica.com', password: '12341234' },
+  { nickname: 'Santos', email: 'santos@habitica.com', password: '12341234' },
+  { nickname: 'Marco', email: 'marcopablo@habitica.com', password: '12341234' },
+  { nickname: 'Berna', email: 'bernardo@habitica.com', password: '12341234' }
 ])
 
-Type.create([
+DefaultType.create([
 	{name: 'Ejercicio', description: 'Hacer ejercicio'},
 	{name: 'Nutricion', description: 'Seguir determinada dieta'},
 	{name: 'Estudio', description: 'Estudiar por mas de 1 hora'},

@@ -13,8 +13,8 @@ Rails.application.routes.draw do
     resources :characters
 
     resources :habits do
-      collection do
-        post 'fulfill', to: 'habits#fulfill_habit'
+      member do
+        post 'fulfill', to: 'habits#fulfill'
       end
     end
   end
