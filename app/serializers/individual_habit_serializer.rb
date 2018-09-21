@@ -6,7 +6,8 @@ class IndividualHabitSerializer
   set_id :id
   attributes :name, :description, :difficulty, :privacy, :frequency
   attribute :count_track do |object|
-    object.track_individual_habits.length
+    now = Time.zone.now
+    object.track_individual_habits.select { |track| track.date.to_date == now.to_date }.length
   end
   has_many :types
 end
