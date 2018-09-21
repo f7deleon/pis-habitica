@@ -32,7 +32,6 @@ module ApiHabits
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
-    config.autoload_paths += %W[#{config.root}/lib]
 
     config.exceptions_app = routes
     config.api_only = true
