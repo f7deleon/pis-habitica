@@ -31,18 +31,7 @@ class UsersController < ApplicationController
     raise Error::ConflictError unless user.save!
 
     token = Knock::AuthToken.new(payload: { sub: user.id }).token
-    user_serializer = UserSerializer.new(user)
-    render json: {
-      "data": user_serializer,
-      "included": [
-        {
-          "type": 'session',
-          "attributes": {
-            "token": token
-          }
-        }
-      ]
-    }, status: :created
+    render json: SessionSerializer.json(user, token), status: :created
   end
 
   # PATCH/PUT /users/1

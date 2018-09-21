@@ -6,9 +6,9 @@ class TypesController < ApplicationController
 
   # GET /types
   def index
-    @types = Type.all
+    types = Type.all
 
-    render json: @types
+    render json: TypeSerializer.new(types).serialized_json
   end
 
   # GET /types/1
