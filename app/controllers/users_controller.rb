@@ -9,9 +9,17 @@ class UsersController < ApplicationController
 
   # GET /users
   def index
-    @users = User.all
-
-    render json: UserSerializer.new(@users).serialized_json, status: :ok
+    users = User.all
+    filter_text = params[:filter]
+    if filter_text.blank?
+      render json: UserSerializer.new(users).serialized_json, status: :ok
+      return
+    end
+    filtered_result = []
+    users.each do |item|
+      filtered_result << item if item.nickname.downcase.include?(filter_text.downcase)
+    end
+    render json: UserSerializer.new(filtered_result).serialized_json, status: :ok
   end
 
   # GET /users/1
