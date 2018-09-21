@@ -15,7 +15,9 @@ class Me::UsersController < Me::ApplicationController
         ]
       }, status: :not_found
     else
-      render json: UserHomeSerializer.new(current_user).serialized_json
+      options = {}
+      options[:include] = [:individual_habits]
+      render json: UserHomeSerializer.new(current_user, options).serialized_json
     end
   end
 end
