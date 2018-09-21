@@ -45,7 +45,6 @@ class Me::HabitsController < Me::ApplicationController
     individual_types.each do |type|
       individual_habit_has_type = IndividualHabitHasType.create(habit_id: habit.id, type_id: type.id)
       habit.individual_habit_has_types << individual_habit_has_type
-      type.individual_habit_has_types << individual_habit_has_type
     end
     render json: IndividualHabitSerializer.new(habit).serialized_json, status: :created
   end
