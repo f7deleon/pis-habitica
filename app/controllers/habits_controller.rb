@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class HabitsController < ApplicationController
-  before_action :authenticate_user
   before_action :set_habit, only: %i[update destroy]
 
   # GET /habits

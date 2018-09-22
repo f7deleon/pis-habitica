@@ -3,7 +3,7 @@
 require 'time'
 
 class UsersController < ApplicationController
-  before_action :authenticate_user, except: %i[create]
+  skip_before_action :authenticate_user, only: %i[create]
   before_action :create_user, only: %i[create]
   before_action :set_user, only: %i[show update destroy]
 

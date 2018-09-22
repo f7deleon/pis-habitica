@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class TypesController < ApplicationController
-  before_action :authenticate_user
   before_action :set_type, only: %i[show update destroy]
 
   # GET /types
