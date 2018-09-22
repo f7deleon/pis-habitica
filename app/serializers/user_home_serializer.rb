@@ -5,7 +5,7 @@ class UserHomeSerializer
   attributes :id, :nickname, :email
 
   has_many :individual_habits do |object|
-    object.individual_habits.find_by_active(true)
+    object.individual_habits.select(&:active)
   end
 
   has_one :character do |object|
