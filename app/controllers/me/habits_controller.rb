@@ -93,7 +93,9 @@ class Me::HabitsController < Me::ApplicationController
   # GET /me/habits/id
   def show
     # Los checkeos que esto hacia se hace en set_habit
-    render json: IndividualHabitSerializer.new(@habit).serialized_json, status: :ok
+    options = {}
+    options[:include] = [:types]
+    render json: IndividualHabitSerializer.new(@habit, options).serialized_json, status: :ok
   end
 
   private
