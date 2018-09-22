@@ -3,7 +3,7 @@
 class Me::UsersController < Me::ApplicationController
   def home
     # There is no home if user has no character alive
-    raise Error::NotFoundError unless current_user.user_characters.find_by_is_alive(true)
+    raise ActiveRecord::RecordNotFound unless current_user.user_characters.find_by!(is_alive: true)
 
     options = {}
     options[:include] = [:individual_habits]

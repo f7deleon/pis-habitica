@@ -5,7 +5,12 @@ module Error
     def self.included(clazz)
       clazz.class_eval do
         rescue_from ActiveRecord::RecordNotFound do |e|
-          json_response = Helpers::Render.json(:record_not_found, 404, e.to_s)
+          klass = Object.const_get e.model
+          json_response = Helpers::Render.json(
+            I18n.t('not_found'),
+            404,
+            I18n.t('activerecord.errors.messages.not_found', model: klass.model_name.human)
+          )
           respond(json_response, 404)
         end
         rescue_from ActiveRecord::RecordInvalid do |e|

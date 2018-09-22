@@ -27,9 +27,8 @@ class Me::HabitsController < Me::ApplicationController
     type_ids_params.each { |type| type_ids << type[:data][:id] }
 
     # Type does not exist
-    raise Error::NotFoundError unless type_ids.all? { |type| DefaultType.exists?(type) }
+    raise ActiveRecord::RecordNotFound unless (individual_types = Type.find(type_ids))
 
-    individual_types = Type.find(type_ids)
     habit = IndividualHabit.new(
       user_id: current_user.id,
       name: habit_params[:name],
@@ -103,7 +102,8 @@ class Me::HabitsController < Me::ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_habit
     # Se busca solo en los habitos individuales del usuario logueado.
-    raise Error::NotFoundError unless (@habit = current_user.individual_habits.find_by(id: params[:id], active: true))
+    raise ActiveRecord::RecordNotFound unless (@habit =
+                                                 current_user.individual_habits.find_by!(id: params[:id], active: true))
   end
 
   def habit_has_been_tracked_today(habit, date)
