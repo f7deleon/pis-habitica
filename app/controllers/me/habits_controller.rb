@@ -125,7 +125,7 @@ class Me::HabitsController < Me::ApplicationController
   end
 
   def create_habit
-    params.require(:data).require(:attributes).require(%i[name description frequency difficulty privacy])
+    params.require(:data).require(:attributes).require(%i[name frequency difficulty privacy])
     # Esto no controla que types sea un array ni que sea no vacio, esa verificacion se hace internamente en creates.
     params.require(:data).require(:relationships).require(:types)
   end
