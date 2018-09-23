@@ -14,14 +14,11 @@ DefaultType.create([
 ])
 
 Character.create([
-  { name: 'Mago', description: 'Hace magia para cumplir sus habitos, nadie le cree ni saben como hace.' },
-  { name: 'Elfa', description: 'Ser fantástico con figura de enana y poderes mágicos; vive en los bosques, las aguas y
-                                en las proximidades de las casas y trabaja como herrera.' },
-  { name: 'Fantasma', description: 'Dice que siempre cumple sus habitos pero en realidad no lo hace.' },
-  { name: 'No muerto', description: 'Nadie sabe como sigue con vida, pero consigue energias de algun
-                                     lugar oculto y cumple sus habitos' },
-  { name: 'Cazador', description: 'Siempre se acerca a su presa, la rodea y lanza el ataque.
-                                   No titubea al momento de cumplir sus habitos.' }
+  { name: 'Mago', description: I18n.t('mage_description') },
+  { name: 'Elfa', description: I18n.t('elf_description') },
+  { name: 'Fantasma', description: I18n.t('gost_description') },
+  { name: 'No muerto', description: I18n.t('dead_description') },
+  { name: 'Cazador', description: I18n.t('hunter_description') }
 ])
 
 
