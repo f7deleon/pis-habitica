@@ -13,33 +13,6 @@ class Me::HabitsController < Me::ApplicationController
     render json: IndividualHabitSerializer.new(habits).serialized_json
   end
 
-  # GET /me/id:/stat
-  def stat_habit
-    time_now = Time.zone.now
-    max, successive = @habit.get_sucesive_max(time_now)
-    porcent_months, porcent = @habit.get_porcent_month(time_now)
-    fst_month = Time.new(time_now.year, time_now.month, 1)
-    tracks = @habit.track_individual_habits.select do |track_habit|
-      TimeDifference.between(track_habit.date, fst_month).in_months <= 1 && track_habit.date.month != time_now.month
-    end
-    render json: {
-      "data": IndividualHabitSerializer.new(@habit),
-      "included": [
-        {
-          "type": 'stat',
-          "attributes": {
-            "stat":  { "data":
-              { "max": max,
-                "successive": successive,
-                "porcent": porcent,
-                "month": porcent_months,
-                "track": TrackIndividualHabitSerializer.new(tracks) } }
-          }
-        }
-      ]
-    }
-  end
-
   # POST /me/habits
   def create
     habit_params = params[:data][:attributes]
@@ -119,9 +92,10 @@ class Me::HabitsController < Me::ApplicationController
   # GET /me/habits/id
   def show
     # Los checkeos que esto hacia se hace en set_habit
-    options = {}
-    options[:include] = [:types]
-    render json: IndividualHabitSerializer.new(@habit, options).serialized_json, status: :ok
+    time_now = Time.zone.now
+    max, successive = @habit.get_sucesive_max(time_now)
+    porcent_months, porcent = @habit.get_porcent_month(time_now)
+    render json: StatsSerializer.json(@habit, max, successive, porcent, porcent_months), status: :ok
   end
 
   private

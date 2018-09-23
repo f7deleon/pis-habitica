@@ -230,29 +230,11 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     @individual_habit.track_individual_habits << @track_individual_habit
     @user.individual_habits << @individual_habit
 
-    @expected = {
-      "data": IndividualHabitSerializer.new(@individual_habit),
-      "included": [
-        {
-          "type": 'stat',
-          "attributes": {
-            "stat": {
-              "data": {
-                "max": 0,
-                "successive": 0,
-                "porcent": 0,
-                "month": 32.258,
-                "track": TrackIndividualHabitSerializer.new(tracks)
-              }
-            }
-          }
-        }
-      ]
-    }
+    @expected = StatsSerializer.json(@individual_habit, 0, 0, 0, 32.258)
   end
 
   test 'VerEstadisticas' do
-    get '/me/habits/' + @individual_habit.id.to_s + '/stat', headers: {
+    get '/me/habits/' + @individual_habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     assert @expected.to_json == response.body
