@@ -9,7 +9,7 @@ class Me::HabitsController < Me::ApplicationController
   # GET /me/habits
   def index
     habits = current_user.individual_habits
-    habits = habits.select(&:active)
+    habits = habits.order('name ASC').select(&:active)
     render json: IndividualHabitSerializer.new(habits).serialized_json
   end
 

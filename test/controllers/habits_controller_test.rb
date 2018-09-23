@@ -50,12 +50,4 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
     result = get "/me/habits/#{@individual_habit.id}", headers: { 'Authorization': 'Bearer faketoken' }
     assert result == 401
   end
-
-  # test 'Get an individual habit from another user id' do
-  #   puts "/me/habits/#{@individual_habit.id}"
-  #   result = get "/me/habits/#{@individual_habit.id}", headers: { 'Authorization': 'Bearer ' + @user2_token }
-  #   puts result
-  #   puts response.body
-  #   assert result == 404
-  # end
 end
