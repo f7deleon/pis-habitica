@@ -11,6 +11,7 @@ jobs:
           RAILS_ENV: test
           PGHOST: 127.0.0.1
           PGUSER: habitica
+          CODECOV_TOKEN: 4b9df79e-7c66-4f45-bfa0-3c79ee860721
     
     # Service container image available at `host: localhost`
     
