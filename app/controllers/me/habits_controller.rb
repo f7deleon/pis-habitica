@@ -4,13 +4,40 @@ class Me::HabitsController < Me::ApplicationController
   before_action :create_habit, only: %i[create]
   before_action :update_habit, only: %i[update]
   before_action :fulfill_habit, only: %i[fulfill]
-  before_action :set_habit, only: %i[update destroy fulfill show]
+  before_action :set_habit, only: %i[update destroy fulfill show stat_habit]
 
   # GET /me/habits
   def index
     habits = current_user.individual_habits
     habits = habits.select(&:active)
     render json: IndividualHabitSerializer.new(habits).serialized_json
+  end
+
+  # GET /me/id:/stat
+  def stat_habit
+    time_now = Time.zone.now
+    max, successive = @habit.get_sucesive_max(time_now)
+    porcent_months, porcent = @habit.get_porcent_month(time_now)
+    fst_month = Time.new(time_now.year, time_now.month, 1)
+    tracks = @habit.track_individual_habits.select do |track_habit|
+      TimeDifference.between(track_habit.date, fst_month).in_months <= 1 && track_habit.date.month != time_now.month
+    end
+    render json: {
+      "data": IndividualHabitSerializer.new(@habit),
+      "included": [
+        {
+          "type": 'stat',
+          "attributes": {
+            "stat":  { "data":
+              { "max": max,
+                "successive": successive,
+                "porcent": porcent,
+                "month": porcent_months,
+                "track": TrackIndividualHabitSerializer.new(tracks) } }
+          }
+        }
+      ]
+    }
   end
 
   # POST /me/habits
