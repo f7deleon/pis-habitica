@@ -12,18 +12,21 @@ class IndividualHabit < Habit
     successive = 0
     max = 0
     before = nil
+    diference = 0
     track_individual_habits.each do |track_habit|
       # calculo la cantidad de dias seguidos haciendo el habito y el record de dias seguidos
-      diference = TimeDifference.between(before, track_habit.date).in_days unless before.nil?
-      if !before.nil? && diference < 2
+      if diference <= 2 && diference >= 1
         successive += 1
-        max = successive if successive > max
       else
         successive = 0
       end
+      max = successive if successive > max
       # actualizo variables
+      diference = TimeDifference.between(before, track_habit.date).in_days unless before.nil?
       before = track_habit.date
     end
+
+    successive = 0 unless diference > 1
     [max, successive]
   end
 
