@@ -173,7 +173,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     result = get '/users?filter=', headers: { 'Authorization': 'Bearer ' + @user_token }
     assert result == 200
     body = JSON.parse(response.body)
-    assert body['data'].length == 6
+    assert body['data'].length == 5 # result excludes current user
   end
 
   test 'Buscar Usuario: find a non existent user (data returns empty)' do
