@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  post 'user_token' => 'user_token#create'
   resources :groups
   resources :types
   resources :users
@@ -12,8 +13,8 @@ Rails.application.routes.draw do
     resources :characters
 
     resources :habits do
-      collection do
-        post 'fulfill', to: 'habits#fulfill_habit'
+      member do
+        post 'fulfill', to: 'habits#fulfill'
       end
     end
   end

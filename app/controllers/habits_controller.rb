@@ -10,16 +10,7 @@ class HabitsController < ApplicationController
     render json: @habits
   end
 
-  # PATCH/PUT /habits/1
-  def update
-    if @habit.update(params)
-      render json: @habit
-    else
-      render json: @habit.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /habits/1
+  # DELETE habits/id
   def destroy
     @habit.destroy
   end

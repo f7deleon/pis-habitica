@@ -5,11 +5,27 @@ require 'test_helper'
 class HabitsControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create(nickname: 'showHabitsTest',
-                        mail: 'showHabitsTest@showHabitsTest.com',
+                        email: 'showHabitsTest@showHabitsTest.com',
                         password: 'showHabitsTest123')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user.email,
+        "password": @user.password
+      }
+    }
+    @user_token = JSON.parse(response.body)['jwt']
+
     @user2 = User.create(nickname: 'test_habit',
-                         mail: 'test_habit@test_habit.com',
+                         email: 'test_habit@test_habit.com',
                          password: 'test_habit1234')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user2.email,
+        "password": @user2.password
+      }
+    }
+    @user2_token = JSON.parse(response.body)['jwt']
+
     @individual_habit = IndividualHabit.create(user_id: @user.id,
                                                name: 'showHabitsTest',
                                                description: 'showHabitsTest',
@@ -21,22 +37,17 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
 
   ### Ver Habito
   test 'Get an existing individual habit' do
-    result = get "/me/habits/#{@individual_habit.id}?token=#{@user.id}"
+    result = get '/me/habits/' + @individual_habit.id.to_s, headers: { 'Authorization': 'Bearer ' + @user_token }
     assert result == 200
   end
 
   test 'Get a non existent individual habit' do
-    result = get "/me/habits/555?token=#{@user.id}"
-    assert result == 400
+    result = get '/me/habits/555', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert result == 404
   end
 
   test 'Get an individual habit from a non existing user id' do
-    result = get "/me/habits/#{@individual_habit.id}?token=555"
-    assert result == 403
-  end
-
-  test 'Get an individual habit from another user id' do
-    result = get "/me/habits/#{@individual_habit.id}?token=#{@user2.id}"
-    assert result == 400
+    result = get "/me/habits/#{@individual_habit.id}", headers: { 'Authorization': 'Bearer faketoken' }
+    assert result == 401
   end
 end

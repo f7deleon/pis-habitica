@@ -2,7 +2,5 @@
 
 class TrackGroupHabit < ApplicationRecord
   belongs_to :user
-  belongs_to :group_habit
-
-  self.primary_key = :user_id, :group_habit_id, :date
+  belongs_to :group_habit, foreign_key: :habit_id
 end

@@ -4,9 +4,37 @@ require 'test_helper'
 
 class UsersControllerTest < ActionDispatch::IntegrationTest
   def setup
-    @user = User.create(nickname: 'Example', mail: 'example@example.com', password: 'Example123')
-    @user1 = User.create(nickname: 'Example2', mail: 'example2@example.com', password: 'Example123')
-    @user2 = User.create(nickname: 'Example12', mail: 'example12@example.com', password: 'Example123')
+    @user = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user.email,
+        "password": @user.password
+      }
+    }
+    @user_token = JSON.parse(response.body)['jwt']
+
+    @user1 = User.create(nickname: 'Example2', email: 'example2@example.com', password: 'Example123')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user1.email,
+        "password": @user1.password
+      }
+    }
+    @user1_token = JSON.parse(response.body)['jwt']
+
+    @user2 = User.create(nickname: 'Example3', email: 'example3@example.com', password: 'Example123')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user2.email,
+        'password': @user2.password
+      }
+    }
+    @user2_token = JSON.parse(response.body)['jwt']
+
+    @user3 = User.create(nickname: 'Ozuna', email: 'latino@negritojosclaro.com', password: 'dontcare')
+    @user4 = User.create(nickname: 'barack', email: 'notpresidentanymore@usa.com', password: 'dontcare23')
+    @user5 = User.create(nickname: 'aaaaabaracaaaaa', email: 'notpresidentanymore1@usa.com', password: 'dontcare1')
+
     ### Characters creation
     @character = Character.create(name: 'Humano',
                                   description: 'Descripcion humano')
@@ -28,7 +56,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                     "attributes": { "date": '2018-09-07T12:00:00Z' } }] }
 
     # Add character to user
-    @user_character = UserCharacter.create(user_id: @user.id,
+    @user_character = UserCharacter.create(user_id: @user1.id,
                                            character_id: @character.id,
                                            creation_date: '2018-09-07T12:00:00Z',
                                            is_alive: true)
@@ -53,9 +81,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       privacy: 2,
       frequency: 2
     )
-    @user_type = Type.create(name: 'Example_seed', description: 'Example_seed')
-    @individual_type = IndividualType.create(user_id: @user1.id, type_id: @user_type.id)
-    @habit_type = IndividualHabitHasType.create(individual_habit_id: @individual_habit.id, type_id: @user_type.id)
+    @individual_type = IndividualType.create(user_id: @user1.id, name: 'Example_seed', description: 'Example_seed')
+    @habit_type = IndividualHabitHasType.create(habit_id: @individual_habit.id, type_id: @individual_type.id)
 
     @user1.individual_types << @individual_type
     @individual_habit.individual_habit_has_types << @habit_type
@@ -64,67 +91,44 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user1.individual_habits << @individual_habit2
   end
 
-  test 'should be valid' do
-    assert @user1.valid?
-    assert @character.valid?
-    assert @user_character.valid?
-    assert @user_type.valid?
-    assert @individual_type.valid?
-    assert @habit_type.valid?
-    assert @individual_habit.valid?
-    assert @individual_habit2.valid?
-  end
-
   test 'should get home' do
-    get '/me/home?token=' + @user1.id.to_s, params: {
-      "data": {
-        "id": @user1.id.to_s,
-        "type": 'users',
-        "attributes": {
-          "nickname": @user1.nickname
-        },
-        "relationships": {
-          "character": {
-            "data": {
-              "type": 'characters',
-              "id": @user1.user_characters.to_s
-            }
-          },
-          "habits": @user1.individual_habits
-        }
-      }
-    }
+    get '/me/home', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                    params: {
+                      "data": {
+                        "id": @user1.id.to_s,
+                        "type": 'users',
+                        "attributes": {
+                          "nickname": @user1.nickname
+                        },
+                        "relationships": {
+                          "character": {
+                            "data": {
+                              "type": 'characters',
+                              "id": @user1.user_characters.to_s
+                            }
+                          },
+                          "habits": @user1.individual_habits
+                        }
+                      }
+                    }
     assert_equal 200, status
-  end
-
-  test 'get home without alive character' do
-    get '/me/home?token=' + @user2.id.to_s, params: {
-      "errors": [
-        {
-          "status": 404,
-          "code": 1,
-          "title": 'No character',
-          "detail": 'User has no character alive'
-        }
-      ]
-    }
-    assert_equal 404, status
   end
 
   # Alta Personaje
   test 'AltaPersonaje: add character id 4 to user
                         id 1 user already have an is_alive character' do
-    url = '/me/characters?token=' + @user.id.to_s
-
-    result0 = post url, params: @parameters
+    url = '/me/characters'
+    result0 = post url, headers: { 'Authorization': 'Bearer ' + @user_token },
+                        params: @parameters
     assert result0 == 201 # :created
-    result = post url, params: @parameters2
+    result = post url, headers: { 'Authorization': 'Bearer ' + @user_token },
+                       params: @parameters2
     assert result == 400 # :bad_request
   end
 
-  test 'AltaPersonaje:  user id do not exists' do
-    result = post '/me/characters?token=9999', params: @parameters
-    assert result == 403 # :forbidden
+  test 'AltaPersonaje:  request without jwt' do
+    result = post '/me/characters', params: @parameters
+    assert result == 401 # :forbidden
   end
 
   test 'AltaPersonaje: char_id do not exists' do
@@ -134,7 +138,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                              "description": 'Una descripcion de mago' } },
                    "included": [{ "type": 'date',
                                   "attributes": { "date": '2018-09-07T12:00:00Z' } }] }
-    result = post '/me/characters?token=' + @user.id.to_s, params: parameters
+    result = post '/me/characters', headers: { 'Authorization': 'Bearer ' + @user_token },
+                                    params: parameters
     assert result == 400 # :bad_request
   end
 
@@ -145,7 +150,41 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                              "description": 'Una descripcion de mago' } },
                    "included": [{ "type": 'date',
                                   "attributes": { "date": '2018-2:00:00Z' } }] }
-    result = post '/me/characters?token=' + @user.id.to_s, params: parameters
+    result = post '/me/characters', headers: { 'Authorization': 'Bearer ' + @user_token },
+                                    params: parameters
     assert result == 400 # :bad_request
+  end
+
+  test 'Buscar Usuario: find an existing user (returns 1)' do
+    result = get '/users?filter=Ozu', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert result == 200
+    body = JSON.parse(response.body)
+    assert body['data'].length == 1
+  end
+
+  test 'Buscar Usuario: find an existing user (returns 2). Also checks ignoreCase' do
+    result = get '/users?filter=BaRaCk', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert result == 200
+    body = JSON.parse(response.body)
+    assert body['data'].length == 1
+  end
+
+  test 'Buscar Usuario: send empty filter (returns all users)' do
+    result = get '/users?filter=', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert result == 200
+    body = JSON.parse(response.body)
+    assert body['data'].length == 6
+  end
+
+  test 'Buscar Usuario: find a non existent user (data returns empty)' do
+    result = get '/users?filter=lennylove', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert result == 200
+    body = JSON.parse(response.body)
+    assert body['data'].length.zero?
+  end
+
+  test 'Buscar Usuario: dont attach Authorization token (unauthorized returned)' do
+    result = get '/users?filter=Ozu'
+    assert result == 401
   end
 end

@@ -30,4 +30,32 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  bad_request: "Bad request"
+  bad_request_details: "Invalid request format"
+  not_found: "Not found"
+  unauthorized: "Unauthorized"
+  unauthorized_details: "Invalid token"
+  standard_error: "Internal error"
+  standard_error_details: "Something went wrong"
+  conflict: "conflict"
+  taken_string: "There is already an user with that "
+  mage_description: "Hace magia para cumplir sus habitos, nadie le cree ni saben como hace."
+  elf_description: "Ser fantástico con figura de enana y poderes mágicos; vive en los bosques, las aguas y en las proximidades de las casas y trabaja como herrera."
+  gost_description: "Dice que siempre cumple sus habitos pero en realidad no lo hace."
+  dead_description: "Nadie sabe como sigue con vida, pero consigue energias de algun lugar oculto y cumple sus habitos"
+  hunter_description: "Siempre se acerca a su presa, la rodea y lanza el ataque. No titubea al momento de cumplir sus habitos."
+  errors:
+    messages:
+      blank: "%{attribute} is required"
+      taken: "There is already an %{model} with that %{attribute}"
+      not_found: "goli"
+      date_formatting: "date is not in ISO 8601"
+      daily_fulfilled: "Habit frequency is daily and it has been fulfilled today"
+      typeless_habit: "Habit needs at least one type"
+  activerecord:
+    models:
+      user_character: Character
+    errors:
+      messages:
+        not_found: "Not found: %{model}"
+

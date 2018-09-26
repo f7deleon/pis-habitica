@@ -5,9 +5,9 @@ class TypesController < ApplicationController
 
   # GET /types
   def index
-    @types = Type.all
+    types = Type.all
 
-    render json: @types
+    render json: TypeSerializer.new(types).serialized_json
   end
 
   # GET /types/1
@@ -17,13 +17,9 @@ class TypesController < ApplicationController
 
   # POST /types
   def create
-    @type = Type.new(type_params)
+    raise Error::ConflictError unless (type = Type.new(type_params))
 
-    if @type.save
-      render json: @type, status: :created, location: @type
-    else
-      render json: @type.errors, status: :unprocessable_entity
-    end
+    render json: type, status: :created, location: @type
   end
 
   # PATCH/PUT /types/1
@@ -44,11 +40,12 @@ class TypesController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_type
-    @type = Type.find(params[:id])
+    raise Error::NotFoundError unless (@type = Type.find(params[:id]))
   end
 
   # Only allow a trusted parameter "white list" through.
   def type_params
     params.require(:type).permit(:name, :description)
+    raise ActionController::ParameterMissing
   end
 end
