@@ -11,6 +11,15 @@ class User < ApplicationRecord
   has_many :user_characters
   has_many :characters, through: :user_characters
 
+  has_and_belongs_to_many :friends,
+                          class_name: 'User',
+                          join_table: :friendships,
+                          foreign_key: :user_id,
+                          association_foreign_key: :friend_user_id
+
+  has_many :user_user_requests, foreign_key: :user_id
+  # TODO: has_many :requests, through: :user_user_request
+
   self.primary_key = :id
   validates :nickname, presence: true, uniqueness: true # string
   validates :email, presence: true, uniqueness: true # string

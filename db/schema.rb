@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_01_192429) do
+ActiveRecord::Schema.define(version: 2018_09_27_003127) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,6 +18,13 @@ ActiveRecord::Schema.define(version: 2018_09_01_192429) do
   create_table "characters", force: :cascade do |t|
     t.string "name"
     t.string "description"
+  end
+
+  create_table "friendships", id: false, force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "friend_user_id"
+    t.index ["friend_user_id", "user_id"], name: "index_friendships_on_friend_user_id_and_user_id", unique: true
+    t.index ["user_id", "friend_user_id"], name: "index_friendships_on_user_id_and_friend_user_id", unique: true
   end
 
   create_table "group_habit_has_types", force: :cascade do |t|
@@ -99,6 +106,15 @@ ActiveRecord::Schema.define(version: 2018_09_01_192429) do
     t.index ["user_id"], name: "index_user_groups_on_user_id"
   end
 
+  create_table "user_user_requests", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "receiver_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["receiver_id"], name: "index_user_user_requests_on_receiver_id"
+    t.index ["user_id"], name: "index_user_user_requests_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "nickname"
     t.string "email"
@@ -119,4 +135,5 @@ ActiveRecord::Schema.define(version: 2018_09_01_192429) do
   add_foreign_key "user_characters", "users"
   add_foreign_key "user_groups", "groups"
   add_foreign_key "user_groups", "users"
+  add_foreign_key "user_user_requests", "users"
 end
