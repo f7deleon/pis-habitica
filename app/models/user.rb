@@ -11,6 +11,8 @@ class User < ApplicationRecord
   has_many :user_characters
   has_many :characters, through: :user_characters
 
+  has_many :notifications
+
   has_and_belongs_to_many :friends,
                           class_name: 'User',
                           join_table: :friendships,
