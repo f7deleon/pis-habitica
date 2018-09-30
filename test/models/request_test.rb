@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class UserUserRequestTest < ActiveSupport::TestCase
+class RequestTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

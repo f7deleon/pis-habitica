@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 2018_09_27_003127) do
     t.string "description"
   end
 
-  create_table "friendships", id: false, force: :cascade do |t|
+  create_table "friendships", force: :cascade do |t|
     t.integer "user_id"
     t.integer "friend_user_id"
     t.index ["friend_user_id", "user_id"], name: "index_friendships_on_friend_user_id_and_user_id", unique: true
@@ -62,6 +62,15 @@ ActiveRecord::Schema.define(version: 2018_09_27_003127) do
     t.bigint "type_id"
     t.index ["habit_id"], name: "index_individual_habit_has_types_on_habit_id"
     t.index ["type_id"], name: "index_individual_habit_has_types_on_type_id"
+  end
+
+  create_table "requests", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "receiver_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["receiver_id"], name: "index_requests_on_receiver_id"
+    t.index ["user_id"], name: "index_requests_on_user_id"
   end
 
   create_table "track_group_habits", force: :cascade do |t|
@@ -106,15 +115,6 @@ ActiveRecord::Schema.define(version: 2018_09_27_003127) do
     t.index ["user_id"], name: "index_user_groups_on_user_id"
   end
 
-  create_table "user_user_requests", force: :cascade do |t|
-    t.bigint "user_id"
-    t.bigint "receiver_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["receiver_id"], name: "index_user_user_requests_on_receiver_id"
-    t.index ["user_id"], name: "index_user_user_requests_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "nickname"
     t.string "email"
@@ -126,6 +126,7 @@ ActiveRecord::Schema.define(version: 2018_09_27_003127) do
 
   add_foreign_key "habits", "groups"
   add_foreign_key "habits", "users"
+  add_foreign_key "requests", "users"
   add_foreign_key "track_group_habits", "habits"
   add_foreign_key "track_group_habits", "users"
   add_foreign_key "track_individual_habits", "habits"
@@ -135,5 +136,4 @@ ActiveRecord::Schema.define(version: 2018_09_27_003127) do
   add_foreign_key "user_characters", "users"
   add_foreign_key "user_groups", "groups"
   add_foreign_key "user_groups", "users"
-  add_foreign_key "user_user_requests", "users"
 end

@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     get 'home', to: 'users#home'
 
     resources :characters
+    resources :requests
 
     resources :habits do
       member do

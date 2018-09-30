@@ -17,8 +17,8 @@ class User < ApplicationRecord
                           foreign_key: :user_id,
                           association_foreign_key: :friend_user_id
 
-  has_many :user_user_requests, foreign_key: :user_id
-  # TODO: has_many :requests, through: :user_user_request
+  has_many :requests_sent, class_name: 'Request', foreign_key: :user_id
+  has_many :requests_received, class_name: 'Request', foreign_key: :receiver_id
 
   self.primary_key = :id
   validates :nickname, presence: true, uniqueness: true # string

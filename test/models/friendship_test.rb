@@ -11,13 +11,13 @@ class FriendshipTest < ActiveSupport::TestCase
     @amigi1.friends << @amigi2
     @amigi2.friends << @amigi1
 
-    @r1 = UserUserRequest.create(user_id: @noami.id, receiver_id: @amigi1.id)
-    @noami.user_user_requests << @r1
-    @amigi1.user_user_requests << @r1
+    @r1 = Request.create(user_id: @noami.id, receiver_id: @amigi1.id)
+    @noami.requests_sent << @r1
+    @amigi1.requests_received << @r1
 
-    @r2 = UserUserRequest.create(user_id: @amigi2.id, receiver_id: @noami.id)
-    @noami.user_user_requests << @r2
-    @amigi2.user_user_requests << @r2
+    @r2 = Request.create(user_id: @amigi2.id, receiver_id: @noami.id)
+    @noami.requests_received << @r2
+    @amigi2.requests_sent << @r2
   end
   test 'should be valid' do
     assert @amigi1.valid?

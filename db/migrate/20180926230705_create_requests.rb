@@ -1,6 +1,6 @@
-class CreateUserUserRequests < ActiveRecord::Migration[5.2]
+class CreateRequests < ActiveRecord::Migration[5.2]
   def change
-    create_table :user_user_requests do |t|
+    create_table :requests do |t|
       t.belongs_to :user, index: true, foreign_key: true
       t.references :receiver
       t.timestamps
