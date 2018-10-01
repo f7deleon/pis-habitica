@@ -35,8 +35,7 @@ class Me::HabitsController < Me::ApplicationController
       description: habit_params[:description],
       difficulty: habit_params[:difficulty],
       privacy: habit_params[:privacy],
-      frequency: habit_params[:frequency],
-      active: true
+      frequency: habit_params[:frequency]
     )
 
     raise ActiveRecord::RecordInvalid unless habit.save!

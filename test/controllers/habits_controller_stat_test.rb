@@ -230,7 +230,7 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     @individual_habit.track_individual_habits << @track_individual_habit
     @user.individual_habits << @individual_habit
 
-    @expected = StatsSerializer.json(@individual_habit, 6, 0, 100, 32.258)
+    @expected = StatsSerializer.json(@individual_habit, 6, 0, 100, 23.333)
   end
   test 'VerEstadisticas' do
     get '/me/habits/' + @individual_habit.id.to_s, headers: {
