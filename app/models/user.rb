@@ -13,11 +13,8 @@ class User < ApplicationRecord
 
   has_many :notifications
 
-  has_and_belongs_to_many :friends,
-                          class_name: 'User',
-                          join_table: :friendships,
-                          foreign_key: :user_id,
-                          association_foreign_key: :friend_user_id
+  has_many :friendships
+  has_many :friends, through: :friendships, class_name: 'User', foreign_key: :user_id
 
   has_many :requests_sent, class_name: 'Request', foreign_key: :user_id
   has_many :requests_received, class_name: 'Request', foreign_key: :receiver_id
