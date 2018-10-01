@@ -52,10 +52,20 @@ en:
       date_formatting: "date is not in ISO 8601"
       daily_fulfilled: "Habit frequency is daily and it has been fulfilled today"
       typeless_habit: "Habit needs at least one type"
+      already_friend: "This user is already your friend"
+      self_friend_request: "You can't send a friend request to yourself"
   activerecord:
     models:
       user_character: Character
+
     errors:
+      models: 
+        request:
+          attributes: 
+            user_id:
+              taken: "You already sent a friend request to this user"
+            receiver_id:
+              taken: "This user has already sent you a friend request"
       messages:
         not_found: "Not found: %{model}"
 

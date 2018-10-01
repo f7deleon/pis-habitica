@@ -18,6 +18,8 @@ Rails.application.routes.draw do
         post 'fulfill', to: 'habits#fulfill'
       end
     end
+
+    post 'requests/:id', to: 'requests#add_friend'
   end
   # For details on the DSL available wihthin this file, see http://guides.rubyonrails.org/routing.htm
 end

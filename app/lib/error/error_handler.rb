@@ -15,7 +15,7 @@ module Error
         end
         rescue_from ActiveRecord::RecordInvalid do |e|
           json_response = Helpers::RenderValidations.json(e)
-          respond(json_response, 400)
+          respond(json_response, json_response['errors'][0]['status'].to_i)
         end
         rescue_from ActionController::ParameterMissing do |e|
           json_response = Helpers::Render.json(I18n.t('bad_request'), 400, e)
