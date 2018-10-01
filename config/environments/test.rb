@@ -43,6 +43,14 @@ Rails.application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
+  require 'simplecov'
+  SimpleCov.start 'rails' do
+    add_group 'Controllers', 'app/controllers'
+    add_group 'Models', 'app/models'
+    add_group 'Serializers', 'app/helpers'
+    add_group 'Errors', 'app/lib/error'
+  end
+
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 end
