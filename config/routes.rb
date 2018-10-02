@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
     resources :characters
     resources :requests
+    resources :friends, controller: 'friends'
 
     resources :habits do
       member do
