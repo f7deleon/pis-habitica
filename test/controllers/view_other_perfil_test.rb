@@ -106,100 +106,36 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user1.individual_habits << @individual_habit
     @user1.individual_habits << @individual_habit2
     @user1.individual_habits << @individual_habit3
-  end
 
-  test 'should get home' do
-    get '/me/home', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                    params: {
-                      "data": {
-                        "id": @user1.id.to_s,
-                        "type": 'users',
-                        "attributes": {
-                          "nickname": @user1.nickname
-                        },
-                        "relationships": {
-                          "character": {
-                            "data": {
-                              "type": 'characters',
-                              "id": @user1.user_characters.to_s
-                            }
-                          },
-                          "habits": @user1.individual_habits
-                        }
-                      }
-                    }
-    assert_equal 200, status
+    @no_friend = UserWithFriendSerializer.new(@user1, params: { current_user: @user },
+                                                      include: %i[individual_habits friends]).serialized_json
+    @friend = UserWithFriendSerializer.new(@user1, params: { current_user: @user2 },
+                                                   include: %i[individual_habits friends]).serialized_json
   end
-
-  # Alta Personaje
-  test 'AltaPersonaje: add character id 4 to user
-                        id 1 user already have an is_alive character' do
-    url = '/me/characters'
-    result0 = post url, headers: { 'Authorization': 'Bearer ' + @user_token },
-                        params: @parameters
-    assert result0 == 201 # :created
-    result = post url, headers: { 'Authorization': 'Bearer ' + @user_token },
-                       params: @parameters2
-    assert result == 400 # :bad_request
-  end
-
-  test 'AltaPersonaje:  request without jwt' do
-    result = post '/me/characters', params: @parameters
-    assert result == 401 # :forbidden
-  end
-
-  test 'AltaPersonaje: char_id do not exists' do
-    parameters = { "data": { "id": '300',
-                             "type": 'characters',
-                             "attributes": { "name": 'Mago',
-                                             "description": 'Una descripcion de mago' } },
-                   "included": [{ "type": 'date',
-                                  "attributes": { "date": '2018-09-07T12:00:00Z' } }] }
-    result = post '/me/characters', headers: { 'Authorization': 'Bearer ' + @user_token },
-                                    params: parameters
-    assert result == 400 # :bad_request
-  end
-
-  test 'AltaPersonaje: wrong date format' do
-    parameters = { "data": { "id": '3',
-                             "type": 'characters',
-                             "attributes": { "name": 'Mago',
-                                             "description": 'Una descripcion de mago' } },
-                   "included": [{ "type": 'date',
-                                  "attributes": { "date": '2018-2:00:00Z' } }] }
-    result = post '/me/characters', headers: { 'Authorization': 'Bearer ' + @user_token },
-                                    params: parameters
-    assert result == 400 # :bad_request
-  end
-
-  test 'Buscar Usuario: find an existing user (returns 1)' do
-    result = get '/users?filter=Ozu', headers: { 'Authorization': 'Bearer ' + @user_token }
+  test 'Ver Perfil de otro usuario: friend all OK ' do
+    result = get '/users/' + @user1.id.to_s, headers: { 'Authorization': 'Bearer ' + @user2_token }
     assert result == 200
-    body = JSON.parse(response.body)
-    assert body['data'].length == 1
+    assert_equal response.body, @friend
   end
 
-  test 'Buscar Usuario: find an existing user (returns 2). Also checks ignoreCase' do
-    result = get '/users?filter=BaRaCk', headers: { 'Authorization': 'Bearer ' + @user_token }
+  test 'Ver Perfil de otro usuario: no friend all OK ' do
+    result = get '/users/' + @user1.id.to_s, headers: { 'Authorization': 'Bearer ' + @user_token }
     assert result == 200
-    body = JSON.parse(response.body)
-    assert body['data'].length == 1
+    assert_equal response.body, @no_friend
   end
 
-  test 'Buscar Usuario: send empty filter (returns all users)' do
-    result = get '/users?filter=', headers: { 'Authorization': 'Bearer ' + @user_token }
+  test 'Ver Perfil de otro usuario: invalid format request' do
+    result = get '/users/', headers: { 'Authorization': 'Bearer ' + @user2_token }
     assert result == 400
   end
 
-  test 'Buscar Usuario: find a non existent user (data returns empty)' do
-    result = get '/users?filter=lennylove', headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 200
-    body = JSON.parse(response.body)
-    assert body['data'].length.zero?
+  test 'Ver Perfil de otro usuario: user not found' do
+    result = get '/users/123', headers: { 'Authorization': 'Bearer ' + @user2_token }
+    assert result == 404
   end
 
-  test 'Buscar Usuario: dont attach Authorization token (unauthorized returned)' do
-    result = get '/users?filter=Ozu'
+  test 'Ver Perfil de otro usuario: dont attach Authorization token' do
+    result = get '/users/123'
     assert result == 401
   end
 end

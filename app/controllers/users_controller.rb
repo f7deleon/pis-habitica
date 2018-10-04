@@ -6,18 +6,22 @@ class UsersController < ApplicationController
   skip_before_action :authenticate_user, only: %i[create]
   before_action :create_user, only: %i[create]
   before_action :set_user, only: %i[show update destroy]
+  before_action :define_method, only: %i[index]
 
   # GET /users
   def index
     render json: UserSerializer.new(User.all.select do |item|
                                       item.id != current_user.id &&
                                       item.nickname.downcase.include?(params[:filter].downcase)
-                                    end).serialized_json, status: :ok
+                                    end, params: { current_user: current_user },
+                                         include: [:individual_habits]).serialized_json, status: :ok
   end
 
   # GET /users/1
   def show
-    render json: UserSerializer.new(@user).serialized_json, status: :ok
+    render json: UserWithFriendSerializer.new(@user, params: { current_user: current_user },
+                                                     include: %i[individual_habits friends])
+                                         .serialized_json, status: :ok
   end
 
   # POST /users
@@ -64,5 +68,9 @@ class UsersController < ApplicationController
   def user_params
     params.require(:user).permit(:nickname, :email, :password)
     raise ActionController::ParameterMissing
+  end
+
+  def define_method
+    params.require(:filter)
   end
 end
