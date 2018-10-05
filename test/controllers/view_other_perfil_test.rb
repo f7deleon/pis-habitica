@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class UsersControllerTest < ActionDispatch::IntegrationTest
+class UsersViewOtherPerfilControllerTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
     post '/user_token', params: {

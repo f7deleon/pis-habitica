@@ -36,7 +36,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user5 = User.create(nickname: 'aaaaabaracaaaaa', email: 'notpresidentanymore1@usa.com', password: 'dontcare1')
 
     ### friends
-    @friendship = Friendship.create(user_id: @user2.id, friend_id: @user1.id)
+    @friendship = Friendship.create(user_id: @user1.id, friend_id: @user2.id)
+
+    @my_friends = UserSerializer.new([@user2], params: { current_user: @user1 }).serialized_json
 
     ### Characters creation
     @character = Character.create(name: 'Humano',
@@ -200,6 +202,17 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test 'Buscar Usuario: dont attach Authorization token (unauthorized returned)' do
     result = get '/users?filter=Ozu'
+    assert result == 401
+  end
+
+  test 'Ver mis amigos: OK' do
+    result = get '/me/friends', headers: { 'Authorization': 'Bearer ' + @user1_token }
+    assert result == 200
+    assert_equal response.body, @my_friends
+  end
+
+  test 'Ver mis amigos: dont attach Authorization token (unauthorized returned)' do
+    result = get '/me/friends'
     assert result == 401
   end
 end

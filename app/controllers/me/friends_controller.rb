@@ -4,9 +4,12 @@ class Me::FriendsController < Me::ApplicationController
   before_action :create_friend, only: %i[create]
   before_action :set_friend, only: %i[destroy]
 
-  # GET /friends
+  # GET me/friends
   # Listar Amigos
-  # def index
+  def index
+    render json: UserSerializer.new(current_user.friends,
+                                    params: { current_user: current_user }).serialized_json, status: :ok
+  end
 
   # POST /me/friends
   # Aceptar Amistad
