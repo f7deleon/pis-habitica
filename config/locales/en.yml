@@ -54,6 +54,7 @@ en:
       typeless_habit: "Habit needs at least one type"
       already_friend: "This user is already your friend"
       self_friend_request: "You can't send a friend request to yourself"
+      self_friend_friendship: "You can't add yourself as a friend"
   activerecord:
     models:
       user_character: Character

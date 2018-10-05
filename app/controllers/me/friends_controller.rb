@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Me::FriendsController < Me::ApplicationController
-  before_action :create_friend, only: %i[create]
+  before_action :create_friendship, only: %i[create]
   before_action :set_friend, only: %i[destroy]
 
   # GET me/friends
@@ -13,7 +13,30 @@ class Me::FriendsController < Me::ApplicationController
 
   # POST /me/friends
   # Aceptar Amistad
-  # def create
+  def create
+    request = current_user.requests_received.find_by!(id: params[:data][:id])
+
+    sender = User.find_by(id: request.user_id)
+
+    # You can't add yourself as a friend
+    raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.self_friend_friendship')) if
+      current_user.id == sender.id
+
+    # Sender can't be your friend
+    raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.already_friend')) if
+      current_user.friends.find_by(id: sender.id)
+
+    request.destroy
+
+    # El modelo crea automaticamente la amistad reciproca
+    friendship = Friendship.new(user_id: sender.id, friend_id: current_user.id)
+    friendship.save!
+
+    friendship_notification = FriendRequestNotification.new(user_id: sender.id, sender_id: current_user.id)
+    friendship_notification.save!
+
+    render json: FriendSerializer.new(sender), status: :created
+  end
 
   # DELETE me/friends
   # Abandonar Amistad

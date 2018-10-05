@@ -9,7 +9,6 @@ class FriendshipTest < ActiveSupport::TestCase
     @noami = User.create(nickname: 'noami', email: 'noami@habitica.com', password: '12341234')
 
     @friendship = Friendship.create(user_id: @amigi1.id, friend_id: @amigi2.id)
-    @amigi1.friendships << @friendship
 
     @r1 = Request.create(user_id: @noami.id, receiver_id: @amigi1.id)
     @noami.requests_sent << @r1

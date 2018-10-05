@@ -2,16 +2,20 @@
 
 class UserSerializer
   include FastJsonapi::ObjectSerializer
+  STATUS_NO_RELATIONSHIP = 0
+  STATUS_REQUEST_SENT = 1
+  STATUS_REQUEST_RECEIVED = 2
+  STATUS_FRIENDS = 3
   attributes :nickname, :email
-  attributes :friendships_status do |object, params|
+  attributes :friendship_status do |object, params|
     if params[:current_user].friendships.exists?(friend_id: object.id)
-      3
+      STATUS_FRIENDS
     elsif params[:current_user].requests_received.exists?(user_id: object.id)
-      2
+      STATUS_REQUEST_RECEIVED
     elsif params[:current_user].requests_sent.exists?(receiver_id: object.id)
-      1
+      STATUS_REQUEST_SENT
     else
-      0
+      STATUS_NO_RELATIONSHIP
     end
   end
 
