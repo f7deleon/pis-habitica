@@ -75,6 +75,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       description: 'Example desc',
       difficulty: 3,
       privacy: 1,
+
       frequency: 1,
       active: true
     )
@@ -203,6 +204,42 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test 'Buscar Usuario: dont attach Authorization token (unauthorized returned)' do
     result = get '/users?filter=Ozu'
     assert result == 401
+  end
+
+  test 'Create user' do
+    url = '/users'
+
+    parameters = { "data": {
+      "type": 'user',
+      "attributes": {
+        "nickname": 'Pai',
+        "email": 'pai@habitica.com',
+        "password": '12345678'
+      }
+    } }
+
+    result = post url, params: parameters
+    user = User.last
+
+    assert result == 201
+
+    result_json = JSON.parse(response.body)
+    assert user.id == result_json['data']['id'].to_i
+  end
+
+  test 'Bad request user' do
+    url = '/users'
+
+    parameters = { "data": {
+      "type": 'user',
+      "attributes": {
+        "nickname": 'Pai',
+        "email": 'pai@habitica.com'
+      }
+    } }
+
+    result = post url, params: parameters
+    assert result == 400
   end
 
   test 'Ver mis amigos: OK' do

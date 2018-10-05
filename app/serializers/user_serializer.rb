@@ -7,7 +7,9 @@ class UserSerializer
   STATUS_REQUEST_RECEIVED = 2
   STATUS_FRIENDS = 3
   attributes :nickname, :email
-  attributes :friendship_status do |object, params|
+
+  attributes :friendship_status,
+             if: proc { |object, params| object.id != params[:current_user].id } do |object, params|
     if params[:current_user].friendships.exists?(friend_id: object.id)
       STATUS_FRIENDS
     elsif params[:current_user].requests_received.exists?(user_id: object.id)
@@ -19,7 +21,7 @@ class UserSerializer
     end
   end
 
-  attributes :requests_sent do |object, params|
+  attributes :requests_sent, if: proc { |object, params| object.id != params[:current_user].id } do |object, params|
     if object.requests_sent.exists?(receiver_id: params[:current_user].id)
       true
     else
