@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     resources :habits do
       member do
         post 'fulfill', to: 'habits#fulfill'
+        get 'stat', to: 'habits#stat_habit'
       end
     end
 

@@ -3,6 +3,21 @@
 require 'test_helper'
 
 class HabitsControllerStatTest < ActionDispatch::IntegrationTest
+  def load_not_frequency(date, save_month)
+    @track_individual_habit = TrackIndividualHabit.create(
+      habit_id: @individual_habit.id,
+      date: date
+    )
+    @months_id << @track_individual_habit if save_month
+  end
+
+  def load_frequency(date)
+    @track_individual_habit = TrackIndividualHabit.create(
+      habit_id: @individual_habit_frequency.id,
+      date: date
+    )
+  end
+
   def setup
     @user = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
     post '/user_token', params: {
@@ -18,224 +33,229 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
       description: 'Example',
       difficulty: 3,
       privacy: 1,
+      frequency: 1,
+      active: true
+    )
+    @individual_habit_frequency = IndividualHabit.create(
+      user_id: @user.id,
+      name: 'Example',
+      description: 'Example',
+      difficulty: 3,
+      privacy: 1,
       frequency: 2,
       active: true
     )
-    @user.individual_habits << @individual_habit
-    ## julio
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 7, 6)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    ## sin frecuencia--------------------------------------------------
+    @months_id = []
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 7, 7)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    # junio
+    @month = []
+    load_not_frequency Time.new(2018, 6, 6), false
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 7, 17)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    # julio
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 7, 23)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 7, 28)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 7, 17)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 7, 23)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 7, 28)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    load_not_frequency Time.new(2018, 7, 7), true
+    load_not_frequency Time.new(2018, 7, 17), true
+    load_not_frequency Time.new(2018, 7, 17), false
+    load_not_frequency Time.new(2018, 7, 23), true
+    load_not_frequency Time.new(2018, 7, 23), false
+    load_not_frequency Time.new(2018, 7, 28), true
+    load_not_frequency Time.new(2018, 7, 28), false
 
     ## agosto
-    @tracks_id = []
-    tracks = []
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 1)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 2)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 3)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 4)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 5)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 6)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 7)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 28)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 17)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 23)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
-
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 8, 28)
-    )
-    tracks << @track_individual_habit
-    @tracks_id << @track_individual_habit.id
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    load_not_frequency Time.new(2018, 8, 1), true
+    load_not_frequency Time.new(2018, 8, 2), true
+    load_not_frequency Time.new(2018, 8, 3), true
+    load_not_frequency Time.new(2018, 8, 4), true
+    load_not_frequency Time.new(2018, 8, 5), true
+    load_not_frequency Time.new(2018, 8, 6), true
+    load_not_frequency Time.new(2018, 8, 7), true
+    load_not_frequency Time.new(2018, 8, 17), true
+    load_not_frequency Time.new(2018, 8, 23), true
+    load_not_frequency Time.new(2018, 8, 28), true
+    load_not_frequency Time.new(2018, 8, 28), false
 
     ## septiembre
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 9, 1)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    load_not_frequency Time.new(2018, 9, 1), true
+    load_not_frequency Time.new(2018, 9, 2), true
+    load_not_frequency Time.new(2018, 9, 3), true
+    load_not_frequency Time.new(2018, 9, 4), true
+    load_not_frequency Time.new(2018, 9, 5), true
+    load_not_frequency Time.new(2018, 9, 7), true
+    load_not_frequency Time.new(2018, 9, 7), false
+    load_not_frequency Time.new(2018, 9, 8), true
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 9, 2)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    ## con frecuencia--------------------------------------------------
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 9, 3)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    # agosto
+    load_frequency Time.new(2018, 8, 28)
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 9, 4)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    ## septiembre
+    load_frequency Time.new(2018, 9, 1)
+    load_frequency Time.new(2018, 9, 2)
+    load_frequency Time.new(2018, 9, 3)
+    load_frequency Time.new(2018, 9, 4)
+    load_frequency Time.new(2018, 9, 5)
+    load_frequency Time.new(2018, 9, 7)
+    load_frequency Time.new(2018, 9, 7)
+    load_frequency Time.new(2018, 9, 8)
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 9, 5)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    @month = [
+      {
+        "id": @months_id[0].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[0].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[1].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[1].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[2].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[2].date,
+        "count_track": 1
+      },
+      {
+        "id": @months_id[3].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[3].date,
+        "count_track": 1
+      },
+      {
+        "id": @months_id[4].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[4].date,
+        "count_track": 1
+      },
+      {
+        "id": @months_id[5].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[5].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[6].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[6].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[7].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[7].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[8].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[8].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[9].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[9].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[10].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[10].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[11].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[11].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[12].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[12].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[13].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[13].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[14].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[14].date,
+        "count_track": 1
+      },
+      {
+        "id": @months_id[15].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[15].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[16].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[16].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[17].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[17].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[18].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[18].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[19].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[19].date,
+        "count_track": 0
+      },
+      {
+        "id": @months_id[20].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[20].date,
+        "count_track": 1
+      }
+    ]
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 9, 7)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    data_frequency = { "max": 5,
+                       "successive": 0,
+                       "percent": 100,
+                       "calendar": [],
+                       "months": [] }
 
-    @track_individual_habit = TrackIndividualHabit.create(
-      habit_id: @individual_habit.id,
-      date: Time.new(2018, 9, 8)
-    )
-    @individual_habit.track_individual_habits << @track_individual_habit
-    @user.individual_habits << @individual_habit
+    data_not_frequency = { "max": 0,
+                           "successive": 0,
+                           "percent": 0,
+                           "calendar": [],
+                           "months": @month }
 
-    @expected = StatsSerializer.json(@individual_habit, 6, 0, 100, 23.333)
+    @expected_frequency = StatsSerializer.json(data_frequency, @individual_habit_frequency)
+    @expected_not_frequency = StatsSerializer.json(data_not_frequency, @individual_habit)
   end
-  test 'VerEstadisticas' do
+  test 'VerEstadisticasNotFrequency' do
     get '/me/habits/' + @individual_habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }
-    # assert @expected.to_json == response.body
+    assert @expected_not_frequency.to_json == response.body
+  end
+  test 'VerEstadisticasFrequency' do
+    get '/me/habits/' + @individual_habit_frequency.id.to_s, headers: {
+      'Authorization': 'Bearer ' + @user_token
+    }
+
+    assert @expected_frequency.to_json == response.body
   end
 end

@@ -92,9 +92,14 @@ class Me::HabitsController < Me::ApplicationController
   def show
     # Los checkeos que esto hacia se hace en set_habit
     time_now = Time.zone.now
-    max, successive = @habit.get_sucesive_max(time_now)
-    porcent_months, porcent = @habit.get_porcent_month(time_now)
-    render json: StatsSerializer.json(@habit, max, successive, porcent, porcent_months), status: :ok
+    max, successive, percent, calendar, months =
+      @habit.frequency == 1 ? @habit.get_stat_not_daily(time_now) : @habit.get_stat_daily(time_now)
+    data = { "max": max,
+             "successive": successive,
+             "percent": percent,
+             "calendar": calendar,
+             "months": months }
+    render json: StatsSerializer.json(data, @habit), status: :ok
   end
 
   private
