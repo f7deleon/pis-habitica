@@ -23,6 +23,10 @@ class UserSerializer
     end
   end
 
+  has_one :requests_sent do |object, params|
+    object.requests_sent.find_by(receiver_id: params[:current_user].id)
+  end
+
   has_one :character do |object|
     object.user_characters&.find_by_is_alive(true)&.character
   end
