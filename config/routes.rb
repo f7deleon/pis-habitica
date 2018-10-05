@@ -8,7 +8,7 @@ Rails.application.routes.draw do
   resources :habits
   resources :characters
   namespace :me do
-    get 'home', to: 'users#home'
+    get '', to: 'users#home'
 
     resources :characters
     resources :requests

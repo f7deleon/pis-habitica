@@ -111,29 +111,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user1.individual_habits << @individual_habit3
   end
 
-  test 'should get home' do
-    get '/me/home', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                    params: {
-                      "data": {
-                        "id": @user1.id.to_s,
-                        "type": 'users',
-                        "attributes": {
-                          "nickname": @user1.nickname
-                        },
-                        "relationships": {
-                          "character": {
-                            "data": {
-                              "type": 'characters',
-                              "id": @user1.user_characters.to_s
-                            }
-                          },
-                          "habits": @user1.individual_habits
-                        }
-                      }
-                    }
-    assert_equal 200, status
-  end
-
   # Alta Personaje
   test 'AltaPersonaje: add character id 4 to user
                         id 1 user already have an is_alive character' do
