@@ -4,7 +4,7 @@ class Me::HabitsController < Me::ApplicationController
   before_action :create_habit, only: %i[create]
   before_action :update_habit, only: %i[update]
   before_action :fulfill_habit, only: %i[fulfill]
-  before_action :set_habit, only: %i[update destroy fulfill show stat_habit]
+  before_action :set_habit, only: %i[update destroy fulfill show stat_habit undo_habit]
 
   # GET /me/habits
   def index
@@ -100,6 +100,14 @@ class Me::HabitsController < Me::ApplicationController
              "calendar": calendar,
              "months": months }
     render json: StatsSerializer.json(data, @habit), status: :ok
+  end
+
+  def undo_habit
+    time_now = Time.zone.now
+    track_to_delete = @habit.track_individual_habits.order(:date).last
+    track_to_delete.delete if track_to_delete && track_to_delete.date.to_date == time_now.to_date
+    track_habit_today = @habit.track_individual_habits.select { |track| track.date.to_date == time_now.to_date }
+    render json: TrackIndividualHabitSerializer.new(track_habit_today).serialized_json, status: :ok
   end
 
   private
