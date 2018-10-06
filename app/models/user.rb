@@ -43,6 +43,15 @@ class User < ApplicationRecord
     nil
   end
 
+  def get_habits_from_user(user_requester)
+    active_habits = individual_habits.order('name ASC').select(&:active)
+    if friends.find_by(id: user_requester.id)
+      active_habits.reject { |habit| habit.privacy == 3 }
+    else
+      active_habits.select { |habit| habit.privacy == 1 }
+    end
+  end
+
   def serialized
     UserSerializer.new(self)
   end

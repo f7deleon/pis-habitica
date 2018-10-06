@@ -38,11 +38,6 @@ class UserSerializer
   end
 
   has_many :individual_habits do |object, params|
-    active_habits = object.individual_habits.order('name ASC').select(&:active)
-    if params[:current_user].friendships.exists?(friend_id: object.id)
-      active_habits.reject { |habit| habit.privacy == 3 }
-    else
-      active_habits.select { |habit| habit.privacy == 1 }
-    end
+    object.get_habits_from_user(params[:current_user])
   end
 end

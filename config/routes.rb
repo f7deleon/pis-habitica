@@ -4,8 +4,9 @@ Rails.application.routes.draw do
   post 'user_token' => 'user_token#create'
   resources :groups
   resources :types
-  resources :users
-  resources :habits
+  resources :users do
+    resources :habits, only: %i[show index]
+  end
   resources :characters
   namespace :me do
     get '', to: 'users#home'
