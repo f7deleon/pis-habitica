@@ -32,7 +32,7 @@ class Me::FriendsController < Me::ApplicationController
     friendship = Friendship.new(user_id: sender.id, friend_id: current_user.id)
     friendship.save!
 
-    friendship_notification = FriendRequestNotification.new(user_id: sender.id, sender_id: current_user.id)
+    friendship_notification = FriendshipNotification.new(user_id: sender.id, sender_id: current_user.id)
     friendship_notification.save!
 
     render json: FriendSerializer.new(sender), status: :created

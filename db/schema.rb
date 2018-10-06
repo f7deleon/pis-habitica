@@ -71,6 +71,7 @@ ActiveRecord::Schema.define(version: 2018_10_01_012146) do
     t.integer "sender_id"
     t.integer "user_id"
     t.integer "request_id"
+    t.boolean "seen"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

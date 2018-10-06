@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   resources :characters
   namespace :me do
     get '', to: 'users#home'
-
+    resources :notifications
     resources :characters
     resources :requests
     resources :friends, controller: 'friends'
