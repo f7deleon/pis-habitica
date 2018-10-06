@@ -6,7 +6,9 @@ class Me::RequestsController < Me::ApplicationController
 
   # GET me/requests
   # Listar Solicitudes
-  # def index
+  def index
+    render json: RequestSerializer.new(current_user.requests_received).serialized_json, status: :ok
+  end
 
   # POST /me/requests/
   # Agregar Amigo
