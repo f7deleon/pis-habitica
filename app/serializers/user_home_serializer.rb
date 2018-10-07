@@ -5,7 +5,7 @@ class UserHomeSerializer
   set_type :user
   attributes :nickname
   attributes :has_notifications do |object|
-    object.notifications.any?
+    object.notifications.where(seen: false).count
   end
 
   has_one :character do |object|

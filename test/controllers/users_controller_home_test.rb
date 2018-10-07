@@ -88,16 +88,6 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     }
     @user2_token = JSON.parse(response.body)['jwt']
 
-    # Add notifications to user1
-    post '/me/requests/', headers: {
-      'Authorization': 'Bearer ' + @user2_token
-    }, params: {
-      'data': {
-        'type': 'request',
-        'relationships': { 'receiver': { 'data': { 'id': @user1.id.to_s, 'type': 'user' } } }
-      }
-    }
-
     # User 3
     @user3 = User.create(nickname: 'Ozuna', email: 'latino@negritojosclaro.com', password: 'dontcare')
     post '/user_token', params: {
@@ -114,18 +104,47 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
                                             creation_date: '2018-09-07T12:00:00Z',
                                             is_alive: true)
 
-    # Add notifications to user3 - friend request from user1 to user3
-    post '/me/requests/', headers: {
+    # Add notification to user1 - friendship request from user3 to user1
+    @req1 = Request.new
+    @req1.user_id = @user3.id
+    @req1.receiver_id = @user1.id
+    @req1.save
+
+    @fr1 = FriendRequestNotification.new
+    @fr1.user_id = @user1.id
+    @fr1.request_id = @req1.id
+    @fr1.seen = false
+    @fr1.save
+
+    # User1 and User3 are now friends
+    post '/me/friends/', headers: {
       'Authorization': 'Bearer ' + @user1_token
     }, params: {
       'data': {
+        'id': @req1.id,
         'type': 'request',
-        'relationships': { 'receiver': { 'data': { 'id': @user3.id.to_s, 'type': 'user' } } }
+        'relationships': { 'user': { 'data': { 'id': @user3.id, 'type': 'user' } } }
       }
     }
 
-    # Create friendship
-    @friendship = Friendship.create(user_id: @user1.id, friend_id: @user3.id)
+    # Add notification to user3 - friendship accepted from user1 to user3
+    @not = FriendshipNotification.new
+    @not.sender_id = @user1.id
+    @not.user_id = @user3.id
+    @not.seen = false
+    @not.save
+
+    # Add another notification to user3 - friendship request from user2 to user3
+    @req2 = Request.new
+    @req2.user_id = @user2.id
+    @req2.receiver_id = @user3.id
+    @req2.save
+
+    @fr2 = FriendRequestNotification.new
+    @fr2.user_id = @user3.id
+    @fr2.request_id = @req2.id
+    @fr2.seen = false
+    @fr2.save
 
     # User 4
     @user4 = User.create(nickname: 'barack', email: 'notpresidentanymore@usa.com', password: 'dontcare23')
@@ -143,17 +162,29 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
                                             creation_date: '2018-09-07T12:00:00Z',
                                             is_alive: true)
 
+    # Add seen notification to user4 - friendship request from user2 to user4
+    @req3 = Request.new
+    @req3.user_id = @user2.id
+    @req3.receiver_id = @user4.id
+    @req3.save
+
+    @fr3 = FriendRequestNotification.new
+    @fr3.user_id = @user4.id
+    @fr3.request_id = @req3.id
+    @fr3.seen = true
+    @fr3.save
+
     # Add friend to user4
     @user4.friendships.create(friend_id: @user2)
   end
 
   # Tests /me - Ir a home
-  test 'Ir a home: user with all data' do
+  test 'Ir a home: user1 with all data' do
     get '/me', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s }
     assert_equal 200, status
     body = JSON.parse(response.body)
     assert body['data']['attributes']['nickname'] == @user1.nickname
-    assert body['data']['attributes']['has_notifications'] == true
+    assert body['data']['attributes']['has_notifications'] == 1
     assert body['data']['relationships']['character'].length == 1
     assert body['data']['relationships']['friends']['data'].length == 1
     assert body['data']['relationships']['individual_habits']['data'].length == 2
@@ -164,14 +195,14 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert body['included'][2]['type'] == 'habit'
   end
 
-  test 'Ir a home: user with no character alive' do
+  test 'Ir a home: user2 with no character alive' do
     get '/me', headers: { 'Authorization': 'Bearer ' + @user2_token.to_s }
     assert_equal 404, status
     body = JSON.parse(response.body)
     assert body['errors'][0]['message'] == 'There is no character alive for this user'
   end
 
-  test 'Ir a home: user without habits' do
+  test 'Ir a home: user4 without habits' do
     get '/me', headers: { 'Authorization': 'Bearer ' + @user4_token.to_s }
     assert_equal 200, status
     body = JSON.parse(response.body)
@@ -185,17 +216,17 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert body['data']['relationships']['friends']['data'].empty?
   end
 
-  test 'Ir a home: user without notifications' do
+  test 'Ir a home: user4 with seen notifications' do
     get '/me', headers: { 'Authorization': 'Bearer ' + @user4_token.to_s }
     assert_equal 200, status
     body = JSON.parse(response.body)
-    assert body['data']['attributes']['has_notifications'] == false
+    assert body['data']['attributes']['has_notifications'].zero?
   end
 
-  test 'Ir a home: user with notifications' do
+  test 'Ir a home: user3 with notifications' do
     get '/me', headers: { 'Authorization': 'Bearer ' + @user3_token.to_s }
     assert_equal 200, status
     body = JSON.parse(response.body)
-    assert body['data']['attributes']['has_notifications'] == true
+    assert body['data']['attributes']['has_notifications'] == 2
   end
 end
