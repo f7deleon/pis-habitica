@@ -32,6 +32,8 @@ class FriendsControllerAcceptRequestTest < ActionDispatch::IntegrationTest
     @sender.requests_sent << @request
     @receiver.requests_received << @request
 
+    FriendRequestNotification.create(user_id: @receiver.id, request_id: @request.id)
+
     @expected = {
       'data': {
         'id': @sender.id.to_s,
@@ -51,6 +53,7 @@ class FriendsControllerAcceptRequestTest < ActionDispatch::IntegrationTest
   end
 
   test 'AceptarAmistad: should accept friend request' do
+    request_id = @request.id
     post '/me/friends/', headers: {
       'Authorization': 'Bearer ' + @receiver_token
     }, params: {
@@ -63,6 +66,7 @@ class FriendsControllerAcceptRequestTest < ActionDispatch::IntegrationTest
     assert_equal 201, status # Created
     assert @expected.to_json == response.body
     # Request is deleted
+    assert_not Notification.find_by(request_id: request_id)
     assert_not Request.find_by(user_id: @sender.id, receiver_id: @receiver.id)
     assert_not @sender.requests_sent.find_by(user_id: @sender.id, receiver_id: @receiver.id)
     assert_not @receiver.requests_received.find_by(user_id: @sender.id, receiver_id: @receiver.id)

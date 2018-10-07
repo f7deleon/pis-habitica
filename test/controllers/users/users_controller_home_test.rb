@@ -184,7 +184,7 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert_equal 200, status
     body = JSON.parse(response.body)
     assert body['data']['attributes']['nickname'] == @user1.nickname
-    assert body['data']['attributes']['has_notifications'] == 1
+    assert body['data']['attributes']['has_notifications'].zero?
     assert body['data']['relationships']['character'].length == 1
     assert body['data']['relationships']['friends']['data'].length == 1
     assert body['data']['relationships']['individual_habits']['data'].length == 2

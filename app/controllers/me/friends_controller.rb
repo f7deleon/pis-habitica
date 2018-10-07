@@ -26,6 +26,8 @@ class Me::FriendsController < Me::ApplicationController
     raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.already_friend')) if
       current_user.friends.find_by(id: sender.id)
 
+    request_notification = Notification.find_by(request_id: request.id)
+    request_notification.destroy
     request.destroy
 
     # El modelo crea automaticamente la amistad reciproca
