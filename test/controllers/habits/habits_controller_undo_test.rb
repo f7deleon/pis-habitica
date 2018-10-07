@@ -38,20 +38,17 @@ class HabitsControllerUntoTest < ActionDispatch::IntegrationTest
       frequency: 1,
       active: true
     )
-    @expected = TrackIndividualHabitSerializer.new([@track_individual_habit_to_return])
-
-    @expected_empty_return = TrackIndividualHabitSerializer.new([])
   end
   test 'undo_habit' do
-    put '/me/habits/' + @individual_habit.id.to_s + '/undo', headers: {
+    delete '/me/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
-    assert @expected.to_json == response.body
+    assert_equal 204, status # No Content
   end
   test 'undo_empty_habit' do
-    put '/me/habits/' + @individual_habit_empty.id.to_s + '/undo', headers: {
+    delete '/me/habits/' + @individual_habit_empty.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
-    assert @expected_empty_return.to_json == response.body
+    assert_equal 404, status # Not Found
   end
 end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class HabitsController < ApplicationController
-  before_action :set_habit, only: %i[update destroy]
   before_action :set_user_and_habit, only: %i[index show]
 
   # GET /user/:user_id/habits
@@ -34,17 +33,7 @@ class HabitsController < ApplicationController
     render json: StatsSerializer.json(data, habit), status: :ok
   end
 
-  # DELETE habits/id
-  def destroy
-    @habit.destroy
-  end
-
   def set_user_and_habit
     @user = User.find(params[:user_id])
-  end
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_habit
-    @habit = IndividualHabit.find(params[:id])
   end
 end

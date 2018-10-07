@@ -19,7 +19,7 @@ Rails.application.routes.draw do
       member do
         post 'fulfill', to: 'habits#fulfill'
         get 'stat', to: 'habits#stat_habit'
-        put 'undo', to: 'habits#undo_habit'
+        delete 'fulfill', to: 'habits#undo_habit'
       end
     end
 

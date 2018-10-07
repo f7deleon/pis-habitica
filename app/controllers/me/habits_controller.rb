@@ -105,9 +105,13 @@ class Me::HabitsController < Me::ApplicationController
   def undo_habit
     time_now = Time.zone.now
     track_to_delete = @habit.track_individual_habits.order(:date).last
-    track_to_delete.delete if track_to_delete && track_to_delete.date.to_date == time_now.to_date
-    track_habit_today = @habit.track_individual_habits.select { |track| track.date.to_date == time_now.to_date }
-    render json: TrackIndividualHabitSerializer.new(track_habit_today).serialized_json, status: :ok
+    unless track_to_delete && track_to_delete.date.to_date == time_now.to_date
+      raise Error::CustomError.new(I18n.t('not_found'), :not_found, I18n.t('errors.messages.habit_not_fulfilled'))
+    end
+
+    track_to_delete.delete
+    @habit.track_individual_habits.select { |track| track.date.to_date == time_now.to_date }
+    render json: {}, status: :no_content
   end
 
   private
