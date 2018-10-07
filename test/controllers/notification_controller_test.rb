@@ -37,6 +37,39 @@ class NotificationControllerTest < ActionDispatch::IntegrationTest
     }
     @user3_token = JSON.parse(response.body)['jwt']
 
+    @user4 = User.create(nickname: 'NotificationController4',
+                         email: 'NotificationController4@NotificationController4.com',
+                         password: 'NotificationController1234')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user4.email,
+        "password": @user4.password
+      }
+    }
+    @user4_token = JSON.parse(response.body)['jwt']
+
+    @user5 = User.create(nickname: 'NotificationController5',
+                         email: 'NotificationController5@NotificationController5.com',
+                         password: 'NotificationController1234')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user5.email,
+        "password": @user5.password
+      }
+    }
+    @user5_token = JSON.parse(response.body)['jwt']
+
+    @user6 = User.create(nickname: 'NotificationController6',
+                         email: 'NotificationController6@NotificationController6.com',
+                         password: 'NotificationController1234')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user6.email,
+        "password": @user6.password
+      }
+    }
+    @user6_token = JSON.parse(response.body)['jwt']
+
     # user1 send friend request to user2
     @req1 = Request.new
     @req1.user_id = @user.id
@@ -67,6 +100,37 @@ class NotificationControllerTest < ActionDispatch::IntegrationTest
     @fr2.request_id = @req2.id
     @fr2.seen = false
     @fr2.save
+
+    # Add 5 Notifications to user 4
+    @notification_user4_seen1 = FriendshipNotification.new
+    @notification_user4_seen1.sender_id = @user.id
+    @notification_user4_seen1.user_id = @user4.id
+    @notification_user4_seen1.seen = true
+    @notification_user4_seen1.save
+
+    @notification_user4_seen2 = FriendshipNotification.new
+    @notification_user4_seen2.sender_id = @user2.id
+    @notification_user4_seen2.user_id = @user4.id
+    @notification_user4_seen2.seen = true
+    @notification_user4_seen2.save
+
+    @notification_user4_seen3 = FriendshipNotification.new
+    @notification_user4_seen3.sender_id = @user3.id
+    @notification_user4_seen3.user_id = @user4.id
+    @notification_user4_seen3.seen = true
+    @notification_user4_seen3.save
+
+    @notification_user4_seen4 = FriendshipNotification.new
+    @notification_user4_seen4.sender_id = @user5.id
+    @notification_user4_seen4.user_id = @user4.id
+    @notification_user4_seen4.seen = false
+    @notification_user4_seen4.save
+
+    @notification_user4_seen5 = FriendshipNotification.new
+    @notification_user4_seen5.sender_id = @user6.id
+    @notification_user4_seen5.user_id = @user4.id
+    @notification_user4_seen5.seen = false
+    @notification_user4_seen5.save
   end
 
   test 'Get both types of notification of @user' do
@@ -122,5 +186,23 @@ class NotificationControllerTest < ActionDispatch::IntegrationTest
     result = get '/me/notifications?type=FriendRequestNotification',
                  headers: { 'Authorization': 'Bearer estoescualca' }
     assert result == 401
+  end
+
+  test 'Verify that notifications are ordered by seen (starting in false) and then marked as seen' do
+    result = get '/me/notifications?type=',
+                 headers: { 'Authorization': 'Bearer ' + @user4_token }
+    # verify that notifications not seen are first
+    assert result == 200
+    body = JSON.parse(response.body)
+    assert body['data'][0]['attributes']['seen'] == false
+    assert body['data'][1]['attributes']['seen'] == false
+    assert body['data'][2]['attributes']['seen'] == true
+    assert body['data'][3]['attributes']['seen'] == true
+    assert body['data'][4]['attributes']['seen'] == true
+    # verify that notifications not seen are marked as seen
+    noti1 = Notification.find_by_id(@notification_user4_seen4.id)
+    noti2 = Notification.find_by_id(@notification_user4_seen5.id)
+    assert noti1.seen
+    assert noti2.seen
   end
 end
