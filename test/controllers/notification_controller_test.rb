@@ -98,6 +98,7 @@ class NotificationControllerTest < ActionDispatch::IntegrationTest
     assert body['data'][0]['relationships']['request']['data']['id'].eql? @req2.id.to_s
     assert body['included'][0]['relationships']['sender']['data']['id'].eql? @user3.id.to_s
     assert body['included'][0]['relationships']['receiver']['data']['id'].eql? @user.id.to_s
+    assert body['included'][1]['id'].eql? @user3.id.to_s
   end
 
   test 'Get FriendRequestNotification of @user2' do

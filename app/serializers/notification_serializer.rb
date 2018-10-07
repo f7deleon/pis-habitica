@@ -9,4 +9,10 @@ class NotificationSerializer
 
   belongs_to :request, record_type: :request,
                        serializer: :request, if: proc { |record| record.type.eql? 'FriendRequestNotification' }
+
+  belongs_to :request_sender, record_type: :user, id_method_name: :user_id, serializer: :user,
+                              if: proc { |record| record.type.eql? 'FriendRequestNotification' },
+                              params: { current_user: :sender } do |object|
+                                object.request.user
+                              end
 end
