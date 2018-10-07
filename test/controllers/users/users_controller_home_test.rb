@@ -227,6 +227,6 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     get '/me', headers: { 'Authorization': 'Bearer ' + @user3_token.to_s }
     assert_equal 200, status
     body = JSON.parse(response.body)
-    assert body['data']['attributes']['has_notifications'] == 2
+    assert body['data']['attributes']['has_notifications'] == 3
   end
 end
