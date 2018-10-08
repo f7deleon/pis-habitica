@@ -74,7 +74,7 @@ ActiveRecord::Schema.define(version: 2018_10_01_012146) do
     t.boolean "seen"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["request_id"], name: "index_notifications_on_request_id"
+    t.index ["request_id"], name: "index_notifications_on_request_id", unique: true
   end
 
   create_table "requests", force: :cascade do |t|
@@ -140,6 +140,7 @@ ActiveRecord::Schema.define(version: 2018_10_01_012146) do
   add_foreign_key "friendships", "users"
   add_foreign_key "habits", "groups"
   add_foreign_key "habits", "users"
+  add_foreign_key "notifications", "requests", on_delete: :cascade
   add_foreign_key "requests", "users"
   add_foreign_key "track_group_habits", "habits"
   add_foreign_key "track_group_habits", "users"

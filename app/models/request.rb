@@ -4,6 +4,8 @@ class Request < ApplicationRecord
   belongs_to :user, foreign_key: :user_id # sender
   belongs_to :receiver, class_name: 'User', foreign_key: :receiver_id
 
+  has_one :friend_request_notification, dependent: :destroy
+
   validates_uniqueness_of :user_id, scope: %i[receiver_id]
 
   validate :check_uniqueness_of_both_tables

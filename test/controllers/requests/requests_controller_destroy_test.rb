@@ -30,8 +30,7 @@ class RequestsControllerDestroyTest < ActionDispatch::IntegrationTest
     @requestless_user_token = JSON.parse(response.body)['jwt']
 
     @request = Request.create(user_id: @sender.id, receiver_id: @receiver.id)
-    @sender.requests_sent << @request
-    @receiver.requests_received << @request
+    @request_notification = FriendRequestNotification.create(user_id: @receiver.id, request_id: @request.id)
   end
 
   test 'should be valid' do
@@ -46,6 +45,7 @@ class RequestsControllerDestroyTest < ActionDispatch::IntegrationTest
       'Authorization': 'Bearer ' + @receiver_token
     }
     assert_equal 204, status # No Content
+    assert_not FriendRequestNotification.find_by(id: @request_notification.id)
     assert Request.find_by(user_id: @sender.id, receiver_id: @receiver.id).nil?
     assert @sender.requests_sent.find_by(user_id: @sender.id, receiver_id: @receiver.id).nil?
     assert @receiver.requests_received.find_by(user_id: @sender.id, receiver_id: @receiver.id).nil?
@@ -54,6 +54,7 @@ class RequestsControllerDestroyTest < ActionDispatch::IntegrationTest
     delete '/me/requests/' + @request.id.to_s, headers: {
       'Authorization': 'Bearer asdasdasd'
     }
+
     assert_equal 401, status # Unauthorized
   end
   test 'RechazarAmistad: request should exist' do
