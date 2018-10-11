@@ -6,7 +6,17 @@ class UserSerializer
   STATUS_REQUEST_SENT = 1
   STATUS_REQUEST_RECEIVED = 2
   STATUS_FRIENDS = 3
-  attributes :nickname, :email
+  attributes :nickname, :email, :health, :level, :experience
+
+  # hacer el calculo ed la salud maxima
+  attributes :max_health do |_object|
+    100
+  end
+
+  # hacer el calculo de la experiencia maxima
+  attributes :max_experience do |_object|
+    500
+  end
 
   attributes :friendship_status,
              if: proc { |object, params| object.id != params[:current_user].id } do |object, params|

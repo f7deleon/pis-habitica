@@ -26,6 +26,7 @@ class Me::CharactersController < Me::ApplicationController
     end
 
     user_character = current_user.add_character(params[:data][:id], params[:included][0][:attributes][:date])
+    current_user.update_attributes(health: 100, experience: 0, level: 1)
     if user_character
       character_chosen.user_characters << user_character
       render json: character_chosen, status: :created

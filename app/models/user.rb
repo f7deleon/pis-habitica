@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class User < ApplicationRecord
+  before_validation :set_default, on: :create
   has_many :individual_types
   has_many :track_group_habits
 
@@ -22,7 +23,7 @@ class User < ApplicationRecord
   self.primary_key = :id
   validates :nickname, presence: true, uniqueness: true # string
   validates :email, presence: true, uniqueness: true # string
-  validates :password, presence: true, length: { minimum: 8 }
+  validates :password_digest, presence: true, length: { minimum: 8 }
 
   has_secure_password
 
@@ -50,6 +51,12 @@ class User < ApplicationRecord
     else
       active_habits.select { |habit| habit.privacy == 1 }
     end
+  end
+
+  def set_default
+    self.health ||= 0
+    self.level ||= 1
+    self.experience ||= 0
   end
 
   def serialized

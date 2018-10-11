@@ -7,7 +7,6 @@ class Me::UsersController < Me::ApplicationController
       raise Error::CustomError.new(I18n.t('not_found'), '404',
                                    I18n.t('errors.messages.no_character_alive'))
     end
-
     options = {}
     options[:include] = %i[individual_habits friends]
     render json: UserHomeSerializer.new(current_user, options).serialized_json
