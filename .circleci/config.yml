@@ -56,9 +56,6 @@ jobs:
           name: Tests
           command: |
             bundle exec rake test
-     # - run:
-     #     name: Parallel RSpec
-     #     command: bin/rails test
 
       # Save artifacts
       - store_test_results:

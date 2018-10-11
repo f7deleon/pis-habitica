@@ -11,6 +11,14 @@ class User < ApplicationRecord
   has_many :user_characters
   has_many :characters, through: :user_characters
 
+  has_many :notifications
+
+  has_many :friendships
+  has_many :friends, through: :friendships, class_name: 'User', foreign_key: :user_id
+
+  has_many :requests_sent, class_name: 'Request', foreign_key: :user_id
+  has_many :requests_received, class_name: 'Request', foreign_key: :receiver_id
+
   self.primary_key = :id
   validates :nickname, presence: true, uniqueness: true # string
   validates :email, presence: true, uniqueness: true # string
@@ -33,6 +41,15 @@ class User < ApplicationRecord
       return user_character
     end
     nil
+  end
+
+  def get_habits_from_user(user_requester)
+    active_habits = individual_habits.order('name ASC').select(&:active)
+    if friends.find_by(id: user_requester.id)
+      active_habits.reject { |habit| habit.privacy == 3 }
+    else
+      active_habits.select { |habit| habit.privacy == 1 }
+    end
   end
 
   def serialized

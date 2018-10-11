@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_09_01_192429) do
+ActiveRecord::Schema.define(version: 2018_10_01_012146) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,6 +18,15 @@ ActiveRecord::Schema.define(version: 2018_09_01_192429) do
   create_table "characters", force: :cascade do |t|
     t.string "name"
     t.string "description"
+  end
+
+  create_table "friendships", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "friend_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["friend_id"], name: "index_friendships_on_friend_id"
+    t.index ["user_id"], name: "index_friendships_on_user_id"
   end
 
   create_table "group_habit_has_types", force: :cascade do |t|
@@ -55,6 +64,26 @@ ActiveRecord::Schema.define(version: 2018_09_01_192429) do
     t.bigint "type_id"
     t.index ["habit_id"], name: "index_individual_habit_has_types_on_habit_id"
     t.index ["type_id"], name: "index_individual_habit_has_types_on_type_id"
+  end
+
+  create_table "notifications", force: :cascade do |t|
+    t.string "type"
+    t.integer "sender_id"
+    t.integer "user_id"
+    t.bigint "request_id"
+    t.boolean "seen"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["request_id"], name: "index_notifications_on_request_id", unique: true
+  end
+
+  create_table "requests", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "receiver_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["receiver_id"], name: "index_requests_on_receiver_id"
+    t.index ["user_id"], name: "index_requests_on_user_id"
   end
 
   create_table "track_group_habits", force: :cascade do |t|
@@ -108,8 +137,11 @@ ActiveRecord::Schema.define(version: 2018_09_01_192429) do
     t.string "password_digest"
   end
 
+  add_foreign_key "friendships", "users"
   add_foreign_key "habits", "groups"
   add_foreign_key "habits", "users"
+  add_foreign_key "notifications", "requests", on_delete: :cascade
+  add_foreign_key "requests", "users"
   add_foreign_key "track_group_habits", "habits"
   add_foreign_key "track_group_habits", "users"
   add_foreign_key "track_individual_habits", "habits"

@@ -2,7 +2,7 @@
 
 class SessionSerializer
   def self.json(user, token)
-    user_serializer = UserSerializer.new(user).serializable_hash
+    user_serializer = UserSerializer.new(user, params: { current_user: user }).serializable_hash
     included_token = [
       {
         "type": 'session',

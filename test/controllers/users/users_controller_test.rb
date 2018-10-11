@@ -35,6 +35,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user4 = User.create(nickname: 'barack', email: 'notpresidentanymore@usa.com', password: 'dontcare23')
     @user5 = User.create(nickname: 'aaaaabaracaaaaa', email: 'notpresidentanymore1@usa.com', password: 'dontcare1')
 
+    ### friends
+    @friendship = Friendship.create(user_id: @user1.id, friend_id: @user2.id)
+
+    @my_friends = UserSerializer.new([@user2], params: { current_user: @user1 }).serialized_json
+
     ### Characters creation
     @character = Character.create(name: 'Humano',
                                   description: 'Descripcion humano')
@@ -70,7 +75,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       description: 'Example desc',
       difficulty: 3,
       privacy: 1,
-      frequency: 1
+
+      frequency: 1,
+      active: true
     )
 
     @individual_habit2 = IndividualHabit.create(
@@ -79,7 +86,18 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       description: 'Example2 desc',
       difficulty: 2,
       privacy: 2,
-      frequency: 2
+      frequency: 2,
+      active: true
+    )
+
+    @individual_habit3 = IndividualHabit.create(
+      user_id: @user1.id,
+      name: 'Example3',
+      description: 'Example3 desc',
+      difficulty: 2,
+      privacy: 3,
+      frequency: 2,
+      active: true
     )
     @individual_type = IndividualType.create(user_id: @user1.id, name: 'Example_seed', description: 'Example_seed')
     @habit_type = IndividualHabitHasType.create(habit_id: @individual_habit.id, type_id: @individual_type.id)
@@ -87,31 +105,10 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user1.individual_types << @individual_type
     @individual_habit.individual_habit_has_types << @habit_type
     @individual_habit2.individual_habit_has_types << @habit_type
+    @individual_habit3.individual_habit_has_types << @habit_type
     @user1.individual_habits << @individual_habit
     @user1.individual_habits << @individual_habit2
-  end
-
-  test 'should get home' do
-    get '/me/home', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                    params: {
-                      "data": {
-                        "id": @user1.id.to_s,
-                        "type": 'users',
-                        "attributes": {
-                          "nickname": @user1.nickname
-                        },
-                        "relationships": {
-                          "character": {
-                            "data": {
-                              "type": 'characters',
-                              "id": @user1.user_characters.to_s
-                            }
-                          },
-                          "habits": @user1.individual_habits
-                        }
-                      }
-                    }
-    assert_equal 200, status
+    @user1.individual_habits << @individual_habit3
   end
 
   # Alta Personaje
@@ -171,9 +168,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test 'Buscar Usuario: send empty filter (returns all users)' do
     result = get '/users?filter=', headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 200
-    body = JSON.parse(response.body)
-    assert body['data'].length == 6
+    assert result == 400
   end
 
   test 'Buscar Usuario: find a non existent user (data returns empty)' do
@@ -185,6 +180,53 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
 
   test 'Buscar Usuario: dont attach Authorization token (unauthorized returned)' do
     result = get '/users?filter=Ozu'
+    assert result == 401
+  end
+
+  test 'Create user' do
+    url = '/users'
+
+    parameters = { "data": {
+      "type": 'user',
+      "attributes": {
+        "nickname": 'Pai',
+        "email": 'pai@habitica.com',
+        "password": '12345678'
+      }
+    } }
+
+    result = post url, params: parameters
+    user = User.last
+
+    assert result == 201
+
+    result_json = JSON.parse(response.body)
+    assert user.id == result_json['data']['id'].to_i
+  end
+
+  test 'Bad request user' do
+    url = '/users'
+
+    parameters = { "data": {
+      "type": 'user',
+      "attributes": {
+        "nickname": 'Pai',
+        "email": 'pai@habitica.com'
+      }
+    } }
+
+    result = post url, params: parameters
+    assert result == 400
+  end
+
+  test 'Ver mis amigos: OK' do
+    result = get '/me/friends', headers: { 'Authorization': 'Bearer ' + @user1_token }
+    assert result == 200
+    assert_equal response.body, @my_friends
+  end
+
+  test 'Ver mis amigos: dont attach Authorization token (unauthorized returned)' do
+    result = get '/me/friends'
     assert result == 401
   end
 end
