@@ -36,15 +36,15 @@ User.create([
 ])
 
 User.all.each do |user|
-  UserCharacter.create(user_id: user.id, character_id: Character.order("RANDOM()").limit(1).first.id, creation_date: Time.zone.now, is_alive: true)
+  character_id = Character.order("RANDOM()").limit(1).first.id
+  character = Character.find(character_id)
+  user_character = user.add_character(character_id, Time.zone.now)
+  character.user_characters << user_character
 end
-
 
 friends = User.all.limit(3).first
 
 user.friends << friends
-
-
 
 
 from_date = Date.new(2018, 9, 1)

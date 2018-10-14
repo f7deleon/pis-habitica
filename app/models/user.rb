@@ -38,6 +38,7 @@ class User < ApplicationRecord
 
     # save to database
     if user_character.save
+      update_attributes(health: 100, experience: 0, level: 1)
       user_characters << user_character
       return user_character
     end
