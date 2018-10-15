@@ -86,9 +86,9 @@ jobs:
           command: |
             if [ "${CIRCLE_BRANCH}" == "development" ]; then
               git push https://git.heroku.com/$HEROKU_APP_NAME.git development:master
-              heroku pg:reset --confirm $HEROKU_APP_NAME
-              heroku run rake db:migrate
-              heroku run rake db:seed
+              heroku pg:reset --app $HEROKU_APP_NAME --confirm $HEROKU_APP_NAME
+              heroku run rake db:migrate --app $HEROKU_APP_NAME
+              heroku run rake db:seed --app $HEROKU_APP_NAME
             fi
 
       # Save artifacts
