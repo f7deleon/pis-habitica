@@ -37,25 +37,24 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
   end
   test 'AltaHabito: should create habit' do
     post '/me/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
-      'data': {
-        'type': 'habit',
-        'attributes': { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
-        'relationships': {
-          'types': [
-            { 'data': { 'id': @default_type.id, 'type': 'type' } },
-            { 'data': { 'id': @default_type2.id, 'type': 'type' } }
-          ]
-        }
-      }
+      'data': { 'type': 'habit',
+                'attributes':
+                { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
+                'relationships': {
+                  'types': [
+                    { 'data': { 'id': @default_type.id, 'type': 'type' } },
+                    { 'data': { 'id': @default_type2.id, 'type': 'type' } }
+                  ]
+                } }
     }
     expected = {
       'data': {
         'id': JSON.parse(response.body)['data']['id'], 'type': 'habit', 'attributes': {
-          'name': 'Example', 'description': 'Example', 'difficulty': 1, 'privacy': 1, 'frequency': 1, 'count_track': 0
+          'name': 'Example', 'description': 'Example', 'difficulty': 1, 'privacy': 1, 'frequency': 1,
+          'negative': false, 'count_track': 0
         }, 'relationships': {
-          'types': {
-            'data': [{ 'id': @default_type.id.to_s, 'type': 'type' }, { 'id': @default_type2.id.to_s, 'type': 'type' }]
-          }
+          'types': { 'data': [{ 'id': @default_type.id.to_s, 'type': 'type' },
+                              { 'id': @default_type2.id.to_s, 'type': 'type' }] }
         }
       }
     }

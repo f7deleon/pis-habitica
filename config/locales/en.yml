@@ -59,6 +59,7 @@ en:
       habit_is_private: "You cant see other person habits that are private"
       habit_not_fulfilled: "This habit has not been fulfilled today"
       habit_is_protected: "You cant see other person habits that are protected if you are not their friend"
+      habit_negative_frequency: "You can't create negative habit with daily frequency"
 
   activerecord:
     models:
@@ -66,6 +67,10 @@ en:
 
     errors:
       models: 
+        habit:
+          attributes: 
+            frequency:
+              invalid: "You can't create negative habit with daily frequency" 
         request:
           attributes: 
             user_id:
@@ -74,3 +79,7 @@ en:
               taken: "This user has already sent you a friend request"
       messages:
         not_found: "Not found: %{model}"
+    models:
+      user_character: Habit
+
+    

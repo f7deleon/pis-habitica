@@ -102,7 +102,8 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
         'id': @individual_habit_to_track.id.to_s,
         'type': 'habit',
         'attributes': {
-          'name': 'Example', 'description': 'Example', 'difficulty': 3, 'privacy': 1, 'frequency': 1, 'count_track': 0
+          'name': 'Example', 'description': 'Example', 'difficulty': 3, 'privacy': 1, 'frequency': 1,
+          'negative': false, 'count_track': 0
         },
         'relationships': {
           'types': { 'data': [{ 'id': @individual_type.id.to_s, 'type': 'type' }] }
