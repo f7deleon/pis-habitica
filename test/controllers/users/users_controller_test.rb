@@ -184,8 +184,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'Create user' do
-    url = '/users'
-
     parameters = { "data": {
       "type": 'user',
       "attributes": {
@@ -195,7 +193,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       }
     } }
 
-    result = post url, params: parameters
+    result = post '/users', params: parameters
     user = User.last
 
     assert result == 201
