@@ -97,6 +97,8 @@ ActiveRecord::Schema.define(version: 2018_10_12_011348) do
 
   create_table "track_individual_habits", force: :cascade do |t|
     t.bigint "habit_id"
+    t.integer "health_difference"
+    t.integer "experience_difference"
     t.datetime "date"
     t.index ["habit_id"], name: "index_track_individual_habits_on_habit_id"
   end
