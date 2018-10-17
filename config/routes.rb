@@ -25,5 +25,7 @@ Rails.application.routes.draw do
 
     post 'requests/:id', to: 'requests#add_friend'
   end
+  # FOR DEVELOPMENT ONLY
+  get '/killme', to: 'users#killme'
   # For details on the DSL available wihthin this file, see http://guides.rubyonrails.org/routing.htm
 end
