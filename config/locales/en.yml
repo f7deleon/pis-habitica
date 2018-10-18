@@ -54,7 +54,7 @@ en:
       typeless_habit: "Habit needs at least one type"
       already_friend: "This user is already your friend"
       self_friend_request: "You can't send a friend request to yourself"
-      no_character_alive: "There is no character alive for this user"
+      no_character_created: "This user has not created a character yet"
       self_friend_friendship: "You can't add yourself as a friend"
       habit_is_private: "You cant see other person habits that are private"
       habit_not_fulfilled: "This habit has not been fulfilled today"

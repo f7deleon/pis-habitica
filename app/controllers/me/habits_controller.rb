@@ -121,7 +121,7 @@ class Me::HabitsController < Me::ApplicationController
 
   def undo_habit
     if current_user.dead?
-      raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.no_character_alive'))
+      raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.no_character_created'))
     end
 
     time_now = Time.zone.now
@@ -191,7 +191,7 @@ class Me::HabitsController < Me::ApplicationController
     end
 
     @date_passed = Time.zone.parse(date_params)
-    message = I18n.t('errors.messages.no_character_alive')
+    message = I18n.t('errors.messages.no_character_created')
     raise Error::CustomError.new(I18n.t('not_found'), '404', message) if current_user.dead?
   end
 

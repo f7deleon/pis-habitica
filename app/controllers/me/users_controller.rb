@@ -2,10 +2,10 @@
 
 class Me::UsersController < Me::ApplicationController
   def home
-    # There is no home if user has no character alive
-    unless current_user.user_characters.find_by(is_alive: true)
+    # There is no home if user has no character created
+    unless current_user.user_characters.any?
       raise Error::CustomError.new(I18n.t('not_found'), '404',
-                                   I18n.t('errors.messages.no_character_alive'))
+                                   I18n.t('errors.messages.no_character_created'))
     end
     options = {}
     options[:include] = %i[individual_habits friends]

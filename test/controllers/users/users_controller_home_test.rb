@@ -195,11 +195,31 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert body['included'][2]['type'] == 'habit'
   end
 
-  test 'Ir a home: user2 with no character alive' do
+  # Tests /me - Ir a home
+  test 'Ir a home: user1 with created but dead character' do
+    @user1.update_column(:health, 0)
+    @user1.death
+    get '/me', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s }
+    assert_equal 200, status
+    body = JSON.parse(response.body)
+    assert body['data']['attributes']['nickname'] == @user1.nickname
+    assert body['data']['attributes']['has_notifications'].zero?
+    assert body['data']['attributes']['is_dead']
+    assert body['data']['relationships']['character']['data'].nil?
+    assert body['data']['relationships']['friends']['data'].length == 1
+    assert body['data']['relationships']['individual_habits']['data'].length == 2
+
+    # included data - 1 friend and 2 individual_habits
+    assert body['included'][0]['type'] == 'friend'
+    assert body['included'][1]['type'] == 'habit'
+    assert body['included'][2]['type'] == 'habit'
+  end
+
+  test 'Ir a home: user2 with no created character' do
     get '/me', headers: { 'Authorization': 'Bearer ' + @user2_token.to_s }
     assert_equal 404, status
     body = JSON.parse(response.body)
-    assert body['errors'][0]['message'] == 'There is no character alive for this user'
+    assert body['errors'][0]['message'] == 'This user has not created a character yet'
   end
 
   test 'Ir a home: user4 without habits' do

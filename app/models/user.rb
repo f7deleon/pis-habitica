@@ -64,6 +64,15 @@ class User < ApplicationRecord
     UserSerializer.new(self)
   end
 
+  def alive_character
+    char = user_characters.find_by_is_alive(true)
+    if char.nil?
+      nil
+    else
+      char.character
+    end
+  end
+
   def reward(difficulty)
     experience_gained = increment_of_experience(difficulty)
     self.experience = self.experience + experience_gained
@@ -103,7 +112,7 @@ class User < ApplicationRecord
 
   # to calculate decrements to health
   def decrement_of_health(difficulty)
-    -((max_health / 10) + 5 * (3 - difficulty)).round
+    -((max_health / 10) + 5 * (4 - difficulty)).round
   end
 
   def level_up

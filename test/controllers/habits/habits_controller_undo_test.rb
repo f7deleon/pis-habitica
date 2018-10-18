@@ -176,7 +176,7 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
 
     expected = { "errors":
       [
-        { "status": '404', "title": 'Not found', "message": 'There is no character alive for this user' }
+        { "status": '404', "title": 'Not found', "message": 'This user has not created a character yet' }
       ] }
     assert expected.to_json == response.body
     assert_equal 404, status # Accepted
