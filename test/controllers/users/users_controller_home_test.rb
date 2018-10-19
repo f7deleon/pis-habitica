@@ -183,6 +183,7 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     get '/me', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s }
     assert_equal 200, status
     body = JSON.parse(response.body)
+    puts response.body
     assert body['data']['attributes']['nickname'] == @user1.nickname
     assert body['data']['attributes']['has_notifications'].zero?
     assert body['data']['relationships']['character'].length == 1

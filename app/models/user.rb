@@ -69,7 +69,7 @@ class User < ApplicationRecord
     if char.nil?
       nil
     else
-      char.character
+      char.character.id
     end
   end
 
