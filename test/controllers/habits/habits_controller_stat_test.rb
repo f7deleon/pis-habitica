@@ -46,6 +46,8 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
       active: true
     )
 
+    @individual_habit_frequency.update(created_at: '2018-08-27 22:17:20')
+
     ## sin frecuencia--------------------------------------------------
     @months_id = []
 
@@ -98,7 +100,6 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     load_frequency Time.new(2018, 9, 4)
     load_frequency Time.new(2018, 9, 5)
     load_frequency Time.new(2018, 9, 7)
-    load_frequency Time.new(2018, 9, 7)
     load_frequency Time.new(2018, 9, 8)
 
     @month = [
@@ -106,25 +107,25 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
         "id": @months_id[0].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[0].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[1].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[1].date,
-        "count_track": 0
+        "count_track": 2
       },
       {
         "id": @months_id[2].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[2].date,
-        "count_track": 1
+        "count_track": 2
       },
       {
         "id": @months_id[3].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[3].date,
-        "count_track": 1
+        "count_track": 2
       },
       {
         "id": @months_id[4].id,
@@ -136,55 +137,55 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
         "id": @months_id[5].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[5].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[6].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[6].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[7].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[7].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[8].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[8].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[9].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[9].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[10].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[10].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[11].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[11].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[12].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[12].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[13].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[13].date,
-        "count_track": 0
+        "count_track": 2
       },
       {
         "id": @months_id[14].id,
@@ -196,31 +197,31 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
         "id": @months_id[15].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[15].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[16].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[16].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[17].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[17].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[18].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[18].date,
-        "count_track": 0
+        "count_track": 1
       },
       {
         "id": @months_id[19].id,
         "habit_id": @individual_habit.id,
         "date": @months_id[19].date,
-        "count_track": 0
+        "count_track": 2
       },
       {
         "id": @months_id[20].id,
@@ -230,9 +231,13 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
       }
     ]
 
+    # se calcula porcentaje esperado
+    days = TimeDifference.between('2018-08-27 22:17:20'.to_date, Time.zone.now).in_days.round + 1
+    percent = (8.to_f / days) * 100
+
     data_frequency = { "max": 5,
                        "successive": 0,
-                       "percent": 100,
+                       "percent": percent.round,
                        "calendar": [],
                        "months": [] }
 
@@ -255,7 +260,10 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     get '/me/habits/' + @individual_habit_frequency.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }
-
-    assert @expected_frequency.to_json == response.body
+    # por la diferencia de tiempo el porcentaje da distinto, por eso se hace el redondeo
+    salida = JSON.parse(response.body)
+    percent = salida['included'][0]['attributes']['stat']['data']['percent'].round
+    salida['included'][0]['attributes']['stat']['data']['percent'] = percent
+    assert @expected_frequency.to_json == JSON.generate(salida)
   end
 end

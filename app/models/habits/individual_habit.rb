@@ -30,30 +30,31 @@ class IndividualHabit < Habit
 
   def get_sucesive_max(time)
     successive = 0
-    before = nil
+    before = track_individual_habits[0] ? track_individual_habits[0].date : nil
     difference = 0
     all_successive = []
     time_begin = created_at
-    all_percent = TimeDifference.between(time_begin, time).in_days
+    all_percent = TimeDifference.between(time_begin, time).in_days.round + 1
+    # caso de el mismo dia que creo el habito y consulto estadistica
+    all_percent = 1 if TimeDifference.between(time_begin, time).in_days.round.zero?
     count_all = 0
     percent = 0
-    track_individual_habits.each do |track_habit|
-      percent = 100
+    track_individual_habits.order(:date).each do |track_habit|
       # calculo la cantidad de dias seguidos haciendo el habito y el record de dias seguidos
-      if difference.between?(1, 2)
+      difference = TimeDifference.between(before.to_date, track_habit.date.to_date).in_days
+      if difference.between?(0, 1)
         successive += 1
-        count_all += 1
-      elsif difference > 2
-        successive = 0
+      elsif difference > 1
+        # el dia que estoy parado ya lo cuento
+        successive = 1
       end
+      count_all += 1
       all_successive << successive
-
       # actualizo variables
-      difference = TimeDifference.between(before.to_date, track_habit.date.to_date).in_days if before
       before = track_habit.date
     end
-    percent = (count_all / all_percent) * 100 if all_percent.positive?
-
+    percent = (count_all.to_f / all_percent) * 100 if all_percent.positive?
+    percent = percent.round(1)
     [all_successive, before, percent]
   end
 
@@ -66,19 +67,27 @@ class IndividualHabit < Habit
     end
     months = []
     count_in_months = 0
-    before = nil
-    track_order.each do |track_habit|
-      if before && before.to_date == track_habit.date.to_date
-        count_in_months += 1
-      else
-        # si paso mas de un dia por que pueden haber trackeos el mismo dia
-        months << { "id": track_habit.id,
-                    "habit_id": track_habit.habit_id,
-                    "date": track_habit.date,
-                    "count_track": count_in_months }
-        count_in_months = 0
+    before = track_order[0] || nil
+    unless before.nil?
+      track_order.each do |track_habit|
+        if TimeDifference.between(before.date.to_date, track_habit.date.to_date).in_days.zero?
+          # mismo dia
+          count_in_months += 1
+        else
+          # cambio de dia
+          months << { "id": before.id,
+                      "habit_id": before.habit_id,
+                      "date": before.date,
+                      "count_track": count_in_months }
+          count_in_months = 1
+          before = track_habit
+        end
       end
-      before = track_habit.date
+      # El ultimo cambio de dia no se carga, por que se carga luego de la finalizacion
+      months << { "id": before.id,
+                  "habit_id": before.habit_id,
+                  "date": before.date,
+                  "count_track": count_in_months }
     end
     months
   end
