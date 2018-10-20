@@ -38,7 +38,7 @@ class User < ApplicationRecord
     self.health = max_health
     # save to database
     if user_character.save
-      update_attributes(health: 100, experience: 0, level: 1)
+      update_attributes(health: 100)
       user_characters << user_character
       return user_character
     end
