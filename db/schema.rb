@@ -72,10 +72,12 @@ ActiveRecord::Schema.define(version: 2018_10_12_011348) do
     t.integer "sender_id"
     t.integer "user_id"
     t.bigint "request_id"
+    t.bigint "track_individual_habit_id"
     t.boolean "seen"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["request_id"], name: "index_notifications_on_request_id", unique: true
+    t.index ["track_individual_habit_id"], name: "index_notifications_on_track_individual_habit_id", unique: true
   end
 
   create_table "requests", force: :cascade do |t|
@@ -147,6 +149,7 @@ ActiveRecord::Schema.define(version: 2018_10_12_011348) do
   add_foreign_key "habits", "groups"
   add_foreign_key "habits", "users"
   add_foreign_key "notifications", "requests", on_delete: :cascade
+  add_foreign_key "notifications", "track_individual_habits", on_delete: :cascade
   add_foreign_key "requests", "users"
   add_foreign_key "track_group_habits", "habits"
   add_foreign_key "track_group_habits", "users"

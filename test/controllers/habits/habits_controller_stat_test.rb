@@ -6,7 +6,8 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
   def load_not_frequency(date, save_month)
     @track_individual_habit = TrackIndividualHabit.create(
       habit_id: @individual_habit.id,
-      date: date
+      date: date,
+      health_difference: 0
     )
     @months_id << @track_individual_habit if save_month
   end
@@ -14,7 +15,8 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
   def load_frequency(date)
     @track_individual_habit = TrackIndividualHabit.create(
       habit_id: @individual_habit_frequency.id,
-      date: date
+      date: date,
+      health_difference: 0
     )
   end
 

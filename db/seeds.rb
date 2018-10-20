@@ -62,8 +62,8 @@ habit = IndividualHabit.first
 habit2 = IndividualHabit.second
 
 (from_date..to_date).each { |date| 
-  TrackIndividualHabit.create( habit_id: habit.id, date: date )
-  TrackIndividualHabit.create( habit_id: habit2.id, date: date ) if date.day % 3 == 0
+  TrackIndividualHabit.create( habit_id: habit.id, date: date, health_difference: user.reward(habit.difficulty) )
+  TrackIndividualHabit.create( habit_id: habit2.id, date: date, health_difference: user.reward(habit2.difficulty) ) if date.day % 3 == 0
 
 }
 

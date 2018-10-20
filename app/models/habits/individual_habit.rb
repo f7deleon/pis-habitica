@@ -29,8 +29,11 @@ class IndividualHabit < Habit
   end
 
   def get_sucesive_max(time)
+    track_list = track_individual_habits.order(:date).select do |track|
+      track.health_difference >= 0
+    end
     successive = 0
-    before = track_individual_habits[0] ? track_individual_habits[0].date : nil
+    before = track_list[0] ? track_list[0].date : nil
     difference = 0
     all_successive = []
     time_begin = created_at
@@ -39,7 +42,7 @@ class IndividualHabit < Habit
     all_percent = 1 if TimeDifference.between(time_begin, time).in_days.round.zero?
     count_all = 0
     percent = 0
-    track_individual_habits.order(:date).each do |track_habit|
+    track_list.each do |track_habit|
       # calculo la cantidad de dias seguidos haciendo el habito y el record de dias seguidos
       difference = TimeDifference.between(before.to_date, track_habit.date.to_date).in_days
       if difference.between?(0, 1)
