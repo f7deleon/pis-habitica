@@ -137,6 +137,12 @@ class User < ApplicationRecord
     user_character = user_characters.find_by!(is_alive: true)
     user_character.update_column(:is_alive, false)
     self.experience = 0
+    time = Time.zone.now
+    individual_habits.each do |habit|
+      habit.track_individual_habits.each do |track|
+        track.destroy if TimeDifference.between(time.to_date, track.date.to_date).in_days < 1
+      end
+    end
   end
 
   def dead?
