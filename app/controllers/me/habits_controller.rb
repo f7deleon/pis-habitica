@@ -53,7 +53,7 @@ class Me::HabitsController < Me::ApplicationController
   def fulfill
     previous_level = current_user.level
     track_individual_habit = track_habit
-    track_individual_habit.save!
+    track_individual_habit.save! if current_user.user_characters.find_by(is_alive: true)
 
     if previous_level < current_user.level
       render json: LevelUpSerializer.new(current_user, params: { habit: @habit.id }).serialized_json, status: :created
