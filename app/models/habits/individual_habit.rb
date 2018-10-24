@@ -98,7 +98,7 @@ class IndividualHabit < Habit
   def now_calendar(time)
     fst_month = Time.new(time.year, time.month, 1)
     calendar = track_individual_habits.select do |track|
-      track.date >= fst_month
+      track.date >= fst_month && (!frequency == 2 || track.health_difference >= 0)
     end
     calendar
   end
