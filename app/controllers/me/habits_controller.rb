@@ -69,7 +69,7 @@ class Me::HabitsController < Me::ApplicationController
 
   def track_habit
     if @habit.negative
-      track_individual_habit = TrackIndividualHabit.new(habit_id: @habit.id, date: @date_passed)
+      track_individual_habit = TrackIndividualHabit.new(habit_id: @habit.id, date: @date_passed.utc)
       track_individual_habit.experience_difference = 0
       track_individual_habit.health_difference = current_user.penalize(@habit.difficulty)
     else # Positive Habit

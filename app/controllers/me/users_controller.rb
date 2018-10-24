@@ -8,7 +8,9 @@ class Me::UsersController < Me::ApplicationController
                                    I18n.t('errors.messages.no_character_created'))
     end
     options = {}
+    time_zone = params[:time_zone]
     options[:include] = %i[individual_habits friends]
-    render json: UserHomeSerializer.new(current_user, options).serialized_json
+    render json: UserHomeSerializer.new(current_user, params: { time_zone: time_zone },
+                                                      include: options[:include]).serialized_json
   end
 end
