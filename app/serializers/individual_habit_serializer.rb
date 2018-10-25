@@ -3,7 +3,7 @@
 class IndividualHabitSerializer
   include FastJsonapi::ObjectSerializer
 
-  set_type :habit
+  set_type :individual_habit
   set_id :id
   attributes :name, :description, :difficulty, :privacy, :frequency, :negative
   attribute :count_track do |object, params|

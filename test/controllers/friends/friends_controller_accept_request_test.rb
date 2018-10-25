@@ -37,7 +37,7 @@ class FriendsControllerAcceptRequestTest < ActionDispatch::IntegrationTest
     @expected = {
       'data': {
         'id': @sender.id.to_s,
-        'type': 'friend',
+        'type': 'user',
         'attributes': {  'nickname': @sender.nickname,
                          'level': @sender.level },
         'relationships': { 'character': { 'data': { 'id': @character.id.to_s, 'type': 'character' } } }

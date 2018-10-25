@@ -190,9 +190,9 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert body['data']['relationships']['individual_habits']['data'].length == 2
 
     # included data - 1 friend and 2 individual_habits
-    assert body['included'][0]['type'] == 'friend'
-    assert body['included'][1]['type'] == 'habit'
-    assert body['included'][2]['type'] == 'habit'
+    assert body['included'][0]['type'] == 'user'
+    assert body['included'][1]['type'] == 'individual_habit'
+    assert body['included'][2]['type'] == 'individual_habit'
   end
 
   # Tests /me - Ir a home
@@ -210,9 +210,9 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert body['data']['relationships']['individual_habits']['data'].length == 2
 
     # included data - 1 friend and 2 individual_habits
-    assert body['included'][0]['type'] == 'friend'
-    assert body['included'][1]['type'] == 'habit'
-    assert body['included'][2]['type'] == 'habit'
+    assert body['included'][0]['type'] == 'user'
+    assert body['included'][1]['type'] == 'individual_habit'
+    assert body['included'][2]['type'] == 'individual_habit'
   end
 
   test 'Ir a home: user2 with no created character' do

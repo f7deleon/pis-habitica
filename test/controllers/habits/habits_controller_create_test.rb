@@ -49,7 +49,7 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
     }
     expected = {
       'data': {
-        'id': JSON.parse(response.body)['data']['id'], 'type': 'habit', 'attributes': {
+        'id': JSON.parse(response.body)['data']['id'], 'type': 'individual_habit', 'attributes': {
           'name': 'Example', 'description': 'Example', 'difficulty': 1, 'privacy': 1, 'frequency': 1,
           'negative': false, 'count_track': 0
         }, 'relationships': {

@@ -51,7 +51,7 @@ class HabitsControllerNegativeTest < ActionDispatch::IntegrationTest
       }
     }
     @expected = { "data": { "id": JSON.parse(response.body)['data']['id'],
-                            "type": 'habit', "attributes":
+                            "type": 'individual_habit', "attributes":
     { "name": 'Example', "description": 'Example', "difficulty": 1, "privacy": 1, "frequency": 1,
       "negative": true, "count_track": 0 },
                             "relationships": { "types":
@@ -61,7 +61,7 @@ class HabitsControllerNegativeTest < ActionDispatch::IntegrationTest
   end
   test 'TestNegative' do
     expected = { "data": { "id": @individual_habit.id.to_s,
-                           "type": 'habit',
+                           "type": 'individual_habit',
                            "attributes": { "name": 'ExampleNegative', "description": 'ExampleNegative',
                                            "difficulty": 3, "privacy": 1, "frequency": 1,
                                            "negative": true, "count_track": 0 },

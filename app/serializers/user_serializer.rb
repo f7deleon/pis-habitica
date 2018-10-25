@@ -6,6 +6,7 @@ class UserSerializer
   STATUS_REQUEST_SENT = 1
   STATUS_REQUEST_RECEIVED = 2
   STATUS_FRIENDS = 3
+  set_type :user
   attributes :nickname, :email, :health, :level, :experience
 
   attributes :max_health, &:max_health
