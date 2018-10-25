@@ -102,4 +102,29 @@ class IndividualHabit < Habit
     end
     calendar
   end
+
+  def fulfill(date)
+    if negative
+      track_individual_habit = TrackIndividualHabit.new(
+        habit_id: id,
+        date: date,
+        experience_difference: 0,
+        health_difference: user.modify_health(decrement_of_health(user))
+      )
+    else # Positive Habit
+      # Positive Habit frequency is daily and it has been fulfilled today
+      if frequency == 2 && !been_tracked_today?(date).empty?
+        raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.daily_fulfilled'))
+      end
+
+      # If frequency = default || has not been fullfilled
+      track_individual_habit = TrackIndividualHabit.new(
+        habit_id: id,
+        date: date,
+        experience_difference: user.modify_experience(increment_of_experience(user)),
+        health_difference: user.modify_health(increment_of_health(user))
+      )
+    end
+    track_individual_habit
+  end
 end

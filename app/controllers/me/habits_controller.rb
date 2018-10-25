@@ -52,7 +52,7 @@ class Me::HabitsController < Me::ApplicationController
   # POST /me/habits/fulfill
   def fulfill
     previous_level = current_user.level
-    track_individual_habit = track_habit
+    track_individual_habit = @habit.fulfill(@date_passed)
     track_individual_habit.save! if current_user.user_characters.find_by(is_alive: true)
 
     if previous_level < current_user.level
@@ -65,28 +65,6 @@ class Me::HabitsController < Me::ApplicationController
       render json: TrackIndividualHabitSerializer.new(track_individual_habit,
                                                       params: { current_user: current_user }), status: :created
     end
-  end
-
-  def track_habit
-    if @habit.negative
-      track_individual_habit = TrackIndividualHabit.new(habit_id: @habit.id, date: @date_passed.utc)
-      track_individual_habit.experience_difference = 0
-      track_individual_habit.health_difference = current_user.penalize(@habit.difficulty)
-    else # Positive Habit
-      # Positive Habit frequency is daily and it has been fulfilled today
-      if @habit.frequency == 2 && !habit_has_been_tracked_today(@habit, @date_passed).empty?
-        raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.daily_fulfilled'))
-      end
-
-      # If frequency = default || has not been fullfilled
-      track_individual_habit = TrackIndividualHabit.new(
-        habit_id: @habit.id,
-        date: @date_passed,
-        experience_difference: current_user.increment_of_experience(@habit.difficulty)
-      )
-      track_individual_habit.health_difference = current_user.reward(@habit.difficulty)
-    end
-    track_individual_habit
   end
 
   # PATCH/PUT /me/habits/id
@@ -157,13 +135,6 @@ class Me::HabitsController < Me::ApplicationController
     # Se busca solo en los habitos individuales del usuario logueado.
     raise ActiveRecord::RecordNotFound unless (@habit =
                                                  current_user.individual_habits.find_by!(id: params[:id], active: true))
-  end
-
-  def habit_has_been_tracked_today(habit, date)
-    habit.track_individual_habits.created_between(
-      date.beginning_of_day,
-      date.end_of_day
-    )
   end
 
   def check_iso8601(date)

@@ -74,7 +74,7 @@ class TaskPenalizeHabitsTest < ActionDispatch::IntegrationTest
 
   test 'rake task executed and user alive' do
     assert PenalizeNotification.find_by(receiver: @user)
-    assert User.first.health == (@user.max_health + @user.decrement_of_health(@habit.difficulty))
+    assert_equal(User.find(@user.id).health, @user.max_health + @habit.decrement_of_health(@user))
   end
 
   test 'rake task executed user dead' do
