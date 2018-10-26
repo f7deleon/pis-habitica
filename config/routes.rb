@@ -3,7 +3,6 @@
 Rails.application.routes.draw do
   resources :memberships
   post 'user_token' => 'user_token#create'
-  resources :groups
   resources :types
   resources :users do
     resources :habits, only: %i[show index]
@@ -15,7 +14,7 @@ Rails.application.routes.draw do
     resources :characters
     resources :requests
     resources :friends, controller: 'friends'
-
+    resources :groups
     resources :habits do
       member do
         post 'fulfill', to: 'habits#fulfill'
@@ -23,10 +22,9 @@ Rails.application.routes.draw do
         delete 'fulfill', to: 'habits#undo_habit'
       end
     end
-
     post 'requests/:id', to: 'requests#add_friend'
   end
-  # FOR DEVELOPMENT ONLY
+  # - FOR DEVELOPMENT ONLY
   get '/killme', to: 'users#killme'
   # For details on the DSL available wihthin this file, see http://guides.rubyonrails.org/routing.htm
 end
