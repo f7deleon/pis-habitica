@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  resources :memberships
   post 'user_token' => 'user_token#create'
   resources :groups
   resources :types

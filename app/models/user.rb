@@ -17,6 +17,9 @@ class User < ApplicationRecord
   has_many :friendships
   has_many :friends, through: :friendships, class_name: 'User', foreign_key: :user_id
 
+  has_many :membership
+  has_many :groups, through: :membership, class_name: 'Group', foreign_key: :groups_id
+
   has_many :requests_sent, class_name: 'Request', foreign_key: :user_id
   has_many :requests_received, class_name: 'Request', foreign_key: :receiver_id
 

@@ -5,10 +5,10 @@ class Group < ApplicationRecord
 
   has_many :group_habits
   has_many :track_group_habits, through: :group_habits
-  has_many :user_groups
-  has_many :users, through: :user_groups
+  has_many :membership
+  has_many :users, through: :membership, class_name: 'User', foreign_key: :user_id
+  validates :privacity, inclusion: [true, false]
 
   self.primary_key = :id
   validates :name, presence: true # string
-  validates :description, presence: true # string
 end
