@@ -42,7 +42,7 @@ User.all.each do |user|
   character.user_characters << user_character
 end
 
-friends = User.all.limit(3).first
+friends = User.all.limit(3).second
 
 user.friends << friends
 
@@ -67,3 +67,11 @@ habit2 = IndividualHabit.second
 
 }
 
+user2 = User.find_by!(nickname: 'Berna')
+
+group = Group.create(name: 'Propio', description: 'Propio vergazo', privacity: false)
+
+membership = Membership.create(user_id: user.id, group_id: group.id, admin: true)
+membership2 = Membership.create(user_id: user2.id , group_id: group.id, admin: false)
+
+GroupHabit.create(group_id: group.id, name: 'habito diario', description: 'diario', difficulty: 2, privacy: 1, frequency: 2,created_at: from_date)

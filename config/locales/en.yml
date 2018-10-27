@@ -47,6 +47,7 @@ en:
   errors:
     messages:
       blank: "%{attribute} is required"
+      not_admin: "Not admin"
       taken: "There is already an %{model} with that %{attribute}"
       not_found: "goli"
       date_formatting: "date is not in ISO 8601"

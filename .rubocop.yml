@@ -5,6 +5,7 @@ AllCops:
     - 'vendor/**/*'
     - 'bin/**/*'
     - 'log/**/*'
+    - 'config/routes.rb'
   TargetRubyVersion: 2.5
 
 Style/FrozenStringLiteralComment:

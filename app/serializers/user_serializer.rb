@@ -26,18 +26,6 @@ class UserSerializer
     end
   end
 
-  attributes :requests_sent, if: proc { |object, params| object.id != params[:current_user].id } do |object, params|
-    if object.requests_sent.exists?(receiver_id: params[:current_user].id)
-      true
-    else
-      false
-    end
-  end
-
-  has_one :requests_sent do |object, params|
-    object.requests_sent.find_by(receiver_id: params[:current_user].id)
-  end
-
   has_one :character do |object|
     object.user_characters&.find_by_is_alive(true)&.character
   end
