@@ -38,6 +38,8 @@ module Error::Helpers
         '03'
       when :inclusion
         '04'
+      when :invalid
+        '05'
       else
         '00'
       end

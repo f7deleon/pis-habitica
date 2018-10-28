@@ -35,7 +35,8 @@ class Me::HabitsController < Me::ApplicationController
       description: habit_params[:description],
       difficulty: habit_params[:difficulty],
       privacy: habit_params[:privacy],
-      frequency: habit_params[:frequency]
+      frequency: habit_params[:frequency],
+      negative: habit_params[:negative]
     )
 
     raise ActiveRecord::RecordInvalid unless habit.save!
@@ -50,26 +51,42 @@ class Me::HabitsController < Me::ApplicationController
 
   # POST /me/habits/fulfill
   def fulfill
-    date_params = params[:data][:attributes][:date]
+    previous_level = current_user.level
+    track_individual_habit = track_habit
+    track_individual_habit.save! if current_user.user_characters.find_by(is_alive: true)
 
-    # date is not in ISO 8601
-    unless check_iso8601(date_params)
-      raise Error::CustomError.new(I18n.t('bad_request'), :bad_request, I18n.t('errors.messages.date_formatting'))
+    if previous_level < current_user.level
+      render json: LevelUpSerializer.new(current_user, params: { habit: @habit.id }).serialized_json, status: :created
+    elsif current_user.health <= 0
+      render json: DeathSerializer.new(
+        track_individual_habit, params: { current_user: current_user }
+      ), status: :created
+    else # If neither death or level up
+      render json: TrackIndividualHabitSerializer.new(track_individual_habit,
+                                                      params: { current_user: current_user }), status: :created
     end
+  end
 
-    date_passed = Time.zone.parse(date_params)
+  def track_habit
+    if @habit.negative
+      track_individual_habit = TrackIndividualHabit.new(habit_id: @habit.id, date: @date_passed.utc)
+      track_individual_habit.experience_difference = 0
+      track_individual_habit.health_difference = current_user.penalize(@habit.difficulty)
+    else # Positive Habit
+      # Positive Habit frequency is daily and it has been fulfilled today
+      if @habit.frequency == 2 && !habit_has_been_tracked_today(@habit, @date_passed).empty?
+        raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.daily_fulfilled'))
+      end
 
-    # Habit frequency is daily and it has been fulfilled today
-    if @habit.frequency == 2 && !habit_has_been_tracked_today(@habit, date_passed).empty?
-      raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.daily_fulfilled'))
+      # If frequency = default || has not been fullfilled
+      track_individual_habit = TrackIndividualHabit.new(
+        habit_id: @habit.id,
+        date: @date_passed,
+        experience_difference: current_user.increment_of_experience(@habit.difficulty)
+      )
+      track_individual_habit.health_difference = current_user.reward(@habit.difficulty)
     end
-
-    # If frequency = default || has not been fullfilled
-    track_individual_habit = TrackIndividualHabit.new(habit_id: @habit.id, date: date_passed)
-    raise ActiveRecord::RecordInvalid unless track_individual_habit.save!
-
-    @habit.track_individual_habits << track_individual_habit
-    render json: IndividualHabitSerializer.new(@habit).serialized_json, status: :created
+    track_individual_habit
   end
 
   # PATCH/PUT /me/habits/id
@@ -94,24 +111,43 @@ class Me::HabitsController < Me::ApplicationController
     time_now = Time.zone.now
     max, successive, percent, calendar, months =
       @habit.frequency == 1 ? @habit.get_stat_not_daily(time_now) : @habit.get_stat_daily(time_now)
-    data = { "max": max,
-             "successive": successive,
-             "percent": percent,
-             "calendar": calendar,
-             "months": months }
+    data = { 'max': max,
+             'successive': successive,
+             'percent': percent,
+             'calendar': calendar,
+             'months': months }
     render json: StatsSerializer.json(data, @habit), status: :ok
   end
 
   def undo_habit
+    if current_user.dead?
+      raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.no_character_created'))
+    end
+
     time_now = Time.zone.now
     track_to_delete = @habit.track_individual_habits.order(:date).last
     unless track_to_delete && track_to_delete.date.to_date == time_now.to_date
       raise Error::CustomError.new(I18n.t('not_found'), :not_found, I18n.t('errors.messages.habit_not_fulfilled'))
     end
 
+    health_difference = 0
+    experience_difference = 0
+    unless @habit.negative
+      current_user.experience -= track_to_delete.experience_difference
+      experience_difference = -track_to_delete.experience_difference
+    end
+    if current_user.experience >= 0 # Solo se le resta la vida si no habia subido de nivel con este track.
+      current_user.health -= track_to_delete.health_difference
+      health_difference = -track_to_delete.health_difference
+    end
     track_to_delete.delete
-    @habit.track_individual_habits.select { |track| track.date.to_date == time_now.to_date }
-    render json: {}, status: :no_content
+    current_user.save
+    render json: UndoHabitSerializer.new(
+      @habit,
+      params: { health_difference: health_difference,
+                experience_difference: experience_difference,
+                current_user: current_user }
+    ).serialized_json, status: :accepted # 202
   end
 
   private
@@ -148,6 +184,15 @@ class Me::HabitsController < Me::ApplicationController
 
   def fulfill_habit
     params.require(:data).require(:attributes).require(:date)
+    date_params = params[:data][:attributes][:date]
+    # date is not in ISO 8601
+    unless check_iso8601(date_params)
+      raise Error::CustomError.new(I18n.t('bad_request'), :bad_request, I18n.t('errors.messages.date_formatting'))
+    end
+
+    @date_passed = Time.zone.parse(date_params)
+    message = I18n.t('errors.messages.no_character_created')
+    raise Error::CustomError.new(I18n.t('not_found'), '404', message) if current_user.dead?
   end
 
   # Only allow a trusted parameter 'white list' through.

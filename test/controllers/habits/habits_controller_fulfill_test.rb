@@ -12,6 +12,16 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       }
     }
     @user_token = JSON.parse(response.body)['jwt']
+    @char = Character.create(name: 'Mago', description: I18n.t('mage_description'))
+    post '/me/characters', headers: {
+      'Authorization': 'Bearer ' + @user_token
+    }, params: {
+      'data': {
+        'id': @char.id.to_s,
+        'type': 'characters',
+        'attributes': { 'name': 'Mago', 'description': I18n.t('mage_description') }
+      }, 'included': [{ 'type': 'date', 'attributes': { 'date': '2018-09-07T12:00:00Z' } }]
+    }
 
     @individual_type = IndividualType.create(user_id: @user.id, name: 'Example', description: 'Example')
     @individual_habit_to_track = IndividualHabit.create(
@@ -43,6 +53,16 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       }
     }
     @user_fulfilled_token = JSON.parse(response.body)['jwt']
+    post '/me/characters', headers: {
+      'Authorization': 'Bearer ' + @user_fulfilled_token
+    }, params: {
+      'data': {
+        'id': @char.id.to_s,
+        'type': 'characters',
+        'attributes': { 'name': 'Mago', 'description': I18n.t('mage_description') }
+      },
+      'included': [{ 'type': 'date', 'attributes': { 'date': '2018-09-07T12:00:00Z' } }]
+    }
 
     @individual_type3 = IndividualType.create(user_id: @user_fulfilled.id, name: 'Example', description: 'Example')
     @user_fulfilled.individual_types << @individual_type3
@@ -71,6 +91,17 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       date: Time.zone.now
     )
     @individual_habit_already_tracked.track_individual_habits << @track_individual_habit3
+    @char1 = Character.create(name: 'Mago', description: I18n.t('mage_description'))
+    @usr_char = UserCharacter.create(user_id: @user.id,
+                                     character_id: @char1.id,
+                                     creation_date: Time.zone.now,
+                                     is_alive: true)
+    @user.user_characters << @usr_char
+    @usr_char1 = UserCharacter.create(user_id: @user_fulfilled.id,
+                                      character_id: @char1.id,
+                                      creation_date: Time.zone.now,
+                                      is_alive: true)
+    @user_fulfilled.user_characters << @usr_char1
   end
 
   test 'should be valid' do
@@ -89,23 +120,24 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
   test 'CumplirHabito: should track habit' do
     post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
-    }, params: {
-      'data': {
-        'type': 'date',
-        'attributes': {
-          'date': '2018-09-05T21:39:27+00:00'
-        }
-      }
-    }
+    }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     expected = {
       'data': {
-        'id': @individual_habit_to_track.id.to_s,
-        'type': 'habit',
+        'id': JSON.parse(response.body)['data']['id'],
+        'type': 'track',
         'attributes': {
-          'name': 'Example', 'description': 'Example', 'difficulty': 3, 'privacy': 1, 'frequency': 1, 'count_track': 0
+          'max_health': User.find_by_id(@user.id).max_health,
+          'health_difference': 0, # Is at full health
+          'max_experience': User.find_by_id(@user.id).max_experience,
+          'experience_difference': @user.increment_of_experience(@individual_habit_to_track.difficulty)
         },
         'relationships': {
-          'types': { 'data': [{ 'id': @individual_type.id.to_s, 'type': 'type' }] }
+          'individual_habit': {
+            'data': {
+              'id': @individual_habit_to_track.id.to_s,
+              'type': 'individual_habit'
+            }
+          }
         }
       }
     }

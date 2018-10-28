@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_01_012146) do
+ActiveRecord::Schema.define(version: 2018_10_12_011348) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,7 @@ ActiveRecord::Schema.define(version: 2018_10_01_012146) do
     t.bigint "group_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "negative"
     t.index ["group_id"], name: "index_habits_on_group_id"
     t.index ["user_id"], name: "index_habits_on_user_id"
   end
@@ -71,10 +72,12 @@ ActiveRecord::Schema.define(version: 2018_10_01_012146) do
     t.integer "sender_id"
     t.integer "user_id"
     t.bigint "request_id"
+    t.bigint "track_individual_habit_id"
     t.boolean "seen"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["request_id"], name: "index_notifications_on_request_id", unique: true
+    t.index ["track_individual_habit_id"], name: "index_notifications_on_track_individual_habit_id", unique: true
   end
 
   create_table "requests", force: :cascade do |t|
@@ -96,6 +99,8 @@ ActiveRecord::Schema.define(version: 2018_10_01_012146) do
 
   create_table "track_individual_habits", force: :cascade do |t|
     t.bigint "habit_id"
+    t.integer "health_difference"
+    t.integer "experience_difference"
     t.datetime "date"
     t.index ["habit_id"], name: "index_track_individual_habits_on_habit_id"
   end
@@ -132,6 +137,9 @@ ActiveRecord::Schema.define(version: 2018_10_01_012146) do
     t.string "nickname"
     t.string "email"
     t.string "password"
+    t.integer "health"
+    t.integer "level"
+    t.integer "experience"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "password_digest"
@@ -141,6 +149,7 @@ ActiveRecord::Schema.define(version: 2018_10_01_012146) do
   add_foreign_key "habits", "groups"
   add_foreign_key "habits", "users"
   add_foreign_key "notifications", "requests", on_delete: :cascade
+  add_foreign_key "notifications", "track_individual_habits", on_delete: :cascade
   add_foreign_key "requests", "users"
   add_foreign_key "track_group_habits", "habits"
   add_foreign_key "track_group_habits", "users"

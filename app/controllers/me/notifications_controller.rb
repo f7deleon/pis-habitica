@@ -8,7 +8,7 @@ class Me::NotificationsController < Me::ApplicationController
     notification_list = notification_list.reverse
 
     options = {}
-    options[:include] = %i[sender]
+    options[:include] = %i[sender track_individual_habit track_individual_habit.individual_habit]
     options[:params] = { current_user: current_user }
     render json: NotificationSerializer.new(notification_list, options).serialized_json, status: :ok
 

@@ -6,7 +6,7 @@ jobs:
     # Primary container image where all commands run
     
     docker:
-      - image: circleci/ruby:2.5.1-node-browsers
+      - image: circleci/ruby:2.5.1
         environment:
           RAILS_ENV: test
           PGHOST: 127.0.0.1
@@ -51,11 +51,45 @@ jobs:
           command: |
             bundle exec rake db:create
             bundle exec rake db:migrate
-           
+      
+      - run:
+          name: Install heroku
+          command: |
+            wget -qO- https://cli-assets.heroku.com/install-ubuntu.sh | sh
+
+      - run:
+          name: Heroku login
+          command: |
+            cat >~/.netrc <<EOF
+            machine api.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+            machine git.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+            EOF
+
       - run: 
           name: Tests
           command: |
-            bundle exec rake test
+            heroku config --app $HEROKU_APP_NAME | sed 's/:  */=/g; /^=/d' >> .env  
+            sed -i '/SECRET_KEY_BASE/d' .env     
+            sed -i '/DATABASE_URL/d' .env     
+            heroku local:run bundle exec rake RAILS_ENV=test test 
+            rm .env
+
+      - run:
+          filters:
+            branches:
+              only: development
+          name: Deploy to heroku
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
+              git push https://git.heroku.com/$HEROKU_APP_NAME.git development:master
+              heroku pg:reset --app $HEROKU_APP_NAME --confirm $HEROKU_APP_NAME
+              heroku run rake db:migrate --app $HEROKU_APP_NAME
+              heroku run rake db:seed --app $HEROKU_APP_NAME
+            fi
 
       # Save artifacts
       - store_test_results:
