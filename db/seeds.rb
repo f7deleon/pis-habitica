@@ -69,7 +69,7 @@ habit2 = IndividualHabit.second
 
 user2 = User.find_by!(nickname: 'Berna')
 
-group = Group.create(name: 'Propio', description: 'Propio vergazo', privacity: false)
+group = Group.create(name: 'Propio', description: 'Propio vergazo', privacy: false)
 
 membership = Membership.create(user_id: user.id, group_id: group.id, admin: true)
 membership2 = Membership.create(user_id: user2.id , group_id: group.id, admin: false)

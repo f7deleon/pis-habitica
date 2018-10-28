@@ -17,7 +17,7 @@ class Me::GroupsController < Me::ApplicationController
 
   # POST /me/groups/id/habits
   def add_habits
-    unless @group.membership.find_by!(user_id: current_user.id).admin?
+    unless @group.memberships.find_by!(user_id: current_user.id).admin?
       raise Error::CustomError.new(I18n.t(:unauthorized), '401', I18n.t('errors.messages.not_admin'))
     end
 

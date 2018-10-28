@@ -27,6 +27,11 @@ Rails.application.routes.draw do
         post 'habits', to: 'groups#add_habits'
         get 'habits', to: 'groups#view_habits'
       end
+      resources :habits do
+        member do
+          post 'fulfill', to: 'habits#fulfill'
+        end
+      end
     end
 
     post 'requests/:id', to: 'requests#add_friend'

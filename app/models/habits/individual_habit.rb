@@ -125,6 +125,7 @@ class IndividualHabit < Habit
         health_difference: user.modify_health(increment_of_health(user))
       )
     end
+    track_individual_habit.save!
     track_individual_habit
   end
 end

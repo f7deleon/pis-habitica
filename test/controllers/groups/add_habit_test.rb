@@ -22,16 +22,25 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
     }
     @user2_token = JSON.parse(response.body)['jwt']
 
-    @group = Group.create(name: 'Grupo', description: 'Propio grupo', privacity: false)
+    @group = Group.create(name: 'Grupo', description: 'Propio grupo', privacy: false)
 
-    Membership.create(user_id: @user.id, group_id: @group.id, admin: true)
-    Membership.create(user_id: @user2.id, group_id: @group.id, admin: false)
+    @membership1 = Membership.create(user_id: @user.id, group_id: @group.id, admin: true)
+    @membership2 = Membership.create(user_id: @user2.id, group_id: @group.id, admin: false)
 
     @default_type = DefaultType.create(
       user_id: @user.id,
       name: 'Example',
       description: 'Example'
     )
+  end
+
+  test 'is valid' do
+    assert @user.valid?
+    assert @user2.valid?
+    assert @group.valid?
+    assert @default_type.valid?
+    assert @membership1.valid?
+    assert @membership2.valid?
   end
 
   test 'AltaHabitoGrupo: should create habit' do
@@ -46,7 +55,7 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
                 } }
     }
     expected = {
-      'data': { 'id': JSON.parse(response.body)['data']['id'], 'type': 'habit',
+      'data': { 'id': JSON.parse(response.body)['data']['id'], 'type': 'group_habit',
                 'attributes':
                 { 'name': 'Example', 'description': 'Example', 'difficulty': 1, 'privacy': 1, 'frequency': 1,
                   'negative': false },

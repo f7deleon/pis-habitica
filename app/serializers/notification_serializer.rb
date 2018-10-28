@@ -16,5 +16,9 @@ class NotificationSerializer
   belongs_to :request, record_type: :request,
                        serializer: :request, if: proc { |record| record.type.eql? 'FriendRequestNotification' }
 
-  belongs_to :track_individual_habit, if: proc { |record| record.type.eql? 'PenalizeNotification' }
+  belongs_to :track_individual_habit,
+             record_type: :track_individual_habit,
+             serializer: :track_habit,
+             id_method_name: :track_individual_habit_id,
+             if: proc { |record| record.type.eql? 'PenalizeNotification' }
 end

@@ -41,7 +41,7 @@ ActiveRecord::Schema.define(version: 2018_10_25_230546) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "privacity"
+    t.boolean "privacy"
   end
 
   create_table "habits", force: :cascade do |t|

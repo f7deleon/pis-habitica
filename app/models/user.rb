@@ -3,10 +3,12 @@
 class User < ApplicationRecord
   before_validation :set_default, on: :create
   has_many :individual_types
+
   has_many :track_group_habits
 
   has_many :individual_habits
   has_many :track_individual_habits, through: :individual_habits
+
   has_many :user_groups
   has_many :groups, through: :user_groups
   has_many :user_characters
@@ -17,8 +19,8 @@ class User < ApplicationRecord
   has_many :friendships
   has_many :friends, through: :friendships, class_name: 'User', foreign_key: :user_id
 
-  has_many :membership
-  has_many :groups, through: :membership, class_name: 'Group', foreign_key: :groups_id
+  has_many :memberships
+  has_many :groups, through: :memberships, class_name: 'Group', foreign_key: :groups_id
 
   has_many :requests_sent, class_name: 'Request', foreign_key: :user_id
   has_many :requests_received, class_name: 'Request', foreign_key: :receiver_id

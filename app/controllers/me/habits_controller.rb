@@ -49,21 +49,23 @@ class Me::HabitsController < Me::ApplicationController
     render json: IndividualHabitSerializer.new(habit).serialized_json, status: :created
   end
 
-  # POST /me/habits/fulfill
+  # POST /me/habits/Hid/fulfill & /me/groups/Gid/habits/Hid/fulfill
   def fulfill
     previous_level = current_user.level
-    track_individual_habit = @habit.fulfill(@date_passed)
-    track_individual_habit.save! if current_user.user_characters.find_by(is_alive: true)
-
+    track_habit = if @habit.type.eql?('GroupHabit')
+                    @habit.fulfill(@date_passed, current_user)
+                  else
+                    @habit.fulfill(@date_passed)
+                  end
     if previous_level < current_user.level
-      render json: LevelUpSerializer.new(current_user, params: { habit: @habit.id }).serialized_json, status: :created
-    elsif current_user.health <= 0
-      render json: DeathSerializer.new(
-        track_individual_habit, params: { current_user: current_user }
+      render json: LevelUpSerializer.new(
+        current_user,
+        params: { habit: @habit.id }
+      ).serialized_json, status: :created
+    else
+      render json: TrackHabitSerializer.new(
+        track_habit, params: { current_user: current_user }
       ), status: :created
-    else # If neither death or level up
-      render json: TrackIndividualHabitSerializer.new(track_individual_habit,
-                                                      params: { current_user: current_user }), status: :created
     end
   end
 
@@ -133,8 +135,11 @@ class Me::HabitsController < Me::ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_habit
     # Se busca solo en los habitos individuales del usuario logueado.
-    raise ActiveRecord::RecordNotFound unless (@habit =
-                                                 current_user.individual_habits.find_by!(id: params[:id], active: true))
+    @habit = if params[:group_id]
+               current_user.groups.find_by!(id: params[:group_id]).group_habits.find_by!(id: params[:id], active: true)
+             else
+               current_user.individual_habits.find_by!(id: params[:id], active: true)
+             end
   end
 
   def check_iso8601(date)
