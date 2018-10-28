@@ -55,6 +55,16 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
       active: true,
       negative: false
     )
+    @negative_habit = GroupHabit.create(
+      group_id: @group.id,
+      name: 'Example',
+      description: 'Example',
+      difficulty: 3,
+      privacy: 1,
+      frequency: 1,
+      active: true,
+      negative: true
+    )
     @char = Character.create(name: 'Mago', description: I18n.t('mage_description'))
     req = {
       'data': {
@@ -90,6 +100,7 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
     assert @char.valid?
 
     assert @habit.valid?
+    assert @negative_habit.valid?
 
     assert @membership1.valid?
     assert @membership2.valid?
@@ -156,6 +167,55 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     assert_equal 409, status # Conflict
+  end
+
+  test 'Negative Habit: should track habit' do
+    post '/me/groups/' + @group.id.to_s + '/habits/' + @negative_habit.id.to_s + '/fulfill', headers: {
+      'Authorization': 'Bearer ' + @user_token1
+    }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
+    expected = {
+      'data': {
+        'id': JSON.parse(response.body)['data']['id'],
+        'type': 'track',
+        'attributes': {
+          'max_health': User.find_by_id(@user1.id).max_health,
+          'health_difference': @negative_habit.decrement_of_health(@user1), # Is at full health
+          'max_experience': User.find_by_id(@user1.id).max_experience
+        },
+        'relationships': { 'group_habit': { 'data': { 'id': @negative_habit.id.to_s, 'type': 'group_habit' } } }
+      }
+    }
+    assert expected.to_json == response.body
+    assert_equal 201, status # Created
+    assert TrackGroupHabit.find_by(id: JSON.parse(response.body)['data']['id'])
+    assert @user1.track_group_habits.find_by(id: JSON.parse(response.body)['data']['id'])
+    assert @negative_habit.track_group_habits.find_by(id: JSON.parse(response.body)['data']['id'])
+  end
+
+  test 'Negative Habit: both users should be able to fulfill daily habit' do
+    post '/me/groups/' + @group.id.to_s + '/habits/' + @negative_habit.id.to_s + '/fulfill', headers: {
+      'Authorization': 'Bearer ' + @user_token1
+    }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
+    post '/me/groups/' + @group.id.to_s + '/habits/' + @negative_habit.id.to_s + '/fulfill', headers: {
+      'Authorization': 'Bearer ' + @user_token2
+    }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
+    expected = {
+      'data': {
+        'id': JSON.parse(response.body)['data']['id'],
+        'type': 'track',
+        'attributes': {
+          'max_health': User.find_by_id(@user2.id).max_health,
+          'health_difference': @negative_habit.decrement_of_health(@user2),
+          'max_experience': User.find_by_id(@user2.id).max_experience
+        },
+        'relationships': { 'group_habit': { 'data': { 'id': @negative_habit.id.to_s, 'type': 'group_habit' } } }
+      }
+    }
+    assert expected.to_json == response.body
+    assert_equal 201, status # Created
+    assert TrackGroupHabit.find_by(id: JSON.parse(response.body)['data']['id'])
+    assert @user2.track_group_habits.find_by(id: JSON.parse(response.body)['data']['id'])
+    assert @negative_habit.track_group_habits.find_by(id: JSON.parse(response.body)['data']['id'])
   end
 
   test 'user has to be a member from the group' do

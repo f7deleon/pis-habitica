@@ -12,6 +12,7 @@ class GroupHabit < Habit
   def fulfill(date, current_user)
     if negative
       track_habit = TrackGroupHabit.new(
+        user_id: current_user.id,
         habit_id: id,
         date: date,
         experience_difference: 0,
