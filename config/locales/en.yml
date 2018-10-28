@@ -61,6 +61,8 @@ en:
       habit_not_fulfilled: "This habit has not been fulfilled today"
       habit_is_protected: "You cant see other person habits that are protected if you are not their friend"
       habit_negative_frequency: "You can't create negative habit with daily frequency"
+      member_not_friend: "Not all the members are your friend"
+      member_not_exist: "Members do not exist"
 
   activerecord:
     models:

@@ -3,6 +3,7 @@
 class Me::GroupsController < Me::ApplicationController
   before_action :set_group, only: %i[add_habits show view_habits]
   before_action :create_habit, only: %i[add_habits]
+  before_action :create_group, only: %i[create]
 
   # GET /me/groups
   def index
@@ -13,6 +14,27 @@ class Me::GroupsController < Me::ApplicationController
   # GET /me/group/id
   def show
     render json: GroupSerializer.new(@group).serialized_json, status: :ok
+  end
+
+  # POST /me/groups
+  def create
+    params[:data][:relationships][:members][:data].each do |member|
+      unless User.exists?(member[:id])
+        raise Error::CustomError.new(I18n.t(:bad_request), '404', I18n.t('errors.messages.member_not_exist'))
+      end
+      unless current_user.friends.exists?(member[:id])
+        raise Error::CustomError.new(I18n.t(:bad_request), '404', I18n.t('errors.messages.member_not_friend'))
+      end
+    end
+    params_attributte = params[:data][:attributes]
+    group = Group.create(name: params_attributte[:name],
+                         description: params_attributte[:description],
+                         privacy: params_attributte[:privacy])
+    Membership.create(user_id: current_user.id, group_id: group.id, admin: true)
+    params[:data][:relationships][:members][:data].each do |member|
+      Membership.create(user_id: member[:id], group_id: group.id, admin: false)
+    end
+    render json: GroupSerializer.new(group).serialized_json, status: :ok
   end
 
   # POST /me/groups/id/habits
@@ -76,5 +98,9 @@ class Me::GroupsController < Me::ApplicationController
   # Only allow a trusted parameter 'white list' through.
   def habit_params
     params.require(:habit).permit(:group_id, :name, :frequency, :difficulty)
+  end
+
+  def create_group
+    params.require(:data).require(:attributes).require(%i[name privacy])
   end
 end
