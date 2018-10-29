@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-class GroupHabitSerializer
+class HabitSerializer
   include FastJsonapi::ObjectSerializer
 
-  set_id :id
   attributes :name, :description, :difficulty, :privacy, :frequency, :negative
   attribute :count_track do |object, params|
     time_zone = params.nil? || params['time_zone'].nil? ? UTC_HOURS : params['time_zone']

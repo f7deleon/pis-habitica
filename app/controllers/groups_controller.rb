@@ -1,18 +1,27 @@
 # frozen_string_literal: true
 
 class GroupsController < ApplicationController
-  before_action :set_group, only: %i[show update destroy]
+  before_action :set_user, only: %i[index show indexupdate destroy]
 
   # GET /groups
   def index
-    @groups = Group.all
-
-    render json: @groups
+    groups = @user.groups
+    options = {}
+    options[:include] = %i[group_habits members admin]
+    render json: GroupSerializer.new(groups).serialized_json
   end
 
-  # GET /groups/1
+  # GET /user/:user_id/groups/:id
   def show
-    render json: @group
+    raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
+      (@group = @user.groups.find_by(id: params[:id]))
+
+    raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_is_private')) if
+    @group.privacy
+
+    options = {}
+    options[:include] = %i[group_habits members admin]
+    render json: GroupSerializer.new(@group, options).serialized_json, status: :ok
   end
 
   # POST /groups
@@ -43,8 +52,8 @@ class GroupsController < ApplicationController
   private
 
   # Use callbacks to share common setup or constraints between actions.
-  def set_group
-    @group = Group.find(params[:id])
+  def set_user
+    @user = User.find(params[:user_id])
   end
 
   # Only allow a trusted parameter "white list" through.

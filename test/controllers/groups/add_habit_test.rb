@@ -45,7 +45,7 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
 
   test 'AltaHabitoGrupo: should create habit' do
     post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
-      'data': { 'type': 'habit',
+      'data': { 'type': 'group_habit',
                 'attributes':
                   { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
@@ -58,20 +58,21 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
       'data': { 'id': JSON.parse(response.body)['data']['id'], 'type': 'group_habit',
                 'attributes':
                 { 'name': 'Example', 'description': 'Example', 'difficulty': 1, 'privacy': 1, 'frequency': 1,
-                  'negative': false },
+                  'negative': false, 'count_track': 0 },
                 'relationships': {
                   'types': {
                     'data': [{ 'id': @default_type.id.to_s, 'type': 'type' }]
                   }
                 } }
     }
+
     assert_equal 201, status
     assert expected.to_json == response.body
   end
 
   test 'AltaHabitoGrupo: no admin' do
     post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer ' + @user2_token }, params: {
-      'data': { 'type': 'habit',
+      'data': { 'type': 'group_habit',
                 'attributes':
                     { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
@@ -85,7 +86,7 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
 
   test 'AltaHabitoGrupo: bad token' do
     post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer malotoken' }, params: {
-      'data': { 'type': 'habit',
+      'data': { 'type': 'group_habit',
                 'attributes':
                     { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
@@ -99,7 +100,7 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
 
   test 'AltaHabitoGrupo: bad request' do
     post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
-      'data': { 'type': 'habit',
+      'data': { 'type': 'group_habit',
                 'attributes':
                     { 'title': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
@@ -113,7 +114,7 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
 
   test 'AltaHabitoGrupo: not exist type' do
     post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
-      'data': { 'type': 'habit',
+      'data': { 'type': 'group_habit',
                 'attributes':
                     { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {

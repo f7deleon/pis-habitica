@@ -46,15 +46,12 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
         "type": 'group',
         "attributes": {
           "name": 'El Barzon',
-          "description": 'Directo al barro'
+          "description": 'Directo al barro',
+          "privacy": false
         },
         "relationships": {
-          "users": {
+          "members": {
             "data": [
-              {
-                "id": @user_admin.id.to_s,
-                "type": 'user'
-              },
               {
                 "id": @member1.id.to_s,
                 "type": 'user'
@@ -76,8 +73,12 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
           "admin": {
             "data": {
               "id": @user_admin.id.to_s,
-              "type": 'admin'
+              "type": 'user'
             }
+          },
+          "group_habits": {
+            "data": []
+
           }
         }
       }

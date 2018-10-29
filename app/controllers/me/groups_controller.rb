@@ -11,9 +11,11 @@ class Me::GroupsController < Me::ApplicationController
     render json: GroupSerializer.new(groups).serialized_json
   end
 
-  # GET /me/group/id
+  # GET /me/groups/gid
   def show
-    render json: GroupSerializer.new(@group).serialized_json, status: :ok
+    options = {}
+    options[:include] = %i[group_habits members admin]
+    render json: GroupSerializer.new(@group, options).serialized_json, status: :ok
   end
 
   # POST /me/groups
@@ -85,8 +87,8 @@ class Me::GroupsController < Me::ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_group
-    # Se busca solo en los habitos individuales del usuario logueado.
-    @group = current_user.groups.find_by!(id: params[:id])
+    raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
+    (@group = current_user.groups.find_by!(id: params[:id]))
   end
 
   def create_habit

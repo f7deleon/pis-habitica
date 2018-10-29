@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   resources :types
   resources :users do
     resources :habits, only: %i[show index]
+    resources :groups, only: %i[show index]
   end
+  resources :groups
   resources :characters
   namespace :me do
     get '', to: 'users#home'
