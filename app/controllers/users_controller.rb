@@ -20,7 +20,7 @@ class UsersController < ApplicationController
   # GET /users/1
   def show
     render json: UserWithFriendSerializer.new(@user, params: { current_user: current_user },
-                                                     include: %i[individual_habits friends])
+                                                     include: %i[individual_habits friends groups])
                                          .serialized_json, status: :ok
   end
 

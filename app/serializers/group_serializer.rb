@@ -4,6 +4,7 @@ class GroupSerializer
   include FastJsonapi::ObjectSerializer
   set_type :group
   set_id :id
+
   attributes :name, :description, :privacy
 
   has_many :members, record_type: :user do |object|

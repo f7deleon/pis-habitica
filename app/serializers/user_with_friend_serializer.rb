@@ -5,4 +5,7 @@ class UserWithFriendSerializer < UserSerializer
   set_type :user
 
   has_many :friends
+  has_many :groups do |object, params|
+    object.groups.select { |e| !e[:privacy] || params[:current_user].memberships.find_by_group_id(e[:id]) }
+  end
 end

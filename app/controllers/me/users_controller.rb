@@ -9,7 +9,7 @@ class Me::UsersController < Me::ApplicationController
     end
     options = {}
     time_zone = params[:time_zone]
-    options[:include] = %i[individual_habits friends]
+    options[:include] = %i[individual_habits friends groups]
     render json: UserHomeSerializer.new(current_user, params: { time_zone: time_zone },
                                                       include: options[:include]).serialized_json
   end

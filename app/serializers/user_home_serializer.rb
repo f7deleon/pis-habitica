@@ -24,4 +24,6 @@ class UserHomeSerializer
   has_many :individual_habits do |object|
     object.individual_habits.order('name ASC').select(&:active)
   end
+
+  has_many :groups
 end
