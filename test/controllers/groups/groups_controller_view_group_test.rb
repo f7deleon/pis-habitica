@@ -122,7 +122,7 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     result = get url, headers: { 'Authorization': 'Bearer ' + @user1_token }
     assert result == 404
     body = JSON.parse(response.body)
-    assert body['errors'][0]['message'] == 'Current user does not belong to this private group'
+    assert body['errors'][0]['message'] == 'Current user does not belong to this group'
     assert body['errors'][0]['title'] == 'Not found'
   end
 
@@ -133,5 +133,30 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     body = JSON.parse(response.body)
     assert body['errors'][0]['message'] == 'There is no group with the given id'
     assert body['errors'][0]['title'] == 'Not found'
+  end
+
+  test 'View @users3 private @group1, but now @user1 is a member' do
+    Membership.create(user_id: @user1.id, admin: false, group_id: @group1.id)
+    url = '/users/' + @user3.id.to_s + '/groups/' + @group1.id.to_s
+    result = get url, headers: { 'Authorization': 'Bearer ' + @user1_token }
+    assert result == 200
+    body = JSON.parse(response.body)
+    assert body['data']['id'] == @group1.id.to_s
+    assert body['data']['type'] == 'group'
+    assert body['data']['attributes']['name'] == @group1.name
+    assert body['data']['attributes']['description'] == @group1.description
+    assert body['data']['attributes']['privacy'] == @group1.privacy
+    assert body['data']['relationships']['members']['data'].length == 2
+    assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
+    assert body['data']['relationships']['group_habits']['data'].length == 1
+
+    # included data - 2 members and 1 admin, 1 group_habit
+    assert body['included'].length == 4
+    assert body['included'][0]['type'] == 'user'
+    assert body['included'][0]['attributes']['nickname'] == @user.nickname
+    assert body['included'][1]['type'] == 'habit'
+    assert body['included'][2]['type'] == 'user'
+    assert body['included'][2]['attributes']['nickname'] == @user1.nickname
+    assert body['included'][3]['type'] == 'user'
   end
 end

@@ -16,8 +16,8 @@ class GroupsController < ApplicationController
     raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
       (@group = @user.groups.find_by(id: params[:id]))
 
-    raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_is_private')) if
-    @group.privacy
+    raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_is_private')) unless
+    !@group.privacy || current_user.groups.find_by(id: params[:id])
 
     options = {}
     options[:include] = %i[group_habits members admin]
