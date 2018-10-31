@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Me::GroupsController < Me::ApplicationController
-  before_action :set_group, only: %i[add_habits show view_habits]
+  before_action :set_group, only: %i[add_habits show habits habit]
   before_action :create_habit, only: %i[add_habits]
   before_action :create_group, only: %i[create]
 
@@ -42,7 +42,7 @@ class Me::GroupsController < Me::ApplicationController
   # POST /me/groups/id/habits
   def add_habits
     unless @group.memberships.find_by!(user_id: current_user.id).admin?
-      raise Error::CustomError.new(I18n.t(:unauthorized), '401', I18n.t('errors.messages.not_admin'))
+      raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.not_admin'))
     end
 
     habit_params = params[:data][:attributes]
@@ -78,9 +78,19 @@ class Me::GroupsController < Me::ApplicationController
   end
 
   # GET /me/groups/id/habits
-  def view_habits
+  def habits
     habits = @group.group_habits
-    render json: GroupHabitSerializer.new(habits).serialized_json, status: :created
+    render json: GroupHabitSerializer.new(habits).serialized_json, status: :ok
+  end
+
+  # GET /me/groups/id/habits/id
+  def habit
+    unless @group.memberships.find_by(user_id: current_user.id)
+      raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.not_belong'))
+    end
+
+    habit = @group.group_habits.find(params[:habit])
+    render json: GroupHabitSerializer.new(habit).serialized_json, status: :ok
   end
 
   private

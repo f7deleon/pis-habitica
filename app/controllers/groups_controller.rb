@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 class GroupsController < ApplicationController
-  before_action :set_user, only: %i[index show indexupdate destroy]
+  before_action :set_group, only: %i[habits habit]
+  before_action :set_user, only: %i[index show]
 
   # GET /groups
   def index
-    groups = @user.groups
+    groups = @user.groups.find_by(privacy: false)
     options = {}
     options[:include] = %i[group_habits members admin]
     render json: GroupSerializer.new(groups).serialized_json
@@ -16,37 +17,32 @@ class GroupsController < ApplicationController
     raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
       (@group = @user.groups.find_by(id: params[:id]))
 
-    raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_is_private')) unless
-    !@group.privacy || current_user.groups.find_by(id: params[:id])
+    raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.group_is_private')) unless
+      !@group.privacy || current_user.groups.find_by(id: params[:id])
 
     options = {}
     options[:include] = %i[group_habits members admin]
     render json: GroupSerializer.new(@group, options).serialized_json, status: :ok
   end
 
-  # POST /groups
-  def create
-    @group = Group.new(group_params)
-
-    if @group.save
-      render json: @group, status: :created, location: @group
-    else
-      render json: @group.errors, status: :unprocessable_entity
+  # GET /groups/id/habits
+  def habits
+    unless @group.memberships.find_by(user_id: current_user.id) || !@group.privacy?
+      raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.not_belong'))
     end
+
+    habits = @group.group_habits
+    render json: GroupHabitSerializer.new(habits).serialized_json, status: :ok
   end
 
-  # PATCH/PUT /groups/1
-  def update
-    if @group.update(group_params)
-      render json: @group
-    else
-      render json: @group.errors, status: :unprocessable_entity
+  # GET /groups/id/habits/id
+  def habit
+    unless @group.memberships.find_by(user_id: current_user.id) || !@group.privacy?
+      raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.not_belong'))
     end
-  end
 
-  # DELETE /groups/1
-  def destroy
-    @group.destroy
+    habit = @group.group_habits.find(params[:habit])
+    render json: GroupHabitSerializer.new(habit).serialized_json, status: :ok
   end
 
   private
@@ -54,6 +50,10 @@ class GroupsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_user
     @user = User.find(params[:user_id])
+  end
+
+  def set_group
+    @group = Group.find(params[:id])
   end
 
   # Only allow a trusted parameter "white list" through.

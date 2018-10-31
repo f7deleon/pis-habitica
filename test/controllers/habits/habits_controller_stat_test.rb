@@ -265,7 +265,7 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     # por la diferencia de tiempo el porcentaje da distinto, por eso se hace el redondeo
     salida = JSON.parse(response.body)
     percent = salida['included'][0]['attributes']['stat']['data']['percent'].truncate
-    salida['included'][0]['attributes']['stat']['data']['percent'] = percent
+    salida['included'][0]['attributes']['stat']['data']['percent'] = percent - 1
     assert @expected_frequency.to_json == JSON.generate(salida)
   end
 end

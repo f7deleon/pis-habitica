@@ -120,10 +120,10 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
   test 'View @user3s private @group1 being @user1' do
     url = '/users/' + @user3.id.to_s + '/groups/' + @group1.id.to_s
     result = get url, headers: { 'Authorization': 'Bearer ' + @user1_token }
-    assert result == 404
+    assert result == 403
     body = JSON.parse(response.body)
     assert body['errors'][0]['message'] == 'Current user does not belong to this group'
-    assert body['errors'][0]['title'] == 'Not found'
+    assert body['errors'][0]['title'] == 'Unauthorized'
   end
 
   test 'View group that does not exist' do

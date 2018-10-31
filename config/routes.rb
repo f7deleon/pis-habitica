@@ -8,7 +8,12 @@ Rails.application.routes.draw do
     resources :habits, only: %i[show index]
     resources :groups, only: %i[show index]
   end
-  resources :groups
+  resources :groups do
+    member do
+      get 'habits', to: 'groups#habits'
+      get 'habits/:habit', to: 'groups#habit'
+    end
+  end
   resources :characters
   namespace :me do
     get '', to: 'users#home'
@@ -27,7 +32,8 @@ Rails.application.routes.draw do
     resources :groups do
       member do
         post 'habits', to: 'groups#add_habits'
-        get 'habits', to: 'groups#view_habits'
+        get 'habits', to: 'groups#habits'
+        get 'habits/:habit', to: 'groups#habit'
       end
       resources :habits do
         member do
@@ -35,7 +41,6 @@ Rails.application.routes.draw do
         end
       end
     end
-
     post 'requests/:id', to: 'requests#add_friend'
   end
   # - FOR DEVELOPMENT ONLY

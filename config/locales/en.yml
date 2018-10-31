@@ -50,6 +50,7 @@ en:
       not_admin: "Not admin"
       taken: "There is already an %{model} with that %{attribute}"
       not_found: "goli"
+      not_belong: "The user doesnt belong to the group"
       date_formatting: "date is not in ISO 8601"
       daily_fulfilled: "Habit frequency is daily and it has been fulfilled today"
       typeless_habit: "Habit needs at least one type"

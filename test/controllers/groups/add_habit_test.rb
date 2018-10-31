@@ -58,7 +58,7 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
       'data': { 'id': JSON.parse(response.body)['data']['id'], 'type': 'group_habit',
                 'attributes':
                 { 'name': 'Example', 'description': 'Example', 'difficulty': 1, 'privacy': 1, 'frequency': 1,
-                  'negative': false, 'count_track': 0 },
+                  'negative': false, "count_track": 0 },
                 'relationships': {
                   'types': {
                     'data': [{ 'id': @default_type.id.to_s, 'type': 'type' }]
@@ -81,7 +81,7 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
                   ]
                 } }
     }
-    assert_equal 401, status
+    assert_equal 403, status
   end
 
   test 'AltaHabitoGrupo: bad token' do

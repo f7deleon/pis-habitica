@@ -159,6 +159,8 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
   test 'CreateGroup correct form' do
     post '/me/groups/', headers: { 'Authorization': 'Bearer ' + @user_token }, params: params_correct
     expected = expected_correct
+    puts expected.to_json
+    puts response.body
     assert response.body == expected.to_json
   end
   test 'CreateGroup not friend' do
