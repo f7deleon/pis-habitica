@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class Me::GroupsController < Me::ApplicationController
-  before_action :set_group, only: %i[add_habits show habits habit]
+  before_action :set_group, only: %i[add_habits show habits habit update_members]
   before_action :create_habit, only: %i[add_habits]
   before_action :create_group, only: %i[create]
+  before_action :update_members_requirements, only: %i[update_members]
 
   # GET /me/groups
   def index
@@ -93,6 +94,11 @@ class Me::GroupsController < Me::ApplicationController
     render json: GroupHabitSerializer.new(habit).serialized_json, status: :ok
   end
 
+  def update_members
+    @group.update_members(params[:data], current_user)
+    render status: :no_content
+  end
+
   private
 
   # Use callbacks to share common setup or constraints between actions.
@@ -105,6 +111,17 @@ class Me::GroupsController < Me::ApplicationController
     params.require(:data).require(:attributes).require(%i[name frequency difficulty])
     # Esto no controla que types sea un array ni que sea no vacio, esa verificacion se hace internamente en creates.
     params.require(:data).require(:relationships).require(:types)
+  end
+
+  def update_members_requirements
+    unless @group.memberships.find_by(user_id: current_user.id).admin?
+      raise Error::CustomError.new(I18n.t(:forbidden), '403', I18n.t('errors.messages.not_admin'))
+    end
+
+    params.require(:data)
+
+    raise Error::CustomError.new(I18n.t(:bad_request), '400', I18n.t('errors.messages.no_users_to_add')) if
+      params[:data][0].blank?
   end
 
   # Only allow a trusted parameter 'white list' through.

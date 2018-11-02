@@ -34,6 +34,7 @@ Rails.application.routes.draw do
         post 'habits', to: 'groups#add_habits'
         get 'habits', to: 'groups#habits'
         get 'habits/:habit', to: 'groups#habit'
+        post 'members', to: 'groups#update_members'
       end
       resources :habits do
         member do

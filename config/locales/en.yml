@@ -32,6 +32,7 @@
 en:
   bad_request: "Bad request"
   bad_request_details: "Invalid request format"
+  forbidden: "Forbidden"
   not_found: "Not found"
   unauthorized: "Unauthorized"
   unauthorized_details: "Invalid token"
@@ -66,6 +67,7 @@ en:
       group_is_private: "Current user does not belong to this group"
       member_not_friend: "Not all the members are your friend"
       member_not_exist: "Members do not exist"
+      no_users_to_add: "User's list to update group members is empty"
 
   activerecord:
     models:

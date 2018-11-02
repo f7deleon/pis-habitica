@@ -105,36 +105,36 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     load_frequency Time.new(2018, 9, 8)
 
     @month = [
-      {
-        "id": @months_id[0].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[0].date,
-        "count_track": 1
-      },
-      {
-        "id": @months_id[1].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[1].date,
-        "count_track": 2
-      },
-      {
-        "id": @months_id[2].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[2].date,
-        "count_track": 2
-      },
-      {
-        "id": @months_id[3].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[3].date,
-        "count_track": 2
-      },
-      {
-        "id": @months_id[4].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[4].date,
-        "count_track": 1
-      },
+      # {
+      #   "id": @months_id[0].id,
+      #   "habit_id": @individual_habit.id,
+      #   "date": @months_id[0].date,
+      #   "count_track": 1
+      # },
+      # {
+      #   "id": @months_id[1].id,
+      #   "habit_id": @individual_habit.id,
+      #   "date": @months_id[1].date,
+      #   "count_track": 2
+      # },
+      # {
+      #   "id": @months_id[2].id,
+      #   "habit_id": @individual_habit.id,
+      #   "date": @months_id[2].date,
+      #   "count_track": 2
+      # },
+      # {
+      #   "id": @months_id[3].id,
+      #   "habit_id": @individual_habit.id,
+      #   "date": @months_id[3].date,
+      #   "count_track": 2
+      # },
+      # {
+      #   "id": @months_id[4].id,
+      #   "habit_id": @individual_habit.id,
+      #   "date": @months_id[4].date,
+      #   "count_track": 1
+      # },
       {
         "id": @months_id[5].id,
         "habit_id": @individual_habit.id,
@@ -265,7 +265,7 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     # por la diferencia de tiempo el porcentaje da distinto, por eso se hace el redondeo
     salida = JSON.parse(response.body)
     percent = salida['included'][0]['attributes']['stat']['data']['percent'].truncate
-    salida['included'][0]['attributes']['stat']['data']['percent'] = percent - 1
+    salida['included'][0]['attributes']['stat']['data']['percent'] = percent
     assert @expected_frequency.to_json == JSON.generate(salida)
   end
 end
