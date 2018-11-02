@@ -40,6 +40,7 @@ Rails.application.routes.draw do
         member do
           patch '', to: 'habits#update'
           post 'fulfill', to: 'habits#fulfill'
+          delete 'fulfill', to: 'habits#undo_habit'
         end
       end
     end

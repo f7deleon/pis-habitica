@@ -108,7 +108,13 @@ class Me::HabitsController < Me::ApplicationController
 
   def undo_habit
     time_now = Time.zone.now
-    track_to_delete = @habit.track_individual_habits.order(:date).last
+    track_to_delete = if @habit.type.eql?('GroupHabit')
+                        @habit.track_group_habits.find_all do |track|
+                          track.user_id.eql?(current_user.id)
+                        end.max_by(&:date)
+                      else # Individual
+                        @habit.track_individual_habits.order(:date).last
+                      end
     unless track_to_delete && track_to_delete.date.to_date == time_now.to_date
       raise Error::CustomError.new(I18n.t('not_found'), :not_found, I18n.t('errors.messages.habit_not_fulfilled'))
     end
