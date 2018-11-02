@@ -57,26 +57,13 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     @month = []
     load_not_frequency Time.new(2018, 6, 6), false
 
-    # julio
+    # agosto
 
-    load_not_frequency Time.new(2018, 7, 7), true
-    load_not_frequency Time.new(2018, 7, 17), true
-    load_not_frequency Time.new(2018, 7, 17), false
-    load_not_frequency Time.new(2018, 7, 23), true
-    load_not_frequency Time.new(2018, 7, 23), false
-    load_not_frequency Time.new(2018, 7, 28), true
-    load_not_frequency Time.new(2018, 7, 28), false
-
-    ## agosto
-    load_not_frequency Time.new(2018, 8, 1), true
-    load_not_frequency Time.new(2018, 8, 2), true
-    load_not_frequency Time.new(2018, 8, 3), true
-    load_not_frequency Time.new(2018, 8, 4), true
-    load_not_frequency Time.new(2018, 8, 5), true
-    load_not_frequency Time.new(2018, 8, 6), true
     load_not_frequency Time.new(2018, 8, 7), true
     load_not_frequency Time.new(2018, 8, 17), true
+    load_not_frequency Time.new(2018, 8, 17), false
     load_not_frequency Time.new(2018, 8, 23), true
+    load_not_frequency Time.new(2018, 8, 23), false
     load_not_frequency Time.new(2018, 8, 28), true
     load_not_frequency Time.new(2018, 8, 28), false
 
@@ -86,55 +73,68 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     load_not_frequency Time.new(2018, 9, 3), true
     load_not_frequency Time.new(2018, 9, 4), true
     load_not_frequency Time.new(2018, 9, 5), true
+    load_not_frequency Time.new(2018, 9, 6), true
     load_not_frequency Time.new(2018, 9, 7), true
-    load_not_frequency Time.new(2018, 9, 7), false
-    load_not_frequency Time.new(2018, 9, 8), true
+    load_not_frequency Time.new(2018, 9, 17), true
+    load_not_frequency Time.new(2018, 9, 23), true
+    load_not_frequency Time.new(2018, 9, 28), true
+    load_not_frequency Time.new(2018, 9, 28), false
+
+    ## octubre
+    load_not_frequency Time.new(2018, 10, 1), true
+    load_not_frequency Time.new(2018, 10, 2), true
+    load_not_frequency Time.new(2018, 10, 3), true
+    load_not_frequency Time.new(2018, 10, 4), true
+    load_not_frequency Time.new(2018, 10, 5), true
+    load_not_frequency Time.new(2018, 10, 7), true
+    load_not_frequency Time.new(2018, 10, 7), false
+    load_not_frequency Time.new(2018, 10, 8), true
 
     ## con frecuencia--------------------------------------------------
 
-    # agosto
-    load_frequency Time.new(2018, 8, 28)
+    # septiempre
+    load_frequency Time.new(2018, 9, 28)
 
-    ## septiembre
-    load_frequency Time.new(2018, 9, 1)
-    load_frequency Time.new(2018, 9, 2)
-    load_frequency Time.new(2018, 9, 3)
-    load_frequency Time.new(2018, 9, 4)
-    load_frequency Time.new(2018, 9, 5)
-    load_frequency Time.new(2018, 9, 7)
-    load_frequency Time.new(2018, 9, 8)
+    ## octubre
+    load_frequency Time.new(2018, 10, 1)
+    load_frequency Time.new(2018, 10, 2)
+    load_frequency Time.new(2018, 10, 3)
+    load_frequency Time.new(2018, 10, 4)
+    load_frequency Time.new(2018, 10, 5)
+    load_frequency Time.new(2018, 10, 7)
+    load_frequency Time.new(2018, 10, 8)
 
     @month = [
-      # {
-      #   "id": @months_id[0].id,
-      #   "habit_id": @individual_habit.id,
-      #   "date": @months_id[0].date,
-      #   "count_track": 1
-      # },
-      # {
-      #   "id": @months_id[1].id,
-      #   "habit_id": @individual_habit.id,
-      #   "date": @months_id[1].date,
-      #   "count_track": 2
-      # },
-      # {
-      #   "id": @months_id[2].id,
-      #   "habit_id": @individual_habit.id,
-      #   "date": @months_id[2].date,
-      #   "count_track": 2
-      # },
-      # {
-      #   "id": @months_id[3].id,
-      #   "habit_id": @individual_habit.id,
-      #   "date": @months_id[3].date,
-      #   "count_track": 2
-      # },
-      # {
-      #   "id": @months_id[4].id,
-      #   "habit_id": @individual_habit.id,
-      #   "date": @months_id[4].date,
-      #   "count_track": 1
-      # },
+      {
+        "id": @months_id[0].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[0].date,
+        "count_track": 1
+      },
+      {
+        "id": @months_id[1].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[1].date,
+        "count_track": 2
+      },
+      {
+        "id": @months_id[2].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[2].date,
+        "count_track": 2
+      },
+      {
+        "id": @months_id[3].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[3].date,
+        "count_track": 2
+      },
+      {
+        "id": @months_id[4].id,
+        "habit_id": @individual_habit.id,
+        "date": @months_id[4].date,
+        "count_track": 1
+      },
       {
         "id": @months_id[5].id,
         "habit_id": @individual_habit.id,
