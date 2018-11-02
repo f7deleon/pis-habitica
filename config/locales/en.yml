@@ -35,6 +35,7 @@ en:
   forbidden: "Forbidden"
   not_found: "Not found"
   unauthorized: "Unauthorized"
+  forbidden: "Forbidden"
   unauthorized_details: "Invalid token"
   standard_error: "Internal error"
   standard_error_details: "Something went wrong"
@@ -67,6 +68,7 @@ en:
       group_is_private: "Current user does not belong to this group"
       member_not_friend: "Not all the members are your friend"
       member_not_exist: "Members do not exist"
+      not_admin_to_delete: "User has to be an admin in order to delete this group"
       no_users_to_add: "User's list to update group members is empty"
 
   activerecord:

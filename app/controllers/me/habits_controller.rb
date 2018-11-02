@@ -75,6 +75,12 @@ class Me::HabitsController < Me::ApplicationController
     params_update = params[:data][:attributes]
     if params_update[:active].to_i.zero?
       # Borrado
+      if @habit.type.eql?('GroupHabit')
+        unless @habit.group.memberships.find_by!(user_id: current_user.id).admin
+          raise Error::CustomError.new(I18n.t('forbidden'), :forbidden, I18n.t('errors.messages.not_admin_to_delete'))
+        end
+      end
+
       @habit.active = 0
       @habit.save
       render json: {}, status: :no_content

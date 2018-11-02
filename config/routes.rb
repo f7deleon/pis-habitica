@@ -38,6 +38,7 @@ Rails.application.routes.draw do
       end
       resources :habits do
         member do
+          patch '', to: 'habits#update'
           post 'fulfill', to: 'habits#fulfill'
         end
       end
