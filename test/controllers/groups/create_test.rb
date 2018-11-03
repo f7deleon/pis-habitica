@@ -161,20 +161,6 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
     expected = expected_correct
     assert response.body == expected.to_json
   end
-  test 'CreateGroup not friend' do
-    post '/me/groups/', headers: { 'Authorization': 'Bearer ' + @user_token }, params:
-    param_not_friend
-    expected = {
-      "errors": [
-        {
-          "status": '404',
-          "title": 'Bad request',
-          "message": 'Not all the members are your friend'
-        }
-      ]
-    }
-    assert response.body == expected.to_json
-  end
   test 'CreateGroup not Exist' do
     post '/me/groups/', headers: { 'Authorization': 'Bearer ' + @user_token }, params:
     param_not_user

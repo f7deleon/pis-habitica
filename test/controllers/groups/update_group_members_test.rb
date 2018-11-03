@@ -96,7 +96,7 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     parameters = { "data": [{ "id": @user3.id.to_s, "type": 'user' }] }
     r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
                                                           params: parameters
-    assert r.eql? 204
+    assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user3.id]
     assert memberships.length.eql? 2
@@ -108,7 +108,7 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
                             { "id": @user3.id.to_s, "type": 'user' }] }
     r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
                                                           params: parameters
-    assert r.eql? 204
+    assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user3.id, @user.id, @user2.id]
     assert memberships.length.eql? 4
@@ -124,7 +124,7 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
                             { "id": @user3.id.to_s, "type": 'user' }] }
     r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
                                                           params: parameters
-    assert r.eql? 204
+    assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user3.id]
     assert memberships.length.eql? 2
@@ -137,7 +137,7 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
                             { "id": @user3.id.to_s, "type": 'user' }] }
     r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
                                                           params: parameters
-    assert r.eql? 204
+    assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user2.id, @user3.id]
     assert memberships.length.eql? 3
@@ -148,38 +148,12 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     parameters = { "data": [{ "id": @user2.id.to_s, "type": 'user' }] }
     r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
                                                           params: parameters
-    assert r.eql? 204
+    assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user2.id]
     assert memberships.length.eql? 2
     assert members_id_expected.include? memberships[0].user_id
     assert members_id_expected.include? memberships[1].user_id
-  end
-
-  test 'Update members: [user1*,user2], user4 not friend of user1' do
-    parameters = { "data": [{ "id": @user4.id.to_s, "type": 'user' },
-                            { "id": @user2.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
-    assert r.eql? 404
-    memberships = Membership.select { |m| m[:group_id] == @group.id }
-    members_id_expected = [@user1.id, @user2.id]
-    assert memberships.length.eql? 2
-    assert members_id_expected.include? memberships[0].user_id
-    assert members_id_expected.include? memberships[1].user_id
-    # after add friendship user1 user4, successfully add user4 to group2
-    Friendship.create(user_id: @user1.id, friend_id: @user4.id)
-    parameters = { "data": [{ "id": @user4.id.to_s, "type": 'user' },
-                            { "id": @user2.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
-    assert r.eql? 204
-    memberships = Membership.select { |m| m[:group_id] == @group.id }
-    members_id_expected = [@user1.id, @user2.id, @user4.id]
-    assert memberships.length.eql? 3
-    assert members_id_expected.include? memberships[0].user_id
-    assert members_id_expected.include? memberships[1].user_id
-    assert members_id_expected.include? memberships[2].user_id
   end
 
   test 'Update members: post with empty group' do
@@ -226,7 +200,6 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
                                                           params: parameters
     assert r.eql? 404
   end
-
   test 'Update members: post made by a non member but is admin in other group' do
     parameters = { "data": [{ "id": @user3.id.to_s, "type": 'user' }] }
     r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user4_token.to_s },

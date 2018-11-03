@@ -17,8 +17,8 @@ class Group < ApplicationRecord
   def update_members(members, admin)
     # check if new members have a friendship with the admin user and if user exists
     members.each do |member|
-      unless admin.friends.exists?(member[:id])
-        raise Error::CustomError.new(I18n.t(:not_found), '404', I18n.t('errors.messages.member_not_friend'))
+      unless User.exists?(member[:id])
+        raise Error::CustomError.new(I18n.t(:bad_request), '404', I18n.t('errors.messages.member_not_exist'))
       end
     end
     memberships.each do |membership|

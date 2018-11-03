@@ -25,9 +25,6 @@ class Me::GroupsController < Me::ApplicationController
       unless User.exists?(member[:id])
         raise Error::CustomError.new(I18n.t(:bad_request), '404', I18n.t('errors.messages.member_not_exist'))
       end
-      unless current_user.friends.exists?(member[:id])
-        raise Error::CustomError.new(I18n.t(:bad_request), '404', I18n.t('errors.messages.member_not_friend'))
-      end
     end
     params_attributte = params[:data][:attributes]
     group = Group.create(name: params_attributte[:name],
@@ -96,7 +93,7 @@ class Me::GroupsController < Me::ApplicationController
 
   def update_members
     @group.update_members(params[:data], current_user)
-    render status: :no_content
+    render json: GroupSerializer.new(@group).serialized_json, status: :created
   end
 
   private
