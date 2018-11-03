@@ -41,11 +41,11 @@ en:
   standard_error_details: "Something went wrong"
   conflict: "conflict"
   taken_string: "There is already an user with that "
-  mage_description: "Hace magia para cumplir sus habitos, nadie le cree ni saben como hace."
+  mage_description: "Hace magia para cumplir sus hábitos, nadie le cree ni saben como hace."
   elf_description: "Ser fantástico con figura de enana y poderes mágicos; vive en los bosques, las aguas y en las proximidades de las casas y trabaja como herrera."
-  gost_description: "Dice que siempre cumple sus habitos pero en realidad no lo hace."
-  dead_description: "Nadie sabe como sigue con vida, pero consigue energias de algun lugar oculto y cumple sus habitos"
-  hunter_description: "Siempre se acerca a su presa, la rodea y lanza el ataque. No titubea al momento de cumplir sus habitos."
+  gost_description: "Dice que siempre cumple sus hábitos pero en realidad no lo hace."
+  dead_description: "Nadie sabe como sigue con vida, pero consigue energías de algun lugar oculto y cumple sus hábitos"
+  hunter_description: "Siempre se acerca a su presa, la rodea y lanza el ataque. No titubea al momento de cumplir sus hábitos."
   errors:
     messages:
       blank: "%{attribute} is required"
