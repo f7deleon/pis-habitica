@@ -100,7 +100,7 @@ class ViewHabitGroupControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'ViewHabit: can view, no member and privacy false' do
-    get '/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s, headers: {
+    get '/users/' + @user.id.to_s + '/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user2_token
     }
     assert_equal 200, status
@@ -108,14 +108,14 @@ class ViewHabitGroupControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'ViewHabit: cant view habits in group2, privacy true' do
-    get '/groups/' + @group2.id.to_s + '/habits/' + @habit2.id.to_s, headers: {
+    get '/users/' + @user.id.to_s + '/groups/' + @group2.id.to_s + '/habits/' + @habit2.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user2_token
     }
     assert_equal 403, status
   end
 
   test 'ViewHabit: can view habits in group2, member and privacy true' do
-    get '/groups/' + @group2.id.to_s + '/habits/' + @habit2.id.to_s, headers: {
+    get '/me/groups/' + @group2.id.to_s + '/habits/' + @habit2.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     assert_equal 200, status

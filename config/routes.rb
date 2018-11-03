@@ -6,12 +6,11 @@ Rails.application.routes.draw do
   resources :types
   resources :users do
     resources :habits, only: %i[show index]
-    resources :groups, only: %i[show index]
-  end
-  resources :groups do
-    member do
-      get 'habits', to: 'groups#habits'
-      get 'habits/:habit', to: 'groups#habit'
+    resources :groups, only: %i[show index] do
+      member do
+        get 'habits', to: 'groups#habits'
+        get 'habits/:habit', to: 'groups#habit'
+      end
     end
   end
   resources :characters

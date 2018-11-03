@@ -2,9 +2,9 @@
 
 class GroupsController < ApplicationController
   before_action :set_group, only: %i[habits habit]
-  before_action :set_user, only: %i[index show]
+  before_action :set_user, only: %i[index show habits habit]
 
-  # GET /groups
+  # GET /users/:user_id/groups
   def index
     groups = @user.groups.find_by(privacy: false)
     options = {}
@@ -12,7 +12,7 @@ class GroupsController < ApplicationController
     render json: GroupSerializer.new(groups).serialized_json
   end
 
-  # GET /user/:user_id/groups/:id
+  # GET /users/:user_id/groups/:id
   def show
     raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
       (@group = @user.groups.find_by(id: params[:id]))
@@ -25,24 +25,24 @@ class GroupsController < ApplicationController
     render json: GroupSerializer.new(@group, options).serialized_json, status: :ok
   end
 
-  # GET /groups/id/habits
+  # GET /users/:user_id/groups/:id/habits
   def habits
     unless @group.memberships.find_by(user_id: current_user.id) || !@group.privacy?
       raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.not_belong'))
     end
 
     habits = @group.group_habits
-    render json: GroupHabitSerializer.new(habits).serialized_json, status: :ok
+    render json: GroupHabitSerializer.new(habits, params: { id: @user.id }).serialized_json, status: :ok
   end
 
-  # GET /groups/id/habits/id
+  # GET /users/:user_id/groups/:id/habits/:habit
   def habit
     unless @group.memberships.find_by(user_id: current_user.id) || !@group.privacy?
       raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.not_belong'))
     end
 
     habit = @group.group_habits.find(params[:habit])
-    render json: GroupHabitSerializer.new(habit).serialized_json, status: :ok
+    render json: GroupHabitSerializer.new(habit, params: { id: @user.id }).serialized_json, status: :ok
   end
 
   private

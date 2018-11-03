@@ -74,4 +74,36 @@ group = Group.create(name: 'Propio', description: 'Propio Grupo', privacy: false
 membership = Membership.create(user_id: user.id, group_id: group.id, admin: true)
 membership2 = Membership.create(user_id: user2.id , group_id: group.id, admin: false)
 
-GroupHabit.create(group_id: group.id, name: 'habito diario', description: 'diario', difficulty: 2, privacy: 1, frequency: 2,created_at: from_date)
+group_habit = GroupHabit.create(group_id: group.id, name: 'habito diario', description: 'diario', difficulty: 2, privacy: 1, frequency: 1,created_at: from_date)
+
+TrackGroupHabit.create(
+  user_id: user.id,
+  habit_id: group_habit.id,
+  date: Date.new(2018,11,3),
+  experience_difference: user.modify_experience(20),
+  health_difference: user.modify_health(100)
+)
+
+TrackGroupHabit.create(
+  user_id: user.id,
+  habit_id: group_habit.id,
+  date: Date.new(2018,11,3),
+  experience_difference: user.modify_experience(20),
+  health_difference: user.modify_health(100)
+)
+
+TrackGroupHabit.create(
+  user_id: user.id,
+  habit_id: group_habit.id,
+  date: Date.new(2018,11,1),
+  experience_difference: user.modify_experience(20),
+  health_difference: user.modify_health(100)
+)
+
+TrackGroupHabit.create(
+  user_id: user2.id,
+  habit_id: group_habit.id,
+  date: Date.new(2018,11,3),
+  experience_difference: user2.modify_experience(20),
+  health_difference: user2.modify_health(100)
+)
