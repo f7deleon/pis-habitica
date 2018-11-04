@@ -35,7 +35,10 @@ class Me::GroupsController < Me::ApplicationController
     params[:data][:relationships][:members][:data].each do |member|
       Membership.create(user_id: member[:id], group_id: group.id, admin: false)
     end
-    render json: GroupSerializer.new(group, params: { id: current_user.id }).serialized_json, status: :ok
+    options = {}
+    options[:include] = %i[members admin]
+    options[:params] = { id: current_user.id }
+    render json: GroupSerializer.new(group, options).serialized_json, status: :ok
   end
 
   # POST /me/groups/id/habits

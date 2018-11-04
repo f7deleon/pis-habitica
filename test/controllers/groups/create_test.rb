@@ -6,104 +6,171 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
   def params_correct
     {
 
-      "data": {
-        "type": 'group',
-        "attributes": {
-          "name": 'El Barzon',
-          "description": 'Directo al barro',
-          "privacy": 0
+      'data': {
+        'type': 'group',
+        'attributes': {
+          'name': 'El Barzon',
+          'description': 'Directo al barro',
+          'privacy': 0
         },
-        "relationships": {
-          "members": {
-            "data": [
+        'relationships': {
+          'members': {
+            'data': [
               {
-                "id": @member1.id.to_s,
-                "type": 'user'
+                'id': @member1.id.to_s,
+                'type': 'user'
               },
               {
-                "id": @member2.id.to_s,
-                "type": 'user'
-              },
-              {
-                "id": @member3.id.to_s,
-                "type": 'user'
-              },
-              {
-                "id": @member4.id.to_s,
-                "type": 'user'
+                'id': @member2.id.to_s,
+                'type': 'user'
               }
             ]
           }
         }
-      }
+      },
+      'included': [
+        {
+          'id': @member1.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'Demogorgon',
+            'level': 4
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': '4',
+                'type': 'character'
+              }
+            }
+          }
+        },
+        {
+          'id': @member2.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'Feli',
+            'level': 1
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': '1',
+                'type': 'character'
+              }
+            }
+          }
+        }
+      ]
     }
   end
 
   def expected_correct
     {
-      "data": {
-        "id": JSON.parse(response.body)['data']['id'],
-        "type": 'group',
-        "attributes": {
-          "name": 'El Barzon',
-          "description": 'Directo al barro',
-          "privacy": false
+      'data': {
+        'id': JSON.parse(response.body)['data']['id'],
+        'type': 'group',
+        'attributes': {
+          'name': 'El Barzon',
+          'description': 'Directo al barro',
+          'privacy': false
         },
-        "relationships": {
-          "members": {
-            "data": [
+        'relationships': {
+          'members': {
+            'data': [
               {
-                "id": @member1.id.to_s,
-                "type": 'user'
+                'id': @member1.id.to_s,
+                'type': 'user'
               },
               {
-                "id": @member2.id.to_s,
-                "type": 'user'
-              },
-              {
-                "id": @member3.id.to_s,
-                "type": 'user'
-              },
-              {
-                "id": @member4.id.to_s,
-                "type": 'user'
+                'id': @member2.id.to_s,
+                'type': 'user'
               }
             ]
           },
-          "admin": {
-            "data": {
-              "id": @user_admin.id.to_s,
-              "type": 'user'
+          'admin': {
+            'data': {
+              'id': @user_admin.id.to_s,
+              'type': 'user'
             }
           },
-          "group_habits": {
-            "data": []
-
+          'group_habits': {
+            'data': []
           },
-          "group_types": {
-            "data": []
+          'group_types': {
+            'data': []
           }
         }
-      }
+      },
+      'included': [
+        {
+          'id': @user_admin.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'Example',
+            'level': 1
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': @character1.id.to_s,
+                'type': 'character'
+              }
+            }
+          }
+        },
+        {
+          'id': @member1.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'member1',
+            'level': 1
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': @character.id.to_s,
+                'type': 'character'
+              }
+            }
+          }
+        },
+        {
+          'id': @member2.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'member2',
+            'level': 1
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': @character1.id.to_s,
+                'type': 'character'
+              }
+            }
+          }
+        }
+      ]
     }
   end
 
   def param_not_friend
     {
 
-      "data": {
-        "type": 'group',
-        "attributes": {
-          "name": 'El Barzon',
-          "description": 'Directo al barro',
-          "privacy": 0
+      'data': {
+        'type': 'group',
+        'attributes': {
+          'name': 'El Barzon',
+          'description': 'Directo al barro',
+          'privacy': 0
         },
-        "relationships": {
-          "members": {
-            "data": [
+        'relationships': {
+          'members': {
+            'data': [
               {
-                "id": @nor_friend.id.to_s,
-                "type": 'user'
+                'id': @nor_friend.id.to_s,
+                'type': 'user'
               }
             ]
           }
@@ -115,19 +182,19 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
   def param_not_user
     {
 
-      "data": {
-        "type": 'group',
-        "attributes": {
-          "name": 'El Barzon',
-          "description": 'Directo al barro',
-          "privacy": 0
+      'data': {
+        'type': 'group',
+        'attributes': {
+          'name': 'El Barzon',
+          'description': 'Directo al barro',
+          'privacy': 0
         },
-        "relationships": {
-          "members": {
-            "data": [
+        'relationships': {
+          'members': {
+            'data': [
               {
-                "id": -1.to_s,
-                "type": 'user'
+                'id': -1.to_s,
+                'type': 'user'
               }
             ]
           }
@@ -158,6 +225,13 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
     Friendship.create(user_id: @user_admin.id, friend_id: @member2.id)
     Friendship.create(user_id: @user_admin.id, friend_id: @member3.id)
     Friendship.create(user_id: @user_admin.id, friend_id: @member4.id)
+
+    # Characters
+    @character = Character.create(name: 'Humano', description: 'Descripcion humano')
+    @character1 = Character.create(name: 'Brujo', description: 'Descripcion brujo')
+    @member1.add_character(@character.id, '2018-09-07T12:00:00Z')
+    @member2.add_character(@character1.id, '2018-09-07T12:00:00Z')
+    @user_admin.add_character(@character1.id, '2018-09-07T12:00:00Z')
   end
   test 'CreateGroup correct form' do
     post '/me/groups/', headers: { 'Authorization': 'Bearer ' + @user_token }, params: params_correct
@@ -168,11 +242,11 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
     post '/me/groups/', headers: { 'Authorization': 'Bearer ' + @user_token }, params:
     param_not_user
     expected = {
-      "errors": [
+      'errors': [
         {
-          "status": '404',
-          "title": 'Bad request',
-          "message": 'Members do not exist'
+          'status': '404',
+          'title': 'Bad request',
+          'message': 'Members do not exist'
         }
       ]
     }
