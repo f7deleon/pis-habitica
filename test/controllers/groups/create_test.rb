@@ -79,6 +79,9 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
           "group_habits": {
             "data": []
 
+          },
+          "group_types": {
+            "data": []
           }
         }
       }

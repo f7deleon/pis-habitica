@@ -32,7 +32,10 @@ class GroupsController < ApplicationController
     end
 
     habits = @group.group_habits
-    render json: GroupHabitSerializer.new(habits, params: { id: @user.id }).serialized_json, status: :ok
+    options = {}
+    options[:include] = %i[types]
+    options[:params] = { id: @user.id }
+    render json: GroupHabitSerializer.new(habits, options).serialized_json, status: :ok
   end
 
   # GET /users/:user_id/groups/:id/habits/:habit
@@ -42,7 +45,10 @@ class GroupsController < ApplicationController
     end
 
     habit = @group.group_habits.find(params[:habit])
-    render json: GroupHabitSerializer.new(habit, params: { id: @user.id }).serialized_json, status: :ok
+    options = {}
+    options[:include] = %i[types]
+    options[:params] = { id: @user.id }
+    render json: GroupHabitSerializer.new(habit, options).serialized_json, status: :ok
   end
 
   private

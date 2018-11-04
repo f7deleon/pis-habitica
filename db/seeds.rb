@@ -97,7 +97,11 @@ Membership.create(user: User.find_by_nickname('Lala'), group_id: group2.id, admi
 Membership.create(user: User.find_by_nickname('Seba'), group_id: group2.id, admin: false)
 Membership.create(user: user, group_id: group2.id, admin: false)
 
-group_habit = GroupHabit.create(group_id: group.id, name: 'habito diario', description: 'diario', difficulty: 2, privacy: 1, frequency: 1,created_at: from_date)
+group_habit = GroupHabit.create(group_id: group.id, name: 'habito diario', description: 'diario', difficulty: 2, privacy: 1, frequency: 2,created_at: from_date)
+
+type_id = DefaultType.all().limit(1).first.id
+
+GroupHabitHasType.create(habit_id: group_habit.id, type_id: type_id)
 
 GroupHabit.create(group_id: group2.id, name: 'habito', description: 'diario', difficulty: 2, privacy: 1, frequency: 2,created_at: from_date)
 

@@ -19,4 +19,8 @@ class GroupSerializer
   has_many :group_habits, serializer: :group_habit, object_method_name: :group_habit do |object|
     object.group_habits.order('name ASC').select(&:active)
   end
+
+  has_many :group_types, serializer: :type do |object|
+    object.group_types.order('name ASC')
+  end
 end

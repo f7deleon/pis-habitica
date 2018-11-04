@@ -79,7 +79,10 @@ class Me::GroupsController < Me::ApplicationController
   # GET /me/groups/id/habits
   def habits
     habits = @group.group_habits
-    render json: GroupHabitSerializer.new(habits, params: { id: current_user.id }).serialized_json, status: :ok
+    options = {}
+    options[:include] = %i[types]
+    options[:params] = { id: current_user.id }
+    render json: GroupHabitSerializer.new(habits, options).serialized_json, status: :ok
   end
 
   # GET /me/groups/id/habits/id
@@ -89,7 +92,10 @@ class Me::GroupsController < Me::ApplicationController
     end
 
     habit = @group.group_habits.find(params[:habit])
-    render json: GroupHabitSerializer.new(habit, params: { id: current_user.id }).serialized_json, status: :ok
+    options = {}
+    options[:include] = %i[types]
+    options[:params] = { id: current_user.id }
+    render json: GroupHabitSerializer.new(habit, options).serialized_json, status: :ok
   end
 
   def update_members

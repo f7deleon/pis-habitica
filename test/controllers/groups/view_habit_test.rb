@@ -67,7 +67,8 @@ class ViewHabitGroupControllerTest < ActionDispatch::IntegrationTest
             "data": []
           }
         }
-      }
+      },
+      "included": []
     }
     @expected2 = {
       "data": {
@@ -87,7 +88,8 @@ class ViewHabitGroupControllerTest < ActionDispatch::IntegrationTest
             "data": []
           }
         }
-      }
+      },
+      "included": []
     }
   end
 
