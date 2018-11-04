@@ -111,8 +111,8 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['included'].length == 5
     assert body['included'][0]['type'] == 'user'
     assert body['included'][0]['attributes']['nickname'] == @user.nickname
-    assert body['included'][1]['type'] == 'habit'
-    assert body['included'][2]['type'] == 'habit'
+    assert body['included'][1]['type'] == 'group_habit'
+    assert body['included'][2]['type'] == 'group_habit'
     assert body['included'][3]['type'] == 'user'
     assert body['included'][4]['type'] == 'user'
   end
@@ -154,7 +154,7 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['included'].length == 4
     assert body['included'][0]['type'] == 'user'
     assert body['included'][0]['attributes']['nickname'] == @user.nickname
-    assert body['included'][1]['type'] == 'habit'
+    assert body['included'][1]['type'] == 'group_habit'
     assert body['included'][2]['type'] == 'user'
     assert body['included'][2]['attributes']['nickname'] == @user1.nickname
     assert body['included'][3]['type'] == 'user'

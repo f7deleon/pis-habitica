@@ -112,8 +112,8 @@ class MeGroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['included'][0]['type'] == 'user'
     # check @user is admin
     assert body['included'][0]['attributes']['nickname'] == @user.nickname
-    assert body['included'][1]['type'] == 'habit'
-    assert body['included'][2]['type'] == 'habit'
+    assert body['included'][1]['type'] == 'group_habit'
+    assert body['included'][2]['type'] == 'group_habit'
     assert body['included'][3]['type'] == 'user'
     assert body['included'][4]['type'] == 'user'
   end
@@ -138,7 +138,7 @@ class MeGroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['included'][0]['type'] == 'user'
     # check @user is admin
     assert body['included'][0]['attributes']['nickname'] == @user.nickname
-    assert body['included'][1]['type'] == 'habit'
+    assert body['included'][1]['type'] == 'group_habit'
     assert body['included'][2]['type'] == 'user'
   end
 
@@ -162,8 +162,8 @@ class MeGroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     # included data - 2 members, 2 group_habits, 1 admin
     assert body['included'].length == 5
     assert body['included'][0]['type'] == 'user'
-    assert body['included'][1]['type'] == 'habit'
-    assert body['included'][2]['type'] == 'habit'
+    assert body['included'][1]['type'] == 'group_habit'
+    assert body['included'][2]['type'] == 'group_habit'
     assert body['included'][3]['type'] == 'user'
     assert body['included'][4]['type'] == 'user'
   end
@@ -187,7 +187,7 @@ class MeGroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     # included data - 1 member, 1 group_habit, 1 admin
     assert body['included'].length == 3
     assert body['included'][0]['type'] == 'user'
-    assert body['included'][1]['type'] == 'habit'
+    assert body['included'][1]['type'] == 'group_habit'
     assert body['included'][2]['type'] == 'user'
   end
 end

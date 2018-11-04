@@ -97,11 +97,11 @@ class ListGroupsHabitsTest < ActionDispatch::IntegrationTest
     assert body['data']['id'] == @group.id.to_s
     assert body['data']['relationships']['group_habits']['data'].length == 3
 
-    assert body['included'][1]['type'] == 'habit'
+    assert body['included'][1]['type'] == 'group_habit'
     assert body['included'][1]['attributes']['name'] == @gh1.name
-    assert body['included'][2]['type'] == 'habit'
+    assert body['included'][2]['type'] == 'group_habit'
     assert body['included'][2]['attributes']['name'] == @gh2.name
-    assert body['included'][3]['type'] == 'habit'
+    assert body['included'][3]['type'] == 'group_habit'
     assert body['included'][3]['attributes']['name'] == @gh.name
   end
 
@@ -124,11 +124,11 @@ class ListGroupsHabitsTest < ActionDispatch::IntegrationTest
     assert body['data']['id'] == @group.id.to_s
     assert body['data']['relationships']['group_habits']['data'].length == 3
 
-    assert body['included'][1]['type'] == 'habit'
+    assert body['included'][1]['type'] == 'group_habit'
     assert body['included'][1]['attributes']['name'] == @gh1.name
-    assert body['included'][2]['type'] == 'habit'
+    assert body['included'][2]['type'] == 'group_habit'
     assert body['included'][2]['attributes']['name'] == @gh2.name
-    assert body['included'][3]['type'] == 'habit'
+    assert body['included'][3]['type'] == 'group_habit'
     assert body['included'][3]['attributes']['name'] == @gh.name
   end
 

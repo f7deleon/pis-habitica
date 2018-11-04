@@ -104,7 +104,7 @@ GroupHabit.create(group_id: group2.id, name: 'habito', description: 'diario', di
 TrackGroupHabit.create(
   user_id: user.id,
   habit_id: group_habit.id,
-  date: Date.new(2018,11,3),
+  date: Date.new(2018,11,4),
   experience_difference: user.modify_experience(20),
   health_difference: user.modify_health(100)
 )
@@ -112,7 +112,7 @@ TrackGroupHabit.create(
 TrackGroupHabit.create(
   user_id: user.id,
   habit_id: group_habit.id,
-  date: Date.new(2018,11,3),
+  date: Date.new(2018,11,4),
   experience_difference: user.modify_experience(20),
   health_difference: user.modify_health(100)
 )
@@ -128,7 +128,7 @@ TrackGroupHabit.create(
 TrackGroupHabit.create(
   user_id: user2.id,
   habit_id: group_habit.id,
-  date: Date.new(2018,11,3),
+  date: Date.new(2018,11,4),
   experience_difference: user2.modify_experience(20),
   health_difference: user2.modify_health(100)
 )

@@ -16,7 +16,7 @@ class GroupSerializer
     object.memberships.find_by_admin(true).user
   end
 
-  has_many :group_habits, serializer: :habit, object_method_name: :group_habit do |object|
+  has_many :group_habits, serializer: :group_habit, object_method_name: :group_habit do |object|
     object.group_habits.order('name ASC').select(&:active)
   end
 end
