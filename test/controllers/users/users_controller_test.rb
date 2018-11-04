@@ -29,6 +29,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         'password': @user2.password
       }
     }
+
     @user2_token = JSON.parse(response.body)['jwt']
 
     @user3 = User.create(nickname: 'Ozuna', email: 'latino@negritojosclaro.com', password: 'dontcare')
@@ -38,6 +39,9 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         'password': @user3.password
       }
     }
+
+    Request.create(user_id: @user3.id, receiver_id: @user.id)
+
     @user3_token = JSON.parse(response.body)['jwt']
     @user4 = User.create(nickname: 'barack', email: 'notpresidentanymore@usa.com', password: 'dontcare23')
     @user5 = User.create(nickname: 'aaaaabaracaaaaa', email: 'notpresidentanymore1@usa.com', password: 'dontcare1')
@@ -186,6 +190,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert result == 200
     body = JSON.parse(response.body)
     assert body['data'].length == 1
+    assert body['data'][0]['relationships']['requests_sent']
   end
 
   test 'Buscar Usuario: find an existing user (returns 2). Also checks ignoreCase' do

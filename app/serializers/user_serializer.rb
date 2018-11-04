@@ -33,4 +33,11 @@ class UserSerializer
   has_many :individual_habits do |object, params|
     object.get_habits_from_user(params[:current_user])
   end
+
+  has_one :requests_sent,
+          if: proc { |object, params|
+                object.requests_sent.exists?(receiver_id: params[:current_user].id)
+              } do |object, params|
+    object.requests_sent.find_by(receiver_id: params[:current_user].id)
+  end
 end
