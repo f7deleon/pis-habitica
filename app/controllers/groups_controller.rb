@@ -9,7 +9,7 @@ class GroupsController < ApplicationController
     groups = @user.groups.find_by(privacy: false)
     options = {}
     options[:include] = %i[group_habits members admin]
-    render json: GroupSerializer.new(groups).serialized_json
+    render json: GroupInfoSerializer.new(groups).serialized_json
   end
 
   # GET /users/:user_id/groups/:id

@@ -21,9 +21,9 @@ class UserHomeSerializer
 
   has_many :friends
 
-  has_many :individual_habits do |object|
+  has_many :individual_habits, serializer: :individual_habit_info do |object|
     object.individual_habits.order('name ASC').select(&:active)
   end
 
-  has_many :groups
+  has_many :groups, serializer: :group_info
 end

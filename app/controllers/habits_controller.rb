@@ -8,7 +8,7 @@ class HabitsController < ApplicationController
   def index
     habits = @user.get_habits_from_user(current_user)
 
-    render json: IndividualHabitSerializer.new(habits).serialized_json
+    render json: IndividualHabitInfoSerializer.new(habits).serialized_json
   end
 
   # GET /user/:user_id/habits/:id

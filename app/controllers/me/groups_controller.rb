@@ -9,7 +9,7 @@ class Me::GroupsController < Me::ApplicationController
   # GET /me/groups
   def index
     groups = current_user.groups
-    render json: GroupSerializer.new(groups, params: { id: current_user.id }).serialized_json
+    render json: GroupInfoSerializer.new(groups).serialized_json
   end
 
   # GET /me/groups/gid
@@ -79,10 +79,7 @@ class Me::GroupsController < Me::ApplicationController
   # GET /me/groups/id/habits
   def habits
     habits = @group.group_habits
-    options = {}
-    options[:include] = %i[types]
-    options[:params] = { id: current_user.id }
-    render json: GroupHabitSerializer.new(habits, options).serialized_json, status: :ok
+    render json: GroupHabitInfoSerializer.new(habits, params: { id: current_user.id }).serialized_json, status: :ok
   end
 
   # GET /me/groups/id/habits/id

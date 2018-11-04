@@ -11,7 +11,7 @@ class Me::HabitsController < Me::ApplicationController
   def index
     habits = current_user.individual_habits
     habits = habits.order('name ASC').select(&:active)
-    render json: IndividualHabitSerializer.new(habits).serialized_json
+    render json: IndividualHabitInfoSerializer.new(habits).serialized_json
   end
 
   # POST /me/habits
