@@ -41,7 +41,6 @@ User.all.each do |user|
   character_id = Character.order("RANDOM()").limit(1).first.id
   character = Character.find(character_id)
   user_character = user.add_character(character_id, Time.zone.now)
-  character.user_characters << user_character
   friends = User.where.not(id: user.id).shuffle.first(3)
   friends.each do |friend|
     _friend = Friendship.new(user: user, friend: friend)
@@ -99,11 +98,17 @@ Membership.create(user: user, group_id: group2.id, admin: false)
 
 group_habit = GroupHabit.create(group_id: group.id, name: 'habito diario', description: 'diario', difficulty: 2, privacy: 1, frequency: 2,created_at: from_date)
 
-type_id = DefaultType.all().limit(1).first.id
-
-GroupHabitHasType.create(habit_id: group_habit.id, type_id: type_id)
-
 GroupHabit.create(group_id: group2.id, name: 'habito', description: 'diario', difficulty: 2, privacy: 1, frequency: 2,created_at: from_date)
+
+
+Habit.all.each do |habit| 
+  types = DefaultType.order("RANDOM()").first
+  if habit.type.eql? "GroupHabit"
+    habit.group_habit_has_types.create(type: types)
+  else
+    habit.individual_habit_has_types.create(type: types)
+  end
+end
 
 TrackGroupHabit.create(
   user_id: user.id,
