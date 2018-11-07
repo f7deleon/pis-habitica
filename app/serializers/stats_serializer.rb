@@ -8,7 +8,7 @@ class StatsSerializer
     included_stats = {
       "type": 'stat',
       "attributes": {
-        "stat":  { "data": data }
+        "stat": { "data": data }
       }
     }
 

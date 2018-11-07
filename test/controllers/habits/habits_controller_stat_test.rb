@@ -52,57 +52,55 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
 
     ## sin frecuencia--------------------------------------------------
     @months_id = []
+    month =  Time.now
+    month1 = (month - 3.month).strftime('%m').to_i
+    month2 = (month - 2.month).strftime('%m').to_i
 
+    year1 =  (month - 3.month).strftime('%Y').to_i
+    year2 =  (month - 2.month).strftime('%Y').to_i
+    year3 =  (month - 1.month).strftime('%Y').to_i
+
+    month =  (month - 1.month).strftime('%m').to_i
     # junio
     @month = []
     load_not_frequency Time.new(2018, 6, 6), false
 
     # agosto
 
-    load_not_frequency Time.new(2018, 8, 7), true
-    load_not_frequency Time.new(2018, 8, 17), true
-    load_not_frequency Time.new(2018, 8, 17), false
-    load_not_frequency Time.new(2018, 8, 23), true
-    load_not_frequency Time.new(2018, 8, 23), false
-    load_not_frequency Time.new(2018, 8, 28), true
-    load_not_frequency Time.new(2018, 8, 28), false
+    load_not_frequency Time.new(year1, month1, 7), true
+    load_not_frequency Time.new(year1, month1, 17), true
+    load_not_frequency Time.new(year1, month1, 17), false
+    load_not_frequency Time.new(year1, month1, 23), true
+    load_not_frequency Time.new(year1, month1, 23), false
+    load_not_frequency Time.new(year1, month1, 28), true
+    load_not_frequency Time.new(year1, month1, 28), false
 
     ## septiembre
-    load_not_frequency Time.new(2018, 9, 1), true
-    load_not_frequency Time.new(2018, 9, 2), true
-    load_not_frequency Time.new(2018, 9, 3), true
-    load_not_frequency Time.new(2018, 9, 4), true
-    load_not_frequency Time.new(2018, 9, 5), true
-    load_not_frequency Time.new(2018, 9, 6), true
-    load_not_frequency Time.new(2018, 9, 7), true
-    load_not_frequency Time.new(2018, 9, 17), true
-    load_not_frequency Time.new(2018, 9, 23), true
-    load_not_frequency Time.new(2018, 9, 28), true
-    load_not_frequency Time.new(2018, 9, 28), false
-
-    ## octubre
-    load_not_frequency Time.new(2018, 10, 1), true
-    load_not_frequency Time.new(2018, 10, 2), true
-    load_not_frequency Time.new(2018, 10, 3), true
-    load_not_frequency Time.new(2018, 10, 4), true
-    load_not_frequency Time.new(2018, 10, 5), true
-    load_not_frequency Time.new(2018, 10, 7), true
-    load_not_frequency Time.new(2018, 10, 7), false
-    load_not_frequency Time.new(2018, 10, 8), true
+    load_not_frequency Time.new(year2, month2, 1), true
+    load_not_frequency Time.new(year2, month2, 2), true
+    load_not_frequency Time.new(year2, month2, 3), true
+    load_not_frequency Time.new(year2, month2, 4), true
+    load_not_frequency Time.new(year2, month2, 5), true
+    load_not_frequency Time.new(year2, month2, 6), true
+    load_not_frequency Time.new(year2, month2, 7), true
+    load_not_frequency Time.new(year2, month2, 17), true
+    load_not_frequency Time.new(year2, month2, 23), true
+    load_not_frequency Time.new(year2, month2, 28), true
+    load_not_frequency Time.new(year2, month2, 28), false
 
     ## con frecuencia--------------------------------------------------
 
     # septiempre
-    load_frequency Time.new(2018, 9, 28)
+    load_frequency Time.new(year2, month2, 28)
 
     ## octubre
-    load_frequency Time.new(2018, 10, 1)
-    load_frequency Time.new(2018, 10, 2)
-    load_frequency Time.new(2018, 10, 3)
-    load_frequency Time.new(2018, 10, 4)
-    load_frequency Time.new(2018, 10, 5)
-    load_frequency Time.new(2018, 10, 7)
-    load_frequency Time.new(2018, 10, 8)
+    load_frequency Time.new(year3, month, 1)
+    load_frequency Time.new(year3, month, 2)
+    load_frequency Time.new(year3, month, 3)
+    load_frequency Time.new(year3, month, 4)
+    load_frequency Time.new(year3, month, 5)
+    load_frequency Time.new(year3, month, 7)
+    load_frequency Time.new(year3, month, 8)
 
     @month = [
       {
@@ -188,58 +186,16 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
         "habit_id": @individual_habit.id,
         "date": @months_id[13].date,
         "count_track": 2
-      },
-      {
-        "id": @months_id[14].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[14].date,
-        "count_track": 1
-      },
-      {
-        "id": @months_id[15].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[15].date,
-        "count_track": 1
-      },
-      {
-        "id": @months_id[16].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[16].date,
-        "count_track": 1
-      },
-      {
-        "id": @months_id[17].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[17].date,
-        "count_track": 1
-      },
-      {
-        "id": @months_id[18].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[18].date,
-        "count_track": 1
-      },
-      {
-        "id": @months_id[19].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[19].date,
-        "count_track": 2
-      },
-      {
-        "id": @months_id[20].id,
-        "habit_id": @individual_habit.id,
-        "date": @months_id[20].date,
-        "count_track": 1
       }
     ]
 
     # se calcula porcentaje esperado
-    days = TimeDifference.between('2018-08-27 22:17:20'.to_date, Time.zone.now).in_days.round + 1
-    percent = (8.to_f / days) * 100
+    days = TimeDifference.between('2018-08-27 22:17:20'.to_date, Time.zone.now).in_days.round
+    @percent = (8.to_f / days) * 100
 
     data_frequency = { "max": 5,
                        "successive": 0,
-                       "percent": percent.truncate,
+                       "percent": @percent.round(1),
                        "calendar": [],
                        "months": [] }
 
@@ -258,14 +214,14 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     }
     assert @expected_not_frequency.to_json == response.body
   end
+
   test 'VerEstadisticasFrequency' do
     get '/me/habits/' + @individual_habit_frequency.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     # por la diferencia de tiempo el porcentaje da distinto, por eso se hace el redondeo
     salida = JSON.parse(response.body)
-    percent = salida['included'][0]['attributes']['stat']['data']['percent'].truncate
-    salida['included'][0]['attributes']['stat']['data']['percent'] = percent
+
     assert @expected_frequency.to_json == JSON.generate(salida)
   end
 end

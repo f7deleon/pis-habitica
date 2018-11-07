@@ -53,7 +53,9 @@ class TaskPenalizeHabitsTest < ActionDispatch::IntegrationTest
       created_at: from_date
     )
 
+    # rubocop:disable Style/DateTime:
     @habit2.track_individual_habits.create(date: DateTime.yesterday.change(hour: 23, min: 59, sec: 0))
+    # rubocop:enable Style/DateTime:
 
     post '/user_token', params: {
       'auth': {
