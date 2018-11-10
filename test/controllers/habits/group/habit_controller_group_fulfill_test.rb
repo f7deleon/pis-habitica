@@ -120,7 +120,8 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
           'max_health': User.find_by_id(@user1.id).max_health,
           'health_difference': 0, # Is at full health
           'max_experience': User.find_by_id(@user1.id).max_experience,
-          'experience_difference': @habit.increment_of_experience(@user1)
+          'experience_difference': @habit.increment_of_experience(@user1),
+          'score_difference': @habit.score_difference
         },
         'relationships': { 'group_habit': { 'data': { 'id': @habit.id.to_s, 'type': 'group_habit' } } }
       }
@@ -147,7 +148,8 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
           'max_health': User.find_by_id(@user2.id).max_health,
           'health_difference': 0, # Is at full health
           'max_experience': User.find_by_id(@user2.id).max_experience,
-          'experience_difference': @habit.increment_of_experience(@user2)
+          'experience_difference': @habit.increment_of_experience(@user2),
+          'score_difference': @habit.score_difference
         },
         'relationships': { 'group_habit': { 'data': { 'id': @habit.id.to_s, 'type': 'group_habit' } } }
       }
@@ -180,7 +182,8 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
         'attributes': {
           'max_health': User.find_by_id(@user1.id).max_health,
           'health_difference': @negative_habit.decrement_of_health(@user1), # Is at full health
-          'max_experience': User.find_by_id(@user1.id).max_experience
+          'max_experience': User.find_by_id(@user1.id).max_experience,
+          'score_difference': @negative_habit.score_difference
         },
         'relationships': { 'group_habit': { 'data': { 'id': @negative_habit.id.to_s, 'type': 'group_habit' } } }
       }
@@ -206,7 +209,8 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
         'attributes': {
           'max_health': User.find_by_id(@user2.id).max_health,
           'health_difference': @negative_habit.decrement_of_health(@user2),
-          'max_experience': User.find_by_id(@user2.id).max_experience
+          'max_experience': User.find_by_id(@user2.id).max_experience,
+          'score_difference': @negative_habit.score_difference
         },
         'relationships': { 'group_habit': { 'data': { 'id': @negative_habit.id.to_s, 'type': 'group_habit' } } }
       }

@@ -103,16 +103,15 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['name'] == @group.name
     assert body['data']['attributes']['description'] == @group.description
     assert body['data']['attributes']['privacy'] == @group.privacy
-    assert body['data']['relationships']['members']['data'].length == 2
+    assert body['data']['relationships']['members']['data'].length == 3
     assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
     assert body['data']['relationships']['group_habits']['data'].length == 2
 
-    # included data - 2 members and 1 admin, 2 group_habits
-    assert body['included'].length == 5
-    assert body['included'][0]['type'] == 'user'
-    assert body['included'][0]['attributes']['nickname'] == @user.nickname
+    # included data - 2 members and 1 admin, 2 group_habits, 1 leaderboard
+    assert body['included'].length == 6
+    assert body['included'][0]['type'] == 'group_habit'
     assert body['included'][1]['type'] == 'group_habit'
-    assert body['included'][2]['type'] == 'group_habit'
+    assert body['included'][2]['type'] == 'user'
     assert body['included'][3]['type'] == 'user'
     assert body['included'][4]['type'] == 'user'
   end
@@ -146,17 +145,15 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['name'] == @group1.name
     assert body['data']['attributes']['description'] == @group1.description
     assert body['data']['attributes']['privacy'] == @group1.privacy
-    assert body['data']['relationships']['members']['data'].length == 2
+    assert body['data']['relationships']['members']['data'].length == 3
     assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
     assert body['data']['relationships']['group_habits']['data'].length == 1
 
-    # included data - 2 members and 1 admin, 1 group_habit
-    assert body['included'].length == 4
-    assert body['included'][0]['type'] == 'user'
-    assert body['included'][0]['attributes']['nickname'] == @user.nickname
-    assert body['included'][1]['type'] == 'group_habit'
+    # included data - 2 members and 1 admin, 1 group_habit, 1 leaderboard
+    assert body['included'].length == 5
+    assert body['included'][0]['type'] == 'group_habit'
+    assert body['included'][1]['type'] == 'user'
     assert body['included'][2]['type'] == 'user'
-    assert body['included'][2]['attributes']['nickname'] == @user1.nickname
     assert body['included'][3]['type'] == 'user'
   end
 end

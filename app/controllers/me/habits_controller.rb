@@ -107,7 +107,6 @@ class Me::HabitsController < Me::ApplicationController
   end
 
   def undo_habit
-    time_now = Time.zone.now
     track_to_delete = if @habit.type.eql?('GroupHabit')
                         @habit.track_group_habits.find_all do |track|
                           track.user_id.eql?(current_user.id)
@@ -115,22 +114,15 @@ class Me::HabitsController < Me::ApplicationController
                       else # Individual
                         @habit.track_individual_habits.order(:date).last
                       end
-    unless track_to_delete && track_to_delete.date.to_date == time_now.to_date
+    unless track_to_delete && track_to_delete.date.to_date == Time.zone.now.to_date
       raise Error::CustomError.new(I18n.t('not_found'), :not_found, I18n.t('errors.messages.habit_not_fulfilled'))
     end
 
-    # Solo se le resta la vida si no habia subido de nivel con este track.
-    health_difference = current_user.modify_health(-track_to_delete.health_difference) if current_user.experience >= 0
-    render json: UndoHabitSerializer.new(
-      @habit,
-      params: {
-        health_difference: health_difference || 0,
-        # experience_difference = 0 Si el habito es negativo
-        experience_difference: current_user.modify_experience(-track_to_delete.experience_difference),
-        current_user: current_user
-      }
-    ).serialized_json, status: :accepted # 202
-    track_to_delete.delete
+    if @habit.type.eql?('GroupHabit')
+      render json: @habit.undo_track(track_to_delete, current_user), status: :accepted # 202
+    else
+      render json: @habit.undo_track(track_to_delete), status: :accepted # 202
+    end
   end
 
   private

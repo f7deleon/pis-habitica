@@ -7,7 +7,7 @@ class MemberSerializer
 
   attribute :nickname, &:nickname
   has_one :character do |object|
-    object.user_characters.find_by(is_alive: true).character
+    object.user_characters.find_by(is_alive: true)&.character
   end
 
   attribute :level, &:level

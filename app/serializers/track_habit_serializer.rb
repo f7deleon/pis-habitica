@@ -15,6 +15,7 @@ class TrackHabitSerializer
   attribute :experience_difference, if: proc { |record|
     record.experience_difference != 0
   }
+  attribute :score_difference, if: proc { |object| object.try(:group_habit) }
 
   attribute :is_dead, if: proc { |_object, params| params[:current_user].dead? } do |_object|
     true

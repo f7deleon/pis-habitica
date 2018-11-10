@@ -79,6 +79,10 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
           'members': {
             'data': [
               {
+                'id': @user_admin.id.to_s,
+                'type': 'user'
+              },
+              {
                 'id': @member1.id.to_s,
                 'type': 'user'
               },

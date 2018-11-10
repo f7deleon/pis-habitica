@@ -22,16 +22,16 @@ class Habit < ActiveRecord::Base
 
   # to calculate increments to experience and health
   def increment_of_health(user)
-    (user.max_health / 15) + 5 * (difficulty - 1).round
+    (user.max_health / 15) + HEALTH_DIFFICULTY_INCREMENT * (difficulty - 1).round
   end
 
   def increment_of_experience(user)
-    (user.max_experience / 15) + 5 * (difficulty - 1).round
+    (user.max_experience / 15) + EXP_DIFFICULTY_INCREMENT * (difficulty - 1).round
   end
 
   # to calculate decrements to health
   def decrement_of_health(user)
-    -((user.max_health / 10) + 5 * (4 - difficulty)).round
+    -((user.max_health / 10) + HEALTH_DIFFICULTY_INCREMENT * (4 - difficulty)).round
   end
 
   def been_tracked_today?(date)

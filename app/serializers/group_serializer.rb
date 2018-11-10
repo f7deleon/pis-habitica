@@ -8,8 +8,7 @@ class GroupSerializer
   attributes :name, :description, :privacy
 
   has_many :members, record_type: :user do |object|
-    @result = object.memberships.where(admin: false).map(&:user)
-    @result.sort_by! { |res| res[:nickname] }
+    object.memberships.ordered_by_score_and_name.map(&:user)
   end
 
   has_one :admin, serializer: :member, record_type: :user do |object|

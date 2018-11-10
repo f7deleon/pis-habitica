@@ -128,4 +128,20 @@ class IndividualHabit < Habit
     track_individual_habit.save!
     track_individual_habit
   end
+
+  def undo_track(track_to_delete)
+    experience_difference = user.modify_experience(-track_to_delete.experience_difference)
+    # Solo se le resta la vida si no habia subido de nivel con este track.
+    health_difference = user.modify_health(-track_to_delete.health_difference) if user.experience >= 0
+    track_to_delete.delete
+    UndoHabitSerializer.new(
+      self,
+      params: {
+        health_difference: health_difference || 0,
+        experience_difference: experience_difference,
+        score_difference: 0,
+        current_user: user
+      }
+    ).serialized_json
+  end
 end

@@ -5,7 +5,7 @@ require 'test_helper'
 class ListGroupMembersTest < ActionDispatch::IntegrationTest
   def setup
     # Create users
-    @user = User.create(nickname: 'Pai', email: 'example@example.com', password: 'Example123')
+    @user = User.create(nickname: 'Admin', email: 'example@example.com', password: 'Example123')
     post '/user_token', params: {
       'auth': {
         'email': @user.email,
@@ -14,7 +14,7 @@ class ListGroupMembersTest < ActionDispatch::IntegrationTest
     }
     @user_token = JSON.parse(response.body)['jwt']
 
-    @user1 = User.create(nickname: 'German', email: 'example1@example.com', password: 'Example123')
+    @user1 = User.create(nickname: 'Germo', email: 'example1@example.com', password: 'Example123')
     post '/user_token', params: {
       'auth': {
         'email': @user1.email,
@@ -89,7 +89,7 @@ class ListGroupMembersTest < ActionDispatch::IntegrationTest
     assert result == 200
     body = JSON.parse(response.body)
     assert body['data']['id'] == @group.id.to_s
-    assert body['data']['relationships']['members']['data'].length == 2
+    assert body['data']['relationships']['members']['data'].length == 3
     assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
 
     # included data - 2 members, 1 admin
@@ -103,7 +103,7 @@ class ListGroupMembersTest < ActionDispatch::IntegrationTest
     assert body['included'][2]['attributes']['nickname'] == @user1.nickname
   end
 
-  test 'My group without members' do
+  test 'My group where the only member is the admin' do
     url = '/me/groups/' + @group1.id.to_s
     result = get url, headers: { 'Authorization': 'Bearer ' + @user_token }
     assert result == 200
@@ -111,7 +111,7 @@ class ListGroupMembersTest < ActionDispatch::IntegrationTest
     assert body['data']['id'] == @group1.id.to_s
 
     # included data - 0 members, 1 admin
-    assert body['data']['relationships']['members']['data'].empty?
+    assert body['data']['relationships']['members']['data'].length == 1
     assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
   end
 
@@ -122,17 +122,17 @@ class ListGroupMembersTest < ActionDispatch::IntegrationTest
     assert result == 200
     body = JSON.parse(response.body)
     assert body['data']['id'] == @group3.id.to_s
-    assert body['data']['relationships']['members']['data'].length == 2
+    assert body['data']['relationships']['members']['data'].length == 3
     assert body['data']['relationships']['admin']['data']['id'] == @user1.id.to_s
 
     # included data - 2 members, 1 admin
     assert body['included'][0]['type'] == 'user'
     # admin:
-    assert body['included'][0]['attributes']['nickname'] == @user1.nickname
+    assert body['included'][0]['attributes']['nickname'] == @user.nickname
     # members:
     assert body['included'][1]['type'] == 'user'
     assert body['included'][1]['attributes']['nickname'] == @user2.nickname
     assert body['included'][2]['type'] == 'user'
-    assert body['included'][2]['attributes']['nickname'] == @user.nickname
+    assert body['included'][2]['attributes']['nickname'] == @user1.nickname
   end
 end

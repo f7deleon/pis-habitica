@@ -6,7 +6,7 @@ require 'test_helper'
 class MeGroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
   def setup
     # Create users
-    @user = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
+    @user = User.create(nickname: 'Admin', email: 'example@example.com', password: 'Example123')
     post '/user_token', params: {
       'auth': {
         'email': @user.email,
@@ -103,17 +103,17 @@ class MeGroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['name'] == @group.name
     assert body['data']['attributes']['description'] == @group.description
     assert body['data']['attributes']['privacy'] == @group.privacy
-    assert body['data']['relationships']['members']['data'].length == 2
+    assert body['data']['relationships']['members']['data'].length == 3
     assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
     assert body['data']['relationships']['group_habits']['data'].length == 2
 
-    # included data - 2 members, 2 group_habits, 1 admin
-    assert body['included'].length == 5
-    assert body['included'][0]['type'] == 'user'
-    # check @user is admin
-    assert body['included'][0]['attributes']['nickname'] == @user.nickname
+    # included data - 2 members, 2 group_habits, 1 admin, 1 leaderboad
+    assert body['included'].length == 6
+    assert body['included'][0]['type'] == 'group_habit'
     assert body['included'][1]['type'] == 'group_habit'
-    assert body['included'][2]['type'] == 'group_habit'
+    assert body['included'][2]['type'] == 'user'
+    # check @user is admin
+    assert body['included'][2]['attributes']['nickname'] == @user.nickname
     assert body['included'][3]['type'] == 'user'
     assert body['included'][4]['type'] == 'user'
   end
@@ -129,16 +129,14 @@ class MeGroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['name'] == @group1.name
     assert body['data']['attributes']['description'] == @group1.description
     assert body['data']['attributes']['privacy'] == @group1.privacy
-    assert body['data']['relationships']['members']['data'].length == 1
+    assert body['data']['relationships']['members']['data'].length == 2
     assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
     assert body['data']['relationships']['group_habits']['data'].length == 1
 
-    # included data - 1 member, 1 group_habit, 1 admin
-    assert body['included'].length == 3
-    assert body['included'][0]['type'] == 'user'
-    # check @user is admin
-    assert body['included'][0]['attributes']['nickname'] == @user.nickname
-    assert body['included'][1]['type'] == 'group_habit'
+    # included data - 1 member, 1 group_habit, 1 admin, 1 leaderboad
+    assert body['included'].length == 4
+    assert body['included'][0]['type'] == 'group_habit'
+    assert body['included'][1]['type'] == 'user'
     assert body['included'][2]['type'] == 'user'
   end
 
@@ -153,17 +151,17 @@ class MeGroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['name'] == @group.name
     assert body['data']['attributes']['description'] == @group.description
     assert body['data']['attributes']['privacy'] == @group.privacy
-    assert body['data']['relationships']['members']['data'].length == 2
+    assert body['data']['relationships']['members']['data'].length == 3
     # check @user1 is a member
-    assert body['data']['relationships']['members']['data'][0]['id'] == @user1.id.to_s
+    assert body['data']['relationships']['members']['data'][1]['id'] == @user1.id.to_s
     assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
     assert body['data']['relationships']['group_habits']['data'].length == 2
 
-    # included data - 2 members, 2 group_habits, 1 admin
-    assert body['included'].length == 5
-    assert body['included'][0]['type'] == 'user'
+    # included data - 2 members, 2 group_habits, 1 admin, 1 leaderboad
+    assert body['included'].length == 6
+    assert body['included'][0]['type'] == 'group_habit'
     assert body['included'][1]['type'] == 'group_habit'
-    assert body['included'][2]['type'] == 'group_habit'
+    assert body['included'][2]['type'] == 'user'
     assert body['included'][3]['type'] == 'user'
     assert body['included'][4]['type'] == 'user'
   end
@@ -178,16 +176,16 @@ class MeGroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['name'] == @group1.name
     assert body['data']['attributes']['description'] == @group1.description
     assert body['data']['attributes']['privacy'] == @group1.privacy
-    assert body['data']['relationships']['members']['data'].length == 1
+    assert body['data']['relationships']['members']['data'].length == 2
     # check @user1 is a member
-    assert body['data']['relationships']['members']['data'][0]['id'] == @user3.id.to_s
+    assert body['data']['relationships']['members']['data'][1]['id'] == @user3.id.to_s
     assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
     assert body['data']['relationships']['group_habits']['data'].length == 1
 
-    # included data - 1 member, 1 group_habit, 1 admin
-    assert body['included'].length == 3
-    assert body['included'][0]['type'] == 'user'
-    assert body['included'][1]['type'] == 'group_habit'
+    # included data - 1 member, 1 group_habit, 1 admin, 1 leaderboad
+    assert body['included'].length == 4
+    assert body['included'][0]['type'] == 'group_habit'
+    assert body['included'][1]['type'] == 'user'
     assert body['included'][2]['type'] == 'user'
   end
 end

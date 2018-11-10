@@ -16,6 +16,9 @@ class UndoHabitSerializer
   attribute :experience_difference do |_object, params|
     params[:experience_difference]
   end
+  attribute :score_difference, if: proc { |object| object.type.eql?('GroupHabit') } do |_object, params|
+    params[:score_difference]
+  end
   attribute :is_dead, if: proc { |_object, params| params[:current_user].dead? } do
     true
   end

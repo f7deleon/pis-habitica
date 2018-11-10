@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_25_230546) do
+ActiveRecord::Schema.define(version: 2018_11_08_002049) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,6 +74,7 @@ ActiveRecord::Schema.define(version: 2018_10_25_230546) do
     t.boolean "admin"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "score"
     t.index ["group_id"], name: "index_memberships_on_group_id"
     t.index ["user_id"], name: "index_memberships_on_user_id"
   end
@@ -106,6 +107,7 @@ ActiveRecord::Schema.define(version: 2018_10_25_230546) do
     t.datetime "date"
     t.integer "health_difference"
     t.integer "experience_difference"
+    t.integer "score_difference"
     t.index ["habit_id"], name: "index_track_group_habits_on_habit_id"
     t.index ["user_id"], name: "index_track_group_habits_on_user_id"
   end
@@ -137,15 +139,6 @@ ActiveRecord::Schema.define(version: 2018_10_25_230546) do
     t.index ["user_id"], name: "index_user_characters_on_user_id"
   end
 
-  create_table "user_groups", primary_key: ["user_id", "group_id"], force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "group_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["group_id"], name: "index_user_groups_on_group_id"
-    t.index ["user_id"], name: "index_user_groups_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "nickname"
     t.string "email"
@@ -173,6 +166,4 @@ ActiveRecord::Schema.define(version: 2018_10_25_230546) do
   add_foreign_key "types", "users"
   add_foreign_key "user_characters", "characters"
   add_foreign_key "user_characters", "users"
-  add_foreign_key "user_groups", "groups"
-  add_foreign_key "user_groups", "users"
 end

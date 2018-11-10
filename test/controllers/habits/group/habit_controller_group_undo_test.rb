@@ -85,9 +85,7 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
     user.save
     post '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
-    }, params: {
-      'data': { 'type': 'date', 'attributes': { 'date': Time.zone.now.iso8601 } }
-    }
+    }, params: { 'data': { 'type': 'date', 'attributes': { 'date': Time.zone.now.iso8601 } } }
     delete '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
@@ -99,7 +97,8 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
           'max_health': User.find_by_id(@user.id).max_health,
           'health_difference': -@group_habit.increment_of_health(@user),
           'max_experience': User.find_by_id(@user.id).max_experience,
-          'experience_difference': -@group_habit.increment_of_experience(@user)
+          'experience_difference': -@group_habit.increment_of_experience(@user),
+          'score_difference': -@group_habit.score_difference
         }
       }
     }
@@ -121,7 +120,8 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
           'max_health': User.find_by_id(@user.id).max_health,
           'health_difference': -@group_habit_negative.decrement_of_health(@user),
           'max_experience': User.find_by_id(@user.id).max_experience,
-          'experience_difference': 0
+          'experience_difference': 0,
+          'score_difference': -@group_habit_negative.score_difference
         }
       }
     }
@@ -154,7 +154,8 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
           'max_health': User.find_by_id(@user.id).max_health,
           'health_difference': 0,
           'max_experience': User.find_by_id(@user.id).max_experience,
-          'experience_difference': -(@group_habit.increment_of_experience(User.find(@user.id)) - 1)
+          'experience_difference': -(@group_habit.increment_of_experience(User.find(@user.id)) - 1),
+          'score_difference': -@group_habit.score_difference
         }
       }
     }

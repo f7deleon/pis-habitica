@@ -15,9 +15,15 @@ class Me::GroupsController < Me::ApplicationController
   # GET /me/groups/gid
   def show
     options = {}
-    options[:include] = %i[group_habits members admin]
-    options[:params] = { id: current_user.id }
-    render json: GroupSerializer.new(@group, options).serialized_json, status: :ok
+    options[:include] = %i[group_habits members]
+
+    memberships = @group.memberships.ordered_by_score_and_name
+    data = {}
+    memberships.each_with_index do |membership, i|
+      data[i + 1] = { id: membership.user_id, score: membership.score }
+    end
+
+    render json: GroupAndScoresSerializer.json(data, @group, options), status: :ok
   end
 
   # POST /me/groups
