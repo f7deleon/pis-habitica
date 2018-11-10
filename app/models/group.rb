@@ -14,6 +14,15 @@ class Group < ApplicationRecord
   self.primary_key = :id
   validates :name, presence: true # string
 
+  def erase_member(user_id)
+    memberships.find_by_user_id(user_id).delete
+    return if memberships.find_by_admin(true)
+
+    new_admin = memberships.order('created_at ASC').first
+    new_admin.admin = true
+    new_admin.save
+  end
+
   def update_members(members, admin)
     # check if new members have a friendship with the admin user and if user exists
     members.each do |member|

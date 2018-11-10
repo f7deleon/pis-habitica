@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Me::GroupsController < Me::ApplicationController
-  before_action :set_group, only: %i[add_habits show habits habit update_members]
+  before_action :set_group, only: %i[add_habits show habits habit update_members destroy]
   before_action :create_habit, only: %i[add_habits]
   before_action :create_group, only: %i[create]
   before_action :update_members_requirements, only: %i[update_members]
@@ -101,6 +101,11 @@ class Me::GroupsController < Me::ApplicationController
   def update_members
     @group.update_members(params[:data], current_user)
     render json: GroupSerializer.new(@group).serialized_json, status: :created
+  end
+
+  def destroy
+    @group.erase_member(current_user.id)
+    render status: 204
   end
 
   private
