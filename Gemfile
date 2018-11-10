@@ -18,8 +18,10 @@ gem 'puma', '~> 3.11'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
+gem 'api-pagination'
 gem 'bcrypt', '~> 3.1.7'
 gem 'composite_primary_keys', '=11.0'
+gem 'will_paginate', '~> 3.1.0'
 # Use ActiveStorage variant
 # gem 'mini_magick', '~> 4.8'
 gem 'rubocop', require: false

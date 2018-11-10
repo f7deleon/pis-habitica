@@ -32,6 +32,12 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
                                                difficulty: 3,
                                                privacy: 1,
                                                frequency: 1)
+    @individual_habit = IndividualHabit.create(user_id: @user.id,
+                                               name: 'showHabitsTest',
+                                               description: 'showHabitsTest',
+                                               difficulty: 3,
+                                               privacy: 1,
+                                               frequency: 1)
     @user.individual_habits << @individual_habit
   end
 
@@ -49,5 +55,19 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
   test 'Get an individual habit from a non existing user id' do
     result = get "/me/habits/#{@individual_habit.id}", headers: { 'Authorization': 'Bearer faketoken' }
     assert result == 401
+  end
+
+  test 'Get habits paginated' do
+    result = get '/me/habits?page=1', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert result == 200
+    output = JSON.parse(response.body)
+    assert output['data'].length == Habit.all.where(user_id: @user.id).length
+  end
+
+  test 'Get habits paginated empty' do
+    result = get '/me/habits?page=100', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert result == 200
+    output = JSON.parse(response.body)
+    assert output['data'].empty?
   end
 end

@@ -8,7 +8,7 @@ class Me::GroupsController < Me::ApplicationController
 
   # GET /me/groups
   def index
-    groups = current_user.groups
+    groups = paginate current_user.groups, per_page: params['per_page'].to_i
     render json: GroupInfoSerializer.new(groups).serialized_json
   end
 

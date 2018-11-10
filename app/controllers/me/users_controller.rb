@@ -7,10 +7,6 @@ class Me::UsersController < Me::ApplicationController
       raise Error::CustomError.new(I18n.t('not_found'), '404',
                                    I18n.t('errors.messages.no_character_created'))
     end
-    options = {}
-    time_zone = params[:time_zone]
-    options[:include] = %i[individual_habits friends groups]
-    render json: UserHomeSerializer.new(current_user, params: { time_zone: time_zone },
-                                                      include: options[:include]).serialized_json
+    render json: UserHomeSerializer.new(current_user).serialized_json
   end
 end

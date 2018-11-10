@@ -6,12 +6,13 @@ class Me::HabitsController < Me::ApplicationController
   before_action :fulfill_habit, only: %i[fulfill]
   before_action :check_alive, only: %i[undo_habit]
   before_action :set_habit, only: %i[update destroy fulfill show stat_habit undo_habit]
+  before_action :check_params, only: %(index)
 
   # GET /me/habits
   def index
     habits = current_user.individual_habits
-    habits = habits.order('name ASC').select(&:active)
-    render json: IndividualHabitInfoSerializer.new(habits).serialized_json
+    habits = paginate habits.where(active: true).order('name ASC'), per_page: params['per_page'].to_i
+    render json: IndividualHabitInfoSerializer.new(habits, params: { time_zone: params['time_zone'] }).serialized_json
   end
 
   # POST /me/habits
@@ -174,5 +175,10 @@ class Me::HabitsController < Me::ApplicationController
   # Only allow a trusted parameter 'white list' through.
   def habit_params
     params.require(:habit).permit(:user_id, :name, :frequency, :difficulty, :privacy)
+  end
+
+  def check_params
+    params.require(:page)
+    params.permit(:time_zone)
   end
 end

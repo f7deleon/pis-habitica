@@ -193,13 +193,6 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['nickname'] == @user1.nickname
     assert body['data']['attributes']['has_notifications'].zero?
     assert body['data']['relationships']['character'].length == 1
-    assert body['data']['relationships']['friends']['data'].length == 1
-    assert body['data']['relationships']['individual_habits']['data'].length == 2
-
-    # included data - 1 friend and 2 individual_habits
-    assert body['included'][0]['type'] == 'user'
-    assert body['included'][2]['type'] == 'individual_habit'
-    assert body['included'][3]['type'] == 'individual_habit'
   end
 
   # Tests /me - Ir a home
@@ -213,13 +206,6 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['has_notifications'].zero?
     assert body['data']['attributes']['is_dead']
     assert body['data']['relationships']['character']['data'].nil?
-    assert body['data']['relationships']['friends']['data'].length == 1
-    assert body['data']['relationships']['individual_habits']['data'].length == 2
-
-    # included data - 1 friend and 2 individual_habits
-    assert body['included'][0]['type'] == 'user'
-    assert body['included'][2]['type'] == 'individual_habit'
-    assert body['included'][3]['type'] == 'individual_habit'
   end
 
   test 'Ir a home: user2 with no created character' do
@@ -227,20 +213,6 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert_equal 404, status
     body = JSON.parse(response.body)
     assert body['errors'][0]['message'] == 'This user has not created a character yet'
-  end
-
-  test 'Ir a home: user4 without habits' do
-    get '/me', headers: { 'Authorization': 'Bearer ' + @user4_token.to_s }
-    assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['individual_habits']['data'].empty?
-  end
-
-  test 'Ir a home: user without friends' do
-    get '/me', headers: { 'Authorization': 'Bearer ' + @user_token.to_s }
-    assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['friends']['data'].empty?
   end
 
   test 'Ir a home: user4 with seen notifications' do
@@ -255,29 +227,5 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert_equal 200, status
     body = JSON.parse(response.body)
     assert body['data']['attributes']['has_notifications'] == 3
-  end
-
-  test 'Ir a home: user with 2 groups' do
-    get '/me', headers: { 'Authorization': 'Bearer ' + @user_token.to_s }
-    assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['groups']['data'].length.eql? 2
-    assert body['included'][0]['type'].eql? 'group'
-    assert body['included'][1]['type'].eql? 'group'
-  end
-
-  test 'Ir a home: user with 1 group' do
-    get '/me', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s }
-    assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['groups']['data'].length.eql? 1
-    assert body['included'][1]['type'].eql? 'group'
-  end
-
-  test 'Ir a home: user without groups' do
-    get '/me', headers: { 'Authorization': 'Bearer ' + @user3_token.to_s }
-    assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['groups']['data'].length.eql? 0
   end
 end

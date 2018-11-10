@@ -7,7 +7,8 @@ class Me::FriendsController < Me::ApplicationController
   # GET me/friends
   # Listar Amigos
   def index
-    render json: UserSerializer.new(current_user.friends,
+    friends = paginate current_user.friends, per_page: params['per_page'].to_i
+    render json: UserSerializer.new(friends,
                                     params: { current_user: current_user }).serialized_json, status: :ok
   end
 

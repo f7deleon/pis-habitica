@@ -18,12 +18,4 @@ class UserHomeSerializer
   attribute :is_dead, &:dead?
 
   has_one :character, id_method_name: :alive_character
-
-  has_many :friends
-
-  has_many :individual_habits, serializer: :individual_habit_info do |object|
-    object.individual_habits.order('name ASC').select(&:active)
-  end
-
-  has_many :groups, serializer: :group_info
 end
