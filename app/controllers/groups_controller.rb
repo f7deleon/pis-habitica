@@ -20,16 +20,16 @@ class GroupsController < ApplicationController
     raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.group_is_private')) unless
       !@group.privacy || current_user.groups.find_by(id: params[:id])
 
-    options = {}
-    options[:include] = %i[group_habits members]
+    options = %i[group_habits members]
 
     memberships = @group.memberships.ordered_by_score_and_name
     data = {}
     memberships.each_with_index do |membership, i|
       data[i + 1] = { id: membership.user_id, score: membership.score }
     end
+    parameters = { id: current_user.id, time_zone: params['time_zone'] }
 
-    render json: GroupAndScoresSerializer.json(data, @group, options), status: :ok
+    render json: GroupAndScoresSerializer.json(data, @group, options, parameters), status: :ok
   end
 
   # GET /users/:user_id/groups/:id/habits
