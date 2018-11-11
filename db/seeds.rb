@@ -37,6 +37,8 @@ User.create([
   { nickname: 'Mufasa', email: 'mufasa@habitica.com', password: '12341234'}
 ])
 
+user_ocd = User.create(nickname: "OCD_Champion", email: "ocd@demo.com", password: "12341234")
+
 User.all.each do |user|
   character_id = Character.order("RANDOM()").limit(1).first.id
   character = Character.find(character_id)
@@ -67,6 +69,10 @@ IndividualHabit.create([
   {user_id: user3.id, name: 'protegido', description: 'protegido', difficulty: 2, privacy: 2, frequency: 1},
   {user_id: user3.id, name: 'privado', description: 'privado', difficulty: 3, privacy: 3, frequency: 1},
 ])
+
+50.times do |i|
+  IndividualHabit.create(user_id: user_ocd.id, name: "habito: #{i}", description: i.to_s, difficulty: 2, privacy: 1, frequency: 2, created_at: from_date)
+end
 
 habit = IndividualHabit.first
 habit2 = IndividualHabit.second
