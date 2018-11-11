@@ -6,7 +6,6 @@ class Me::HabitsController < Me::ApplicationController
   before_action :fulfill_habit, only: %i[fulfill]
   before_action :check_alive, only: %i[undo_habit]
   before_action :set_habit, only: %i[update destroy fulfill show stat_habit undo_habit]
-  before_action :check_params, only: %(index)
 
   # GET /me/habits
   def index
@@ -175,10 +174,5 @@ class Me::HabitsController < Me::ApplicationController
   # Only allow a trusted parameter 'white list' through.
   def habit_params
     params.require(:habit).permit(:user_id, :name, :frequency, :difficulty, :privacy)
-  end
-
-  def check_params
-    params.require(:page)
-    params.permit(:time_zone)
   end
 end
