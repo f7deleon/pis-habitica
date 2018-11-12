@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   post 'user_token' => 'user_token#create'
   resources :types
   resources :users do
+    resources :friends, only: %i[index]
     resources :habits, only: %i[show index]
     resources :groups, only: %i[show index] do
       member do

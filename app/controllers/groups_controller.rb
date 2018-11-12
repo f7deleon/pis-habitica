@@ -6,9 +6,7 @@ class GroupsController < ApplicationController
 
   # GET /users/:user_id/groups
   def index
-    groups = @user.groups.find_by(privacy: false)
-    options = {}
-    options[:include] = %i[group_habits members admin]
+    groups = paginate @user.groups.where(privacy: false).order('name ASC'), per_page: params[:per_page].to_i
     render json: GroupInfoSerializer.new(groups).serialized_json
   end
 

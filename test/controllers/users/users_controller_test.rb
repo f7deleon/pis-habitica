@@ -56,7 +56,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     ### friends
     @friendship = Friendship.create(user_id: @user1.id, friend_id: @user2.id)
 
-    @my_friends = UserSerializer.new([@user2], params: { current_user: @user1 }).serialized_json
+    @my_friends = UserInfoSerializer.new([@user2], params: { current_user: @user1 }).serialized_json
 
     ### Characters creation
     @character = Character.create(name: 'Humano',
@@ -99,7 +99,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
       description: 'Example desc',
       difficulty: 3,
       privacy: 1,
-
       frequency: 1,
       active: true
     )

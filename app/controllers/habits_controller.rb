@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
 class HabitsController < ApplicationController
+  require 'will_paginate/array'
   before_action :set_user_and_habit, only: %i[index show]
 
   # GET /user/:user_id/habits
 
   def index
-    habits = @user.get_habits_from_user(current_user)
+    habits = paginate @user.get_habits_from_user(current_user), per_page: params[:per_page].to_i
 
     render json: IndividualHabitInfoSerializer.new(habits).serialized_json
   end
