@@ -17,9 +17,9 @@ class Me::GroupsController < Me::ApplicationController
     options = %i[group_habits members]
 
     memberships = @group.memberships.ordered_by_score_and_name
-    data = {}
+    data = []
     memberships.each_with_index do |membership, i|
-      data[i + 1] = { id: membership.user_id, score: membership.score }
+      data[i] = { id: membership.user_id, score: membership.score }
     end
     parameters = { id: current_user.id, time_zone: params['time_zone'] }
     render json: GroupAndScoresSerializer.json(data, @group, options, parameters), status: :ok

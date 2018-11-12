@@ -90,12 +90,12 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     @expected1 = {
       'type': 'leaderboard',
       'attributes': {
-        'leaderboard': {
-          '1': { 'id': @user1.id, 'score': 15 },
-          '2': { 'id': @admin.id, 'score': 5 },
-          '3': { 'id': @user3.id, 'score': 0 },
-          '4': { 'id': @user2.id, 'score': -10 }
-        }
+        'leaderboard': [
+          { 'id': @user1.id, 'score': 15 },
+          { 'id': @admin.id, 'score': 5 },
+          { 'id': @user3.id, 'score': 0 },
+          { 'id': @user2.id, 'score': -10 }
+        ]
       }
     }
 
@@ -103,12 +103,12 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     @expected2 = {
       'type': 'leaderboard',
       'attributes': {
-        'leaderboard': {
-          '1': { 'id': @user3.id, 'score': 20 },
-          '2': { 'id': @admin.id, 'score': 5 },
-          '3': { 'id': @user1.id, 'score': 0 },
-          '4': { 'id': @user2.id, 'score': -5 }
-        }
+        'leaderboard': [
+          { 'id': @user3.id, 'score': 20 },
+          { 'id': @admin.id, 'score': 5 },
+          { 'id': @user1.id, 'score': 0 },
+          { 'id': @user2.id, 'score': -5 }
+        ]
       }
     }
   end
