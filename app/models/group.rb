@@ -16,11 +16,13 @@ class Group < ApplicationRecord
 
   def erase_member(user_id)
     memberships.find_by_user_id(user_id).delete
-    return if memberships.find_by_admin(true)
+    return true if memberships.length.zero?
+    return false if memberships.find_by_admin(true)
 
     new_admin = memberships.order('created_at ASC').first
     new_admin.admin = true
     new_admin.save
+    false
   end
 
   def update_members(members, admin)

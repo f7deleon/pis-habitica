@@ -109,7 +109,7 @@ class Me::GroupsController < Me::ApplicationController
   end
 
   def destroy
-    @group.erase_member(current_user.id)
+    @group.delete if @group.erase_member(current_user.id)
     render status: 204
   end
 

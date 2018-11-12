@@ -152,14 +152,14 @@ ActiveRecord::Schema.define(version: 2018_11_08_002049) do
   end
 
   add_foreign_key "friendships", "users"
-  add_foreign_key "habits", "groups"
+  add_foreign_key "habits", "groups", on_delete: :cascade
   add_foreign_key "habits", "users"
   add_foreign_key "memberships", "groups"
   add_foreign_key "memberships", "users"
   add_foreign_key "notifications", "requests", on_delete: :cascade
   add_foreign_key "notifications", "track_individual_habits", on_delete: :cascade
   add_foreign_key "requests", "users"
-  add_foreign_key "track_group_habits", "habits"
+  add_foreign_key "track_group_habits", "habits", on_delete: :cascade
   add_foreign_key "track_group_habits", "users"
   add_foreign_key "track_individual_habits", "habits"
   add_foreign_key "types", "groups"

@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
+class AbandonGroupTest < ActionDispatch::IntegrationTest
   def setup
     # Create users
     @user = User.create(nickname: 'Pai', email: 'example@example.com', password: 'Example123')
@@ -87,10 +87,25 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     # Add admins
     Membership.create(user_id: @user1.id, admin: true, group_id: @group.id)
     Membership.create(user_id: @user4.id, admin: true, group_id: @group1.id)
+    Membership.create(user_id: @user4.id, admin: true, group_id: @group2.id)
 
     # Add members (not admins)
     Membership.create(user_id: @user2.id, admin: false, group_id: @group.id)
     Membership.create(user_id: @user5.id, admin: false, group_id: @group1.id)
+
+    # create a group habit
+    @habit = GroupHabit.create(
+      group_id: @group2.id,
+      name: 'Example',
+      description: 'Example',
+      difficulty: 3,
+      privacy: 1,
+      frequency: 2,
+      active: true,
+      negative: false
+    )
+    @group2_id = @group2.id
+    @habit_id = @habit.id
   end
 
   test 'Abandon group: not admin user abandon group' do
@@ -125,5 +140,12 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
   test 'Abandon group: error in URL' do
     r = delete '/me/groups/r', headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
     assert r, 404
+  end
+
+  test 'Abandon group: admin and only member abandon group. Group gets deleted' do
+    r = delete '/me/groups/' + @group2.id.to_s, headers: { 'Authorization': 'Bearer ' + @user4_token.to_s }
+    assert r, 204
+    assert Group.all.find_by_id(@group2.id).nil?
+    assert GroupHabit.all.find_by_id(@habit.id).nil?
   end
 end
