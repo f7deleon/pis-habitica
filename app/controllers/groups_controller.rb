@@ -33,7 +33,7 @@ class GroupsController < ApplicationController
   # GET /users/:user_id/groups/:id
   def show
     raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
-      (@group = @user.groups.find_by(id: params[:id]))
+      (@group = Group.find_by(id: params[:id]))
 
     raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.group_is_private')) unless
       !@group.privacy || current_user.groups.find_by(id: params[:id])
@@ -55,7 +55,7 @@ class GroupsController < ApplicationController
       raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.not_belong'))
     end
 
-    habits = @group.group_habits
+    habits = @group.group_habits.order('name ASC').select(&:active)
     options = {}
     options[:include] = %i[types]
     options[:params] = { id: @user.id }

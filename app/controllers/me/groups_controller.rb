@@ -49,7 +49,7 @@ class Me::GroupsController < Me::ApplicationController
 
   # GET /me/groups/id/habits
   def habits
-    habits = @group.group_habits
+    habits = @group.group_habits.order('name ASC').select(&:active)
     render json: GroupHabitInfoSerializer.new(habits, params: { id: current_user.id }).serialized_json, status: :ok
   end
 
