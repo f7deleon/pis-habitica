@@ -36,6 +36,17 @@ ActiveRecord::Schema.define(version: 2018_11_08_002049) do
     t.index ["type_id"], name: "index_group_habit_has_types_on_type_id"
   end
 
+  create_table "group_requests", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "group_id"
+    t.bigint "receiver_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_group_requests_on_group_id"
+    t.index ["receiver_id"], name: "index_group_requests_on_receiver_id"
+    t.index ["user_id"], name: "index_group_requests_on_user_id"
+  end
+
   create_table "groups", force: :cascade do |t|
     t.string "name"
     t.string "description"
@@ -86,8 +97,10 @@ ActiveRecord::Schema.define(version: 2018_11_08_002049) do
     t.bigint "request_id"
     t.bigint "track_individual_habit_id"
     t.boolean "seen"
+    t.bigint "group_request_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["group_request_id"], name: "index_notifications_on_group_request_id", unique: true
     t.index ["request_id"], name: "index_notifications_on_request_id", unique: true
     t.index ["track_individual_habit_id"], name: "index_notifications_on_track_individual_habit_id", unique: true
   end
@@ -152,10 +165,13 @@ ActiveRecord::Schema.define(version: 2018_11_08_002049) do
   end
 
   add_foreign_key "friendships", "users"
+  add_foreign_key "group_requests", "groups"
+  add_foreign_key "group_requests", "users"
   add_foreign_key "habits", "groups", on_delete: :cascade
   add_foreign_key "habits", "users"
   add_foreign_key "memberships", "groups"
   add_foreign_key "memberships", "users"
+  add_foreign_key "notifications", "group_requests", on_delete: :cascade
   add_foreign_key "notifications", "requests", on_delete: :cascade
   add_foreign_key "notifications", "track_individual_habits", on_delete: :cascade
   add_foreign_key "requests", "users"

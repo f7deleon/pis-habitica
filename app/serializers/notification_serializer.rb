@@ -10,6 +10,8 @@ class NotificationSerializer
       record.request.user
     elsif record.type.eql? 'FriendshipNotification'
       record.sender
+    else
+      record.group_request.user
     end
   end
 
@@ -21,4 +23,7 @@ class NotificationSerializer
              serializer: :track_habit,
              id_method_name: :track_individual_habit_id,
              if: proc { |record| record.type.eql? 'PenalizeNotification' }
+
+  belongs_to :group_request, record_type: :group_request, serializer: :group_request,
+                             if: proc { |record| record.type.eql? 'GroupRequestNotification' }
 end

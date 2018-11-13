@@ -219,9 +219,7 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     get '/habits/' + @individual_habit_frequency.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }
-    # por la diferencia de tiempo el porcentaje da distinto, por eso se hace el redondeo
     salida = JSON.parse(response.body)
-
-    assert @expected_frequency.to_json == JSON.generate(salida)
+    assert @percent.truncate == salida['included'][0]['attributes']['stat']['data']['percent'].truncate
   end
 end

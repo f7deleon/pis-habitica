@@ -56,6 +56,7 @@ en:
       daily_fulfilled: "Habit frequency is daily and it has been fulfilled today"
       typeless_habit: "Habit needs at least one type"
       already_friend: "This user is already your friend"
+      already_member_group: "This user is already a member of this group"
       self_friend_request: "You can't send a friend request to yourself"
       no_character_created: "This user has not created a character yet"
       self_friend_friendship: "You can't add yourself as a friend"

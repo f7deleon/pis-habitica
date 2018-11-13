@@ -23,6 +23,9 @@ class User < ApplicationRecord
   has_many :requests_sent, class_name: 'Request', foreign_key: :user_id
   has_many :requests_received, class_name: 'Request', foreign_key: :receiver_id
 
+  has_many :group_requests_sent, class_name: 'GroupRequest', foreign_key: :user_id
+  has_many :group_requests_received, class_name: 'GroupRequest', foreign_key: :receiver_id
+
   self.primary_key = :id
   validates :nickname, presence: true, uniqueness: true # string
   validates :email, presence: true, uniqueness: true # string

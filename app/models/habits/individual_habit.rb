@@ -29,6 +29,7 @@ class IndividualHabit < Habit
   end
 
   def get_sucesive_max(time)
+    time_new = Time.new(time.year, time.month, time.day)
     track_list = track_individual_habits.order(:date).select do |track|
       track.health_difference >= 0
     end
@@ -37,9 +38,9 @@ class IndividualHabit < Habit
     difference = 0
     all_successive = []
     time_begin = created_at
-    all_percent = TimeDifference.between(time_begin, time).in_days.round + 1
+    all_percent = TimeDifference.between(time_begin, time_new).in_days.round + 1
     # caso de el mismo dia que creo el habito y consulto estadistica
-    all_percent = 1 if TimeDifference.between(time_begin, time).in_days.round.zero?
+    all_percent = 1 if TimeDifference.between(time_begin, time_new).in_days.round.zero?
     count_all = 0
     percent = 0
     track_list.each do |track_habit|

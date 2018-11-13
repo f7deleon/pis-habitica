@@ -52,8 +52,10 @@ User.all.each do |user|
   end
 end
 
-from_date = Date.new(2018, 9, 1)
-to_date   = Date.new(2018, 9, 30)
+now = Time.zone.now
+month_3later = now.month.to_i - 2
+from_date = Date.new(2018, month_3later, 1)
+to_date   = Date.new(2018, month_3later, 30)
 
 user3 = User.find_by!(nickname: 'ElRodra')
 

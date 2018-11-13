@@ -40,6 +40,15 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  resources :groups do
+    member do
+      post 'requests', to: 'request_group#send_request'
+      get 'requests', to: 'request_group#requests'
+    end
+  end
+  # - FOR DEVELOPMENT ONLY
+  get '/killme', to: 'users#killme'
   get '/groups', to: 'groups#find_group'
   # For details on the DSL available wihthin this file, see http://guides.rubyonrails.org/routing.htm
 end
