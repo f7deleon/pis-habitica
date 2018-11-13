@@ -13,12 +13,12 @@ class UsersController < ApplicationController
     my_friends = current_user.friends.select do |item|
       item.nickname.downcase.include?(params[:filter].downcase)
     end
-    my_friends.sort_by! { |e| e[:nickname].downcase } unless my_friends.length.zero?
+    my_friends.sort_by! { |friend| friend[:nickname].downcase } unless my_friends.length.zero?
     other_users = User.all.select do |item|
       item.id != current_user.id && item.nickname.downcase.include?(params[:filter].downcase) &&
         !current_user.friends.include?(item)
     end
-    other_users.sort_by! { |e| e[:nickname].downcase } unless other_users.length.zero?
+    other_users.sort_by! { |user| user[:nickname].downcase } unless other_users.length.zero?
     users = paginate my_friends.concat(other_users), per_page: params['per_page'].to_i
     render json: UserInfoSerializer.new(users, params: { current_user: current_user }).serialized_json, status: :ok
   end

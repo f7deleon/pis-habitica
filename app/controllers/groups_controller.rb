@@ -22,10 +22,12 @@ class GroupsController < ApplicationController
     public_groups = Group.all.select do |item|
       item.name.downcase.include?(params[:filter].downcase) && !item.privacy && !item.member_in_group(current_user.id)
     end
-    my_groups.sort_by! { |e| e[:name].downcase } unless my_groups.length.zero?
-    public_groups.sort_by! { |e| e[:name].downcase } unless public_groups.length.zero?
+    my_groups.sort_by! { |group| group[:name].downcase } unless my_groups.length.zero?
+    public_groups.sort_by! { |group| group[:name].downcase } unless public_groups.length.zero?
     groups = paginate my_groups.concat(public_groups), per_page: params['per_page'].to_i
-    render json: GroupInfoSerializer.new(groups).serialized_json, status: :ok
+    options = {}
+    options[:params] = { current_user: current_user }
+    render json: GroupInfoSerializer.new(groups, options).serialized_json, status: :ok
   end
 
   # GET /users/:user_id/groups/:id

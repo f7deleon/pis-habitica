@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # - FOR DEVELOPMENT ONLY
-  get '/killme', to: 'users#killme'
-
   post 'user_token' => 'user_token#create'
+  get '/groups', to: 'groups#find_group'
   namespace :me do
     get '', to: 'users#home'
     get 'habits', to: 'habits#index'
@@ -49,6 +47,6 @@ Rails.application.routes.draw do
   end
   # - FOR DEVELOPMENT ONLY
   get '/killme', to: 'users#killme'
-  get '/groups', to: 'groups#find_group'
+
   # For details on the DSL available wihthin this file, see http://guides.rubyonrails.org/routing.htm
 end
