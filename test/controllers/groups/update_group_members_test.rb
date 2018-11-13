@@ -6,57 +6,27 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
   def setup
     # Create users
     @user = User.create(nickname: 'Pai', email: 'example@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @user.email,
-        "password": @user.password
-      }
-    }
+    sign_in(@user)
     @user_token = JSON.parse(response.body)['jwt']
 
     @user1 = User.create(nickname: 'German', email: 'example1@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @user1.email,
-        "password": @user1.password
-      }
-    }
+    sign_in(@user1)
     @user1_token = JSON.parse(response.body)['jwt']
 
     @user2 = User.create(nickname: 'Feli', email: 'example2@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @user2.email,
-        "password": @user2.password
-      }
-    }
+    sign_in(@user2)
     @user2_token = JSON.parse(response.body)['jwt']
 
     @user3 = User.create(nickname: 'Example3', email: 'example3@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @user3.email,
-        "password": @user3.password
-      }
-    }
+    sign_in(@user3)
     @user3_token = JSON.parse(response.body)['jwt']
 
     @user4 = User.create(nickname: 'Example4', email: 'example4@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @user4.email,
-        "password": @user4.password
-      }
-    }
+    sign_in(@user4)
     @user4_token = JSON.parse(response.body)['jwt']
 
     @user5 = User.create(nickname: 'Example5', email: 'example5@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @user5.email,
-        "password": @user5.password
-      }
-    }
+    sign_in(@user5)
     @user5_token = JSON.parse(response.body)['jwt']
 
     # Characters
@@ -92,6 +62,25 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     Membership.create(user_id: @user5.id, admin: false, group_id: @group1.id)
   end
 
+  def sign_in(user)
+    post '/user_token', params: {
+      'auth': {
+        'email': user.email,
+        "password": user.password
+      }
+    }
+  end
+
+  def check_group_notifications(user_token, group, admin)
+    get '/me/notifications?type=GroupNotification', headers: { 'Authorization': 'Bearer ' + user_token }
+    assert_equal 200, status # Ok
+    body = JSON.parse(response.body)
+    assert body['data'][0]['attributes']['type'].eql? 'GroupNotification'
+    assert body['data'].length.eql?(1)
+    assert body['data'][0]['relationships']['sender']['data']['id'].eql? admin.id.to_s
+    assert body['included'][0]['id'].eql? group.id.to_s
+  end
+
   test 'Update members: [user1*,user2] -- > [user1*,user3]' do
     parameters = { "data": [{ "id": @user3.id.to_s, "type": 'user' }] }
     r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
@@ -102,6 +91,9 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     assert memberships.length.eql? 2
     assert members_id_expected.include? memberships[0].user_id
     assert members_id_expected.include? memberships[1].user_id
+
+    check_group_notifications(@user3_token, @group, @user1)
+
     # case: [user1*,user3] -- > [user0,user1*,user2,user3]
     parameters = { "data": [{ "id": @user.id.to_s, "type": 'user' },
                             { "id": @user2.id.to_s, "type": 'user' },
@@ -116,6 +108,9 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     assert members_id_expected.include? memberships[1].user_id
     assert members_id_expected.include? memberships[2].user_id
     assert members_id_expected.include? memberships[3].user_id
+
+    check_group_notifications(@user_token, @group, @user1)
+    check_group_notifications(@user2_token, @group, @user1)
   end
 
   test 'Update members: add more than once a user. Verify its added only once' do
@@ -130,6 +125,8 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     assert memberships.length.eql? 2
     assert members_id_expected.include? memberships[0].user_id
     assert members_id_expected.include? memberships[1].user_id
+
+    check_group_notifications(@user3_token, @group, @user1)
   end
 
   test 'Update members: [user1*,user2] -- > [user1*, user2, user3] -- > [user1*,user2]' do
@@ -144,6 +141,9 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     assert members_id_expected.include? memberships[0].user_id
     assert members_id_expected.include? memberships[1].user_id
     assert members_id_expected.include? memberships[2].user_id
+
+    check_group_notifications(@user3_token, @group, @user1)
+
     # case: [user1*, user2, user3] -- > [user1*,user2]
     parameters = { "data": [{ "id": @user2.id.to_s, "type": 'user' }] }
     r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },

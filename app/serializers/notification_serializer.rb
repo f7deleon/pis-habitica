@@ -10,10 +10,14 @@ class NotificationSerializer
       record.request.user
     elsif record.type.eql? 'FriendshipNotification'
       record.sender
-    else
+    elsif record.type.eql? 'GroupRequestNotification'
       record.group_request.user
+    elsif record.type.eql? 'GroupNotification'
+      record.group.memberships.find_by(admin: true).user
     end
   end
+
+  belongs_to :group, if: proc { |record| record.type.eql? 'GroupNotification' }
 
   belongs_to :request, record_type: :request,
                        serializer: :request, if: proc { |record| record.type.eql? 'FriendRequestNotification' }
