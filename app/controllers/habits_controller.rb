@@ -35,11 +35,15 @@ class HabitsController < ApplicationController
     # Type does not exist
     raise ActiveRecord::RecordNotFound unless (types = Type.find(type_ids))
 
-    if params[:data][:relationships][:group]
+    if params[:data][:type].eql?('group_habit')
       group = Group.find_by!(id: params[:data][:relationships][:group][:id])
-      unless group.memberships.find_by!(user_id: current_user.id).admin
-        raise Error::CustomError.new(I18n.t('forbidden'), :forbidden, I18n.t('errors.messages.not_admin_to_delete'))
+      unless (membership = group.memberships.find_by(user_id: current_user.id))
+        message = I18n.t('errors.messages.not_admin_of_group')
+        raise Error::CustomError.new(I18n.t('forbidden'), :forbidden, message)
       end
+
+      message = I18n.t('errors.messages.not_admin_of_group')
+      raise Error::CustomError.new(I18n.t('forbidden'), :forbidden, message) unless membership.admin
 
       habit = GroupHabit.new(
         group_id: group.id,
@@ -174,10 +178,14 @@ class HabitsController < ApplicationController
 
   def create_habit
     params.require(:data).require(:type)
-    params.require(:data).require(:attributes).require(%i[name frequency difficulty privacy])
     # Esto no controla que types sea un array ni que sea no vacio, esa verificacion se hace internamente en creates.
     params.require(:data).require(:relationships).require(:types)
-    params.require(:data).require(:relationships).permit(:group)
+    params.require(:data).require(:attributes).require(%i[name frequency difficulty])
+    if params[:data][:type].eql?('group_habit')
+      params.require(:data).require(:relationships).require(:group)
+    else
+      params.require(:data).require(:attributes).require(:privacy)
+    end
   end
 
   def fulfill_habit
@@ -217,6 +225,10 @@ class HabitsController < ApplicationController
 
   # Only allow a trusted parameter 'white list' through.
   def habit_params
-    params.require(:habit).permit(:user_id, :name, :frequency, :difficulty, :privacy)
+    if params[:data][:type].eql?('group_habit')
+      params.require(:habit).permit(:user_id, :name, :frequency, :difficulty)
+    else
+      params.require(:habit).permit(:group_id, :name, :frequency, :difficulty, :privacy)
+    end
   end
 end

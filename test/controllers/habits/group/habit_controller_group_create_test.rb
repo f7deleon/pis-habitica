@@ -22,6 +22,15 @@ class HabitControllerGroupCreateTest < ActionDispatch::IntegrationTest
     }
     @user2_token = JSON.parse(response.body)['jwt']
 
+    @groupless_user = User.create(nickname: 'groupless_user', email: 'groupless@example.com', password: 'Example123')
+    post '/user_token', params: {
+      'auth': {
+        'email': @groupless_user.email,
+        'password': @groupless_user.password
+      }
+    }
+    @groupless_user_token = JSON.parse(response.body)['jwt']
+
     @group = Group.create(name: 'Grupo', description: 'Propio grupo', privacy: false)
 
     @membership1 = Membership.create(user_id: @user.id, group_id: @group.id, admin: true)
@@ -37,6 +46,7 @@ class HabitControllerGroupCreateTest < ActionDispatch::IntegrationTest
   test 'is valid' do
     assert @user.valid?
     assert @user2.valid?
+    assert @groupless_user.valid?
     assert @group.valid?
     assert @default_type.valid?
     assert @membership1.valid?
@@ -47,7 +57,7 @@ class HabitControllerGroupCreateTest < ActionDispatch::IntegrationTest
     post '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
       'data': { 'type': 'group_habit',
                 'attributes':
-                  { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
+                  { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1 },
                 'relationships': {
                   'types': [
                     { 'data': { 'id': @default_type.id, 'type': 'type' } }
@@ -71,8 +81,8 @@ class HabitControllerGroupCreateTest < ActionDispatch::IntegrationTest
     assert expected.to_json == response.body
   end
 
-  test 'AltaHabitoGrupo: no admin' do
-    post '/habits', headers: { 'Authorization': 'Bearer ' + @user2_token }, params: {
+  test 'AltaHabitoGrupo: should be a member to create' do
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @groupless_user_token }, params: {
       'data': { 'type': 'group_habit',
                 'attributes':
                     { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
@@ -83,7 +93,7 @@ class HabitControllerGroupCreateTest < ActionDispatch::IntegrationTest
                   'group': { 'id': @group.id, 'type': 'group' }
                 } }
     }
-    assert_equal 403, status
+    assert_equal 403, status # Forbidden
   end
 
   test 'AltaHabitoGrupo: bad token' do
