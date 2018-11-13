@@ -9,7 +9,7 @@ class Group < ApplicationRecord
   has_many :memberships
   has_many :users, through: :memberships, class_name: 'User', foreign_key: :user_id
 
-  validates :privacy, inclusion: [true, false]
+  validates :privacy, inclusion: [true, false] # true = private, false = public
 
   self.primary_key = :id
   validates :name, presence: true # string

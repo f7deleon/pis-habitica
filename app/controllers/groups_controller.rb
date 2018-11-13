@@ -58,19 +58,6 @@ class GroupsController < ApplicationController
     render json: GroupHabitSerializer.new(habits, options).serialized_json, status: :ok
   end
 
-  # GET /users/:user_id/groups/:id/habits/:habit
-  def habit
-    unless @group.memberships.find_by(user_id: current_user.id) || !@group.privacy?
-      raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.not_belong'))
-    end
-
-    habit = @group.group_habits.find(params[:habit])
-    options = {}
-    options[:include] = %i[types]
-    options[:params] = { id: @user.id }
-    render json: GroupHabitSerializer.new(habit, options).serialized_json, status: :ok
-  end
-
   private
 
   # Use callbacks to share common setup or constraints between actions.

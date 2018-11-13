@@ -6,7 +6,7 @@ require 'will_paginate/array'
 class UsersController < ApplicationController
   skip_before_action :authenticate_user, only: %i[create]
   before_action :create_user, only: %i[create]
-  before_action :set_user, only: %i[show update destroy]
+  before_action :set_user, only: %i[show update destroy index_habits]
 
   # GET /users
   def index
@@ -28,6 +28,12 @@ class UsersController < ApplicationController
     render json: UserWithFriendSerializer.new(@user, params: { current_user: current_user },
                                                      include: %i[individual_habits friends groups])
                                          .serialized_json, status: :ok
+  end
+
+  # GET /users/1/habits
+  def index_habits
+    habits = paginate @user.get_habits_from_user(current_user), per_page: params[:per_page].to_i
+    render json: IndividualHabitInfoSerializer.new(habits).serialized_json
   end
 
   # POST /users

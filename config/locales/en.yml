@@ -52,7 +52,6 @@ en:
       not_admin: "Not admin"
       taken: "There is already an %{model} with that %{attribute}"
       not_found: "goli"
-      not_belong: "The user doesnt belong to the group"
       date_formatting: "date is not in ISO 8601"
       daily_fulfilled: "Habit frequency is daily and it has been fulfilled today"
       typeless_habit: "Habit needs at least one type"
@@ -68,8 +67,11 @@ en:
       group_is_private: "Current user does not belong to this group"
       member_not_friend: "Not all the members are your friend"
       member_not_exist: "Members do not exist"
-      not_admin_to_delete: "User has to be an admin in order to delete this group"
+      not_admin_of_group: "User must be the admin of this group"
       no_users_to_add: "User's list to update group members is empty"
+      habit_is_not_from_user: "This habit does not belong to you"
+      group_habit_is_not_from_user: "This habit does not belong to any of your groups"
+      not_permission_to_show: "You do not have permission to view this habit"
 
   activerecord:
     models:

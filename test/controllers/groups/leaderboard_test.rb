@@ -129,22 +129,22 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     assert @negative.valid?
   end
 
-  def fulfill(user_token, group_habit, group = @group)
-    post '/me/groups/' + group.id.to_s + '/habits/' + group_habit.id.to_s + '/fulfill', headers: {
+  def fulfill(user_token, group_habit)
+    post '/habits/' + group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': Time.zone.now.iso8601 } }
     }
   end
 
-  def undo(user_token, group_habit, group = @group)
-    delete '/me/groups/' + group.id.to_s + '/habits/' + group_habit.id.to_s + '/fulfill', headers: {
+  def undo(user_token, group_habit)
+    delete '/habits/' + group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + user_token
     }
   end
 
-  def show_group(user_token = @admin_token, user = @admin, group = @group)
-    get '/users/' + user.id.to_s + '/groups/' + group.id.to_s, headers: {
+  def show_group(user_token = @admin_token, group = @group)
+    get '/me/groups/' + group.id.to_s, headers: {
       'Authorization': 'Bearer ' + user_token
     }
   end

@@ -63,7 +63,7 @@ class HabitsControllerPenalizeTest < ActionDispatch::IntegrationTest
   end
 
   test 'PenalizarHabito: Health diminish after fulfilling negative habit: Easy' do
-    post '/me/habits/' + @habit1.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit1.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:29+00:00', 'negative': true } }
@@ -85,7 +85,7 @@ class HabitsControllerPenalizeTest < ActionDispatch::IntegrationTest
   end
 
   test 'PenalizarHabito: Health diminish after fulfilling negative habit: Medium' do
-    post '/me/habits/' + @habit2.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit2.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:29+00:00', 'negative': true } }
@@ -107,7 +107,7 @@ class HabitsControllerPenalizeTest < ActionDispatch::IntegrationTest
   end
 
   test 'PenalizarHabito: Health diminish after fulfilling negative habit: Hard' do
-    post '/me/habits/' + @habit3.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit3.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:29+00:00', 'negative': true } }
@@ -132,7 +132,7 @@ class HabitsControllerPenalizeTest < ActionDispatch::IntegrationTest
     @user.health = 3
     @user.save
 
-    post '/me/habits/' + @habit3.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit3.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:29+00:00', 'negative': true } } }
 
@@ -152,7 +152,7 @@ class HabitsControllerPenalizeTest < ActionDispatch::IntegrationTest
     assert_equal(User.find(@user.id).experience, 0)
     assert User.find(@user.id).dead?
 
-    post '/me/habits/' + @habit3.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit3.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:29+00:00', 'negative': true } } }
     assert_equal 404, status # Not Found

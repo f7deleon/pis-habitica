@@ -209,14 +209,14 @@ class HabitsControllerStatTest < ActionDispatch::IntegrationTest
     @expected_not_frequency = StatsSerializer.json(data_not_frequency, @individual_habit)
   end
   test 'VerEstadisticasNotFrequency' do
-    get '/me/habits/' + @individual_habit.id.to_s, headers: {
+    get '/habits/' + @individual_habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     assert @expected_not_frequency.to_json == response.body
   end
 
   test 'VerEstadisticasFrequency' do
-    get '/me/habits/' + @individual_habit_frequency.id.to_s, headers: {
+    get '/habits/' + @individual_habit_frequency.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     # por la diferencia de tiempo el porcentaje da distinto, por eso se hace el redondeo

@@ -59,12 +59,12 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
     user = User.find(@user.id)
     user.health = 50
     user.save
-    post '/me/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': Time.zone.now.iso8601 } }
     }
-    delete '/me/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     expected = {
@@ -83,10 +83,10 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
     assert_equal 202, status # Accepted
   end
   test 'undo_negative_habit' do
-    post '/me/habits/' + @individual_habit_negative.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_negative.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': Time.zone.now.iso8601 } } }
-    delete '/me/habits/' + @individual_habit_negative.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @individual_habit_negative.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     expected = {
@@ -106,7 +106,7 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
   end
 
   test 'undo_empty_habit' do
-    delete '/me/habits/' + @individual_habit_empty.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @individual_habit_empty.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     assert_equal 404, status # Not Found
@@ -116,11 +116,11 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
     @user.experience = @user.max_experience - 1
     User.find(@user.id).update_column(:experience, @user.experience)
 
-    post '/me/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': Time.zone.now.iso8601 } } }
 
-    delete '/me/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     expected = {
@@ -144,7 +144,7 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
   end
 
   test 'undo_habit without fulfill in same day' do
-    post '/me/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
@@ -154,7 +154,7 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
         }
       }
     }
-    delete '/me/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     expected = {
@@ -170,7 +170,7 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
     character = User.find(@user.id).user_characters.find_by(is_alive: true)
     character.update_column(:is_alive, false)
 
-    delete '/me/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @individual_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
 

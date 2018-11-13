@@ -36,8 +36,8 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
     assert @default_type2.valid?
   end
   test 'AltaHabito: should create habit' do
-    post '/me/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
-      'data': { 'type': 'habit',
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
+      'data': { 'type': 'individual_habit',
                 'attributes':
                 { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
@@ -62,11 +62,11 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
     assert expected.to_json == response.body
   end
   test 'AltaHabito: User should exist' do
-    post '/me/habits', headers: {
+    post '/habits', headers: {
       'Authorization': 'Bearer asdasd'
     }, params: {
       'data': {
-        'type': 'habit',
+        'type': 'individual_habit',
         'attributes': {
           'name': 'Example',
           'description': 'Example',
@@ -85,11 +85,11 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
     assert_equal 401, status # Unauthorized
   end
   test 'AltaHabito: Type should exist' do
-    post '/me/habits', headers: {
+    post '/habits', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
-        'type': 'habit',
+        'type': 'individual_habit',
         'attributes': {
           'name': 'Example',
           'description': 'Example',
@@ -108,11 +108,11 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
   end
 
   test 'AltaHabito: should have correct Format' do
-    post '/me/habits', headers: {
+    post '/habits', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
-        'type': 'habit',
+        'type': 'individual_habit',
         'attributes': {
           'title': 'Example',
           'description': 'Example',
@@ -131,11 +131,11 @@ class HabitsControllerCreateTest < ActionDispatch::IntegrationTest
     assert_equal 400, status # Bad Request
   end
   test 'AltaHabito: at least 1 type' do
-    post '/me/habits', headers: {
+    post '/habits', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
-        'type': 'habit',
+        'type': 'individual_habit',
         'attributes': {
           'name': 'Example',
           'description': 'Example',

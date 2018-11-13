@@ -42,12 +42,19 @@ class HabitsControllerRewardTest < ActionDispatch::IntegrationTest
       frequency: 1,
       active: true
     )
-    @char1 = Character.create(name: 'Mago', description: I18n.t('mage_description'))
-    @usr_char = UserCharacter.create(user_id: @user.id,
-                                     character_id: @char1.id,
-                                     creation_date: Time.zone.now,
-                                     is_alive: true)
-    @user.user_characters << @usr_char
+    # Characters
+    @char = Character.create(name: 'Mago', description: I18n.t('mage_description'))
+    req = {
+      'data': {
+        'id': @char.id.to_s,
+        'type': 'characters',
+        'attributes': { 'name': 'Mago', 'description': I18n.t('mage_description') }
+      },
+      'included': [{ 'type': 'date', 'attributes': { 'date': '2018-09-07T12:00:00Z' } }]
+    }
+    post '/me/characters', headers: {
+      'Authorization': 'Bearer ' + @user_token
+    }, params: req
   end
 
   test 'should be valid' do
@@ -57,7 +64,9 @@ class HabitsControllerRewardTest < ActionDispatch::IntegrationTest
     assert @individual_habit_to_track2.valid?
   end
   test 'fullfill one more habit and check health and experience increase.' do
-    post '/me/habits/' + @individual_habit_to_track1.id.to_s + '/fulfill', headers: {
+    @user.health = 30
+    @user.save
+    post '/habits/' + @individual_habit_to_track1.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:29+00:00' } }
@@ -70,7 +79,9 @@ class HabitsControllerRewardTest < ActionDispatch::IntegrationTest
     assert body['data']['relationships']['individual_habit']['data']['id'].eql? @individual_habit_to_track1.id.to_s
   end
   test 'fullfill another habit of the user.' do
-    post '/me/habits/' + @individual_habit_to_track2.id.to_s + '/fulfill', headers: {
+    @user.health = 30
+    @user.save
+    post '/habits/' + @individual_habit_to_track2.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:37+00:00' } }
@@ -84,7 +95,7 @@ class HabitsControllerRewardTest < ActionDispatch::IntegrationTest
     past_level = @user.level
     level = past_level
     while past_level == level
-      post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+      post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
         'Authorization': 'Bearer ' + @user_token
       }, params: {
         'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:49:29+00:00' } }
@@ -105,14 +116,14 @@ class HabitsControllerRewardTest < ActionDispatch::IntegrationTest
     @user.health = 96
     @user.save
     # the following request will increase health by 16. Verify that health was set to max_health for level 1
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:49:29+00:00' } }
     }
     assert User.find_by_id(@user.id).health.eql? User.find_by_id(@user.id).max_health
     # Then fulfill habit and verify that health still max_health
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:49:29+00:00' } }
@@ -125,7 +136,7 @@ class HabitsControllerRewardTest < ActionDispatch::IntegrationTest
     @user.health = 96
     @user.save
     # the following request will increase health by 16. Verify that health was set to max_health for level 1
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:49:29+00:00' } }
@@ -137,7 +148,7 @@ class HabitsControllerRewardTest < ActionDispatch::IntegrationTest
     past_level = @user.level
     @user.experience = 96
     @user.save
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:49:29+00:00' } }

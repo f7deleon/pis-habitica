@@ -109,7 +109,7 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
   end
 
   test 'should track habit' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     expected = {
@@ -134,10 +134,10 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
   end
 
   test 'both users should be able to fulfill daily habit' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token2
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     expected = {
@@ -162,17 +162,17 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
   end
 
   test 'If Habit frequency is daily habit must not have been fulfilled today by the same user' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     assert_equal 409, status # Conflict
   end
 
   test 'Negative Habit: should track habit' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @negative_habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @negative_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     expected = {
@@ -196,10 +196,10 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
   end
 
   test 'Negative Habit: both users should be able to fulfill daily habit' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @negative_habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @negative_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @negative_habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @negative_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token2
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     expected = {
@@ -223,49 +223,35 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
   end
 
   test 'user has to be a member from the group' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @groupless_user_token
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
-    assert_equal 404, status # Not Found
-  end
-
-  test 'Group should exist' do
-    post '/me/groups/999999999/habits/' + @habit.id.to_s + '/fulfill', headers: {
-      'Authorization': 'Bearer ' + @user_token1
-    }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
-    assert_equal 404, status # Not Found
+    assert_equal 403, status # Forbbiden
   end
 
   test 'Habit should exist' do
-    post '/me/groups/' + @group.id.to_s + '/habits/999999999/fulfill', headers: {
-      'Authorization': 'Bearer ' + @user_token1
-    }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
-    assert_equal 404, status # Not Found
-  end
-
-  test 'Habit should belong to group' do
-    post '/me/groups/' + @group2.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/999999999/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     assert_equal 404, status # Not Found
   end
 
   test 'token should be valid' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer asdasd'
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     assert_equal 401, status # Unauthorized
   end
 
   test 'Date should be in ISO 8601' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': Time.now.rfc2822 } } }
     assert_equal 400, status # Bad Request
   end
 
   test 'Request should have correct Format' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: { 'data': { 'type': 'date', 'attributes': { 'qweqweq': '2018-09-05T21:39:27+00:00' } } }
     assert_equal 400, status # Bad Request

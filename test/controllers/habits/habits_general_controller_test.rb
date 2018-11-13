@@ -105,31 +105,31 @@ class HabitGeneralControllerTest < ActionDispatch::IntegrationTest
 
   test 'get Habits' do
     url = '/users/' + @user1.id.to_s + '/habits'
-    result = get url, headers: { 'Authorization': 'Bearer ' + @user2_token }
-    assert result == 200
+    get url, headers: { 'Authorization': 'Bearer ' + @user2_token }
+    assert_equal 200, status # Ok
     body = JSON.parse(response.body)
     assert body['data'].length == 2
   end
 
   test 'get Habit public' do
-    url = '/users/' + @user1.id.to_s + '/habits/' + @individual_habit.id.to_s
-    result = get url, headers: { 'Authorization': 'Bearer ' + @user2_token }
-    assert result == 200
+    url = '/habits/' + @individual_habit.id.to_s
+    get url, headers: { 'Authorization': 'Bearer ' + @user2_token }
+    assert_equal 200, status # Ok
     body = JSON.parse(response.body)
     assert body['data']['id'] == @individual_habit.id.to_s
   end
 
   test 'get Habit protected' do
-    url = '/users/' + @user1.id.to_s + '/habits/' + @individual_habit2.id.to_s
-    result = get url, headers: { 'Authorization': 'Bearer ' + @user2_token }
-    assert result == 200
+    url = '/habits/' + @individual_habit2.id.to_s
+    get url, headers: { 'Authorization': 'Bearer ' + @user2_token }
+    assert_equal 200, status # Ok
     body = JSON.parse(response.body)
     assert body['data']['id'] == @individual_habit2.id.to_s
   end
 
   test 'get Habit private' do
-    url = '/users/' + @user1.id.to_s + '/habits/' + @individual_habit3.id.to_s
-    result = get url, headers: { 'Authorization': 'Bearer ' + @user2_token }
-    assert result == 401
+    url = '/habits/' + @individual_habit3.id.to_s
+    get url, headers: { 'Authorization': 'Bearer ' + @user2_token }
+    assert_equal 403, status # Forbidden
   end
 end

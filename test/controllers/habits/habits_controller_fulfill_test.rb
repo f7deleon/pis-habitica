@@ -12,16 +12,6 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       }
     }
     @user_token = JSON.parse(response.body)['jwt']
-    @char = Character.create(name: 'Mago', description: I18n.t('mage_description'))
-    post '/me/characters', headers: {
-      'Authorization': 'Bearer ' + @user_token
-    }, params: {
-      'data': {
-        'id': @char.id.to_s,
-        'type': 'characters',
-        'attributes': { 'name': 'Mago', 'description': I18n.t('mage_description') }
-      }, 'included': [{ 'type': 'date', 'attributes': { 'date': '2018-09-07T12:00:00Z' } }]
-    }
 
     @individual_type = IndividualType.create(user_id: @user.id, name: 'Example', description: 'Example')
     @individual_habit_to_track = IndividualHabit.create(
@@ -33,8 +23,6 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       frequency: 1,
       active: true
     )
-
-    @user.individual_habits << @individual_habit_to_track
 
     @individual_habit_has_type = IndividualHabitHasType.create(
       habit_id: @individual_habit_to_track.id,
@@ -53,9 +41,10 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       }
     }
     @user_fulfilled_token = JSON.parse(response.body)['jwt']
-    post '/me/characters', headers: {
-      'Authorization': 'Bearer ' + @user_fulfilled_token
-    }, params: {
+
+    # Characters
+    @char = Character.create(name: 'Mago', description: I18n.t('mage_description'))
+    req = {
       'data': {
         'id': @char.id.to_s,
         'type': 'characters',
@@ -63,9 +52,14 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       },
       'included': [{ 'type': 'date', 'attributes': { 'date': '2018-09-07T12:00:00Z' } }]
     }
+    post '/me/characters', headers: {
+      'Authorization': 'Bearer ' + @user_fulfilled_token
+    }, params: req
+    post '/me/characters', headers: {
+      'Authorization': 'Bearer ' + @user_token
+    }, params: req
 
     @individual_type3 = IndividualType.create(user_id: @user_fulfilled.id, name: 'Example', description: 'Example')
-    @user_fulfilled.individual_types << @individual_type3
 
     @individual_habit_already_tracked = IndividualHabit.create(
       user_id: @user_fulfilled.id,
@@ -76,8 +70,6 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       frequency: 2,
       active: true
     )
-
-    @user_fulfilled.individual_habits << @individual_habit_already_tracked
 
     @individual_habit_has_type3 = IndividualHabitHasType.create(
       habit_id: @individual_habit_already_tracked.id,
@@ -90,18 +82,6 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       habit_id: @individual_habit_already_tracked.id,
       date: Time.zone.now
     )
-    @individual_habit_already_tracked.track_individual_habits << @track_individual_habit3
-    @char1 = Character.create(name: 'Mago', description: I18n.t('mage_description'))
-    @usr_char = UserCharacter.create(user_id: @user.id,
-                                     character_id: @char1.id,
-                                     creation_date: Time.zone.now,
-                                     is_alive: true)
-    @user.user_characters << @usr_char
-    @usr_char1 = UserCharacter.create(user_id: @user_fulfilled.id,
-                                      character_id: @char1.id,
-                                      creation_date: Time.zone.now,
-                                      is_alive: true)
-    @user_fulfilled.user_characters << @usr_char1
   end
 
   test 'should be valid' do
@@ -118,7 +98,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert @track_individual_habit3.valid?
   end
   test 'CumplirHabito: should track habit' do
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
     expected = {
@@ -145,7 +125,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert_equal 201, status # Created
   end
   test 'CumplirHabito: habit should exist' do
-    post '/me/habits/9090999/fulfill', headers: {
+    post '/habits/9090999/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
@@ -158,7 +138,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert_equal 404, status # Not Found
   end
   test 'CumplirHabito: User should exist' do
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer asdasd'
     }, params: {
       'data': {
@@ -171,7 +151,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert_equal 401, status # Unauthorized
   end
   test 'CumplirHabito: User should have this habit' do
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_fulfilled_token
     }, params: {
       'data': {
@@ -181,10 +161,10 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
         }
       }
     }
-    assert_equal 404, status # Not Found
+    assert_equal 403, status # Forbbiden
   end
   test 'CumplirHabito: If Habit frequency is daily habit must not have been fulfilled today' do
-    post '/me/habits/' + @individual_habit_already_tracked.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_already_tracked.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_fulfilled_token
     }, params: {
       'data': {
@@ -197,7 +177,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert_equal 409, status # :conflict
   end
   test 'CumplirHabito: Date should be in ISO 8601' do
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
@@ -212,7 +192,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
   test 'CumplirHabito: Habit should be active' do
     @individual_habit_to_track.active = false
     @individual_habit_to_track.save
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
@@ -225,7 +205,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
     assert_equal 404, status # Not Found
   end
   test 'CumplirHabito: should have correct Format' do
-    post '/me/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
@@ -236,5 +216,20 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
       }
     }
     assert_equal 400, status # Bad Request
+  end
+  test 'undo_habit without alive character' do
+    character = User.find(@user.id).user_characters.find_by(is_alive: true)
+    character.update_column(:is_alive, false)
+
+    post '/habits/' + @individual_habit_to_track.id.to_s + '/fulfill', headers: {
+      'Authorization': 'Bearer ' + @user_token
+    }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
+
+    expected = { "errors":
+      [
+        { "status": '404', "title": 'Not found', "message": 'This user has not created a character yet' }
+      ] }
+    assert expected.to_json == response.body
+    assert_equal 404, status # Accepted
   end
 end

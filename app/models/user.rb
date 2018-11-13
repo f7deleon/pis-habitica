@@ -139,4 +139,12 @@ class User < ApplicationRecord
   def dead?
     user_characters.find_by(is_alive: true).nil?
   end
+
+  def friend?(user)
+    friends.find(user.id)
+  end
+
+  def belongs?(group)
+    groups.find_by(id: group.id)
+  end
 end

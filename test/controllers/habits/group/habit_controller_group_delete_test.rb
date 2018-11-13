@@ -109,11 +109,11 @@ class HabitsControllerGroupDeleteTest < ActionDispatch::IntegrationTest
   end
 
   test 'should delete habit' do
-    patch '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s, headers: {
+    patch '/habits/' + @habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: {
       'data': {
-        'type': 'habits',
+        'type': 'habit',
         'attributes': {
           'active': 0
         }
@@ -122,11 +122,11 @@ class HabitsControllerGroupDeleteTest < ActionDispatch::IntegrationTest
     assert_equal 204, status # Not Content
   end
   test 'should be admin to delete' do
-    patch '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s, headers: {
+    patch '/habits/' + @habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token2
     }, params: {
       'data': {
-        'type': 'habits',
+        'type': 'habit',
         'attributes': {
           'active': 0
         }
@@ -135,11 +135,11 @@ class HabitsControllerGroupDeleteTest < ActionDispatch::IntegrationTest
     assert_equal 403, status # Forbidden
   end
   test 'habit should exist' do
-    patch '/me/groups/' + @group.id.to_s + '/habits/123123123', headers: {
+    patch '/habits/123123123', headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: {
       'data': {
-        'type': 'habits',
+        'type': 'habit',
         'attributes': {
           'active': 0
         }
@@ -148,11 +148,11 @@ class HabitsControllerGroupDeleteTest < ActionDispatch::IntegrationTest
     assert_equal 404, status # Not Found
   end
   test 'User should exist' do
-    patch '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s, headers: {
+    patch '/habits/' + @habit.id.to_s, headers: {
       'Authorization': 'Bearer asdasd'
     }, params: {
       'data': {
-        'type': 'habits',
+        'type': 'habit',
         'attributes': {
           'active': 0
         }
@@ -161,27 +161,27 @@ class HabitsControllerGroupDeleteTest < ActionDispatch::IntegrationTest
     assert_equal 401, status # Unauthorized
   end
   test 'User should belong to this group' do
-    patch '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s, headers: {
+    patch '/habits/' + @habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @groupless_user_token
     }, params: {
       'data': {
-        'type': 'habits',
+        'type': 'habit',
         'attributes': {
           'active': 0
         }
       }
     }
-    assert_equal 404, status # Not Found
+    assert_equal 403, status # Forbbiden
   end
 
   test 'Habit should be active' do
     @habit.active = false
     @habit.save
-    patch '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s, headers: {
+    patch '/habits/' + @habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: {
       'data': {
-        'type': 'habits',
+        'type': 'habit',
         'attributes': {
           'active': 0
         }
@@ -190,11 +190,11 @@ class HabitsControllerGroupDeleteTest < ActionDispatch::IntegrationTest
     assert_equal 404, status # Bad Request
   end
   test 'should have correct Format' do
-    patch '/me/groups/' + @group.id.to_s + '/habits/' + @habit.id.to_s, headers: {
+    patch '/habits/' + @habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token1
     }, params: {
       'data': {
-        'type': 'habits',
+        'type': 'habit',
         'asdsadqwe': {
           'active': 0
         }

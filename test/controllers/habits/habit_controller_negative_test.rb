@@ -33,7 +33,7 @@ class HabitsControllerNegativeTest < ActionDispatch::IntegrationTest
   end
 
   test 'NegativeHabits' do
-    post '/me/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
       'data': {
         'type': 'habit',
         'attributes':
@@ -69,7 +69,7 @@ class HabitsControllerNegativeTest < ActionDispatch::IntegrationTest
     assert IndividualHabitSerializer.new(@individual_habit).serialized_json == expected.to_json
   end
   test 'checkErrorNegative' do
-    post '/me/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
       'data': {
         'type': 'habit',
         'attributes':
@@ -92,7 +92,7 @@ class HabitsControllerNegativeTest < ActionDispatch::IntegrationTest
     assert response.body == error_expected.to_json
   end
   test 'existNegativeInDb' do
-    post '/me/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
       'data': {
         'type': 'habit',
         'attributes':

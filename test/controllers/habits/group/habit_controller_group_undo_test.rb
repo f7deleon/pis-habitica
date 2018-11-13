@@ -20,6 +20,14 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
         'password': @user2.password
       }
     }
+    @groupless_user = User.create(nickname: 'groupless_user', email: 'groupless@example.com', password: 'Example123')
+    post '/user_token', params: {
+      'auth': {
+        'email': @groupless_user.email,
+        'password': @groupless_user.password
+      }
+    }
+    @groupless_user_token = JSON.parse(response.body)['jwt']
     @group = Group.create(name: 'example', privacy: true)
     @membership1 = Membership.create(user_id: @user.id, group_id: @group.id, admin: true)
     @membership2 = Membership.create(user_id: @user2.id, group_id: @group.id, admin: false)
@@ -53,11 +61,9 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
       negative: true
     )
 
-    # If user has no character alive it won't let fulfill habit
+    # Characters
     @char = Character.create(name: 'Mago', description: I18n.t('mage_description'))
-    post '/me/characters', headers: {
-      'Authorization': 'Bearer ' + @user_token
-    }, params: {
+    req = {
       'data': {
         'id': @char.id.to_s,
         'type': 'characters',
@@ -65,6 +71,12 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
       },
       'included': [{ 'type': 'date', 'attributes': { 'date': '2018-09-07T12:00:00Z' } }]
     }
+    post '/me/characters', headers: {
+      'Authorization': 'Bearer ' + @user_token
+    }, params: req
+    post '/me/characters', headers: {
+      'Authorization': 'Bearer ' + @groupless_user_token
+    }, params: req
   end
 
   test 'is valid' do
@@ -83,10 +95,10 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
     user = User.find(@user.id)
     user.health = 50
     user.save
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': Time.zone.now.iso8601 } } }
-    delete '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     expected = {
@@ -106,10 +118,10 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
     assert_equal 202, status # Accepted
   end
   test 'undo_negative_habit' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit_negative.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @group_habit_negative.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': Time.zone.now.iso8601 } } }
-    delete '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit_negative.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @group_habit_negative.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     expected = {
@@ -130,7 +142,7 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
   end
 
   test 'undo_empty_habit' do
-    delete '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit_empty.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @group_habit_empty.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     assert_equal 404, status # Not Found
@@ -140,11 +152,11 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
     @user.experience = @user.max_experience - 1
     User.find(@user.id).update_column(:experience, @user.experience)
 
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: { 'data': { 'type': 'date', 'attributes': { 'date': Time.zone.now.iso8601 } } }
 
-    delete '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     expected = {
@@ -169,7 +181,7 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
   end
 
   test 'undo_habit without fulfill in same day' do
-    post '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
+    post '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
@@ -179,7 +191,7 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
         }
       }
     }
-    delete '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
     expected = {
@@ -195,7 +207,7 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
     character = User.find(@user.id).user_characters.find_by(is_alive: true)
     character.update_column(:is_alive, false)
 
-    delete '/me/groups/' + @group.id.to_s + '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
+    delete '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + @user_token
     }
 
@@ -205,5 +217,12 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
       ] }
     assert expected.to_json == response.body
     assert_equal 404, status # Accepted
+  end
+
+  test 'user has to be a member from the group' do
+    delete '/habits/' + @group_habit.id.to_s + '/fulfill', headers: {
+      'Authorization': 'Bearer ' + @groupless_user_token
+    }
+    assert_equal 403, status # Forbbiden
   end
 end

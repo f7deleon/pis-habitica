@@ -144,4 +144,17 @@ class IndividualHabit < Habit
       }
     ).serialized_json
   end
+
+  def can_be_seen_by(user)
+    return true if user.id.equal?(user_id)
+
+    case privacy
+    when 1 # public
+      true
+    when 2 # protected
+      user.friend?(self.user)
+    else # private
+      false
+    end
+  end
 end

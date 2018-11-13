@@ -73,4 +73,14 @@ class GroupHabit < Habit
       }
     ).serialized_json
   end
+
+  def can_be_seen_by(user)
+    if user.belongs?(group)
+      true
+    else
+      # group.privacy = false -> private
+      # group.privacy = true -> public
+      !group.privacy
+    end
+  end
 end

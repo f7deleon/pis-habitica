@@ -2,7 +2,7 @@
 
 require 'test_helper'
 
-class GroupControllerTest < ActionDispatch::IntegrationTest
+class HabitControllerGroupCreateTest < ActionDispatch::IntegrationTest
   def setup
     @user = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
     post '/user_token', params: {
@@ -44,14 +44,15 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'AltaHabitoGrupo: should create habit' do
-    post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
       'data': { 'type': 'group_habit',
                 'attributes':
                   { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
                   'types': [
                     { 'data': { 'id': @default_type.id, 'type': 'type' } }
-                  ]
+                  ],
+                  'group': { 'id': @group.id, 'type': 'group' }
                 } }
     }
     expected = {
@@ -71,58 +72,77 @@ class GroupControllerTest < ActionDispatch::IntegrationTest
   end
 
   test 'AltaHabitoGrupo: no admin' do
-    post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer ' + @user2_token }, params: {
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @user2_token }, params: {
       'data': { 'type': 'group_habit',
                 'attributes':
                     { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
                   'types': [
                     { 'data': { 'id': @default_type.id, 'type': 'type' } }
-                  ]
+                  ],
+                  'group': { 'id': @group.id, 'type': 'group' }
                 } }
     }
     assert_equal 403, status
   end
 
   test 'AltaHabitoGrupo: bad token' do
-    post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer malotoken' }, params: {
+    post '/habits', headers: { 'Authorization': 'Bearer malotoken' }, params: {
       'data': { 'type': 'group_habit',
                 'attributes':
                     { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
                   'types': [
                     { 'data': { 'id': @default_type.id, 'type': 'type' } }
-                  ]
+                  ],
+                  'group': { 'id': @group.id, 'type': 'group' }
                 } }
     }
     assert_equal 401, status
   end
 
   test 'AltaHabitoGrupo: bad request' do
-    post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
       'data': { 'type': 'group_habit',
                 'attributes':
                     { 'title': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
                   'types': [
                     { 'data': { 'id': @default_type.id, 'type': 'type' } }
-                  ]
+                  ],
+                  'group': { 'id': @group.id, 'type': 'group' }
                 } }
     }
     assert_equal 400, status
   end
 
   test 'AltaHabitoGrupo: not exist type' do
-    post '/me/groups/' + @group.id.to_s + '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @user_token }, params: {
       'data': { 'type': 'group_habit',
                 'attributes':
                     { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
                 'relationships': {
                   'types': [
                     { 'data': { 'id': 10_001, 'type': 'type' } }
-                  ]
+                  ],
+                  'group': { 'id': @group.id, 'type': 'group' }
                 } }
     }
     assert_equal 404, status
+  end
+
+  test 'should be admin to create' do
+    post '/habits', headers: { 'Authorization': 'Bearer ' + @user2_token }, params: {
+      'data': { 'type': 'group_habit',
+                'attributes':
+                  { 'name': 'Example', 'description': 'Example', 'frequency': 1, 'difficulty': 1, 'privacy': 1 },
+                'relationships': {
+                  'types': [
+                    { 'data': { 'id': @default_type.id, 'type': 'type' } }
+                  ],
+                  'group': { 'id': @group.id, 'type': 'group' }
+                } }
+    }
+    assert_equal 403, status # Forbidden
   end
 end

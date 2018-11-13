@@ -43,30 +43,30 @@ class HabitsControllerTest < ActionDispatch::IntegrationTest
 
   ### Ver Habito
   test 'Get an existing individual habit' do
-    result = get '/me/habits/' + @individual_habit.id.to_s, headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 200
+    get '/habits/' + @individual_habit.id.to_s, headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert_equal 200, status # ok
   end
 
   test 'Get a non existent individual habit' do
-    result = get '/me/habits/555', headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 404
+    get '/habits/555', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert_equal 404, status # Not Found
   end
 
   test 'Get an individual habit from a non existing user id' do
-    result = get "/me/habits/#{@individual_habit.id}", headers: { 'Authorization': 'Bearer faketoken' }
-    assert result == 401
+    get "/habits/#{@individual_habit.id}", headers: { 'Authorization': 'Bearer faketoken' }
+    assert_equal 401, status # Unauthorized
   end
 
   test 'Get habits paginated' do
-    result = get '/me/habits?page=1', headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 200
+    get '/me/habits?page=1', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert_equal 200, status # ok
     output = JSON.parse(response.body)
     assert output['data'].length == Habit.all.where(user_id: @user.id).length
   end
 
   test 'Get habits paginated empty' do
-    result = get '/me/habits?page=100', headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 200
+    get '/me/habits?page=100', headers: { 'Authorization': 'Bearer ' + @user_token }
+    assert_equal 200, status # ok
     output = JSON.parse(response.body)
     assert output['data'].empty?
   end

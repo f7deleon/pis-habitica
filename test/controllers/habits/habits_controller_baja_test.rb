@@ -51,7 +51,7 @@ class HabitsControllerBajaTest < ActionDispatch::IntegrationTest
     assert @individual_habit_has_type.valid?
   end
   test 'BajaHabito: should delete habit' do
-    patch '/me/habits/' + @individual_habit.id.to_s, headers: {
+    patch '/habits/' + @individual_habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
@@ -64,7 +64,7 @@ class HabitsControllerBajaTest < ActionDispatch::IntegrationTest
     assert_equal 204, status # Not Content
   end
   test 'BajaHabito: habit should exist' do
-    patch '/me/habits/9090999', headers: {
+    patch '/habits/9090999', headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
@@ -77,7 +77,7 @@ class HabitsControllerBajaTest < ActionDispatch::IntegrationTest
     assert_equal 404, status # Not Found
   end
   test 'BajaHabito: User should exist' do
-    patch '/me/habits/' + @individual_habit.id.to_s, headers: {
+    patch '/habits/' + @individual_habit.id.to_s, headers: {
       'Authorization': 'Bearer asdasd'
     }, params: {
       'data': {
@@ -90,7 +90,7 @@ class HabitsControllerBajaTest < ActionDispatch::IntegrationTest
     assert_equal 401, status # Unauthorized
   end
   test 'BajaHabito: User should have this habit' do
-    patch '/me/habits/' + @individual_habit.id.to_s, headers: {
+    patch '/habits/' + @individual_habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user2_token
     }, params: {
       'data': {
@@ -100,13 +100,13 @@ class HabitsControllerBajaTest < ActionDispatch::IntegrationTest
         }
       }
     }
-    assert_equal 404, status # Not Found
+    assert_equal 403, status # Forbidden
   end
 
   test 'BajaHabito: Habit should be active' do
     @individual_habit.active = false
     @individual_habit.save
-    patch '/me/habits/' + @individual_habit.id.to_s, headers: {
+    patch '/habits/' + @individual_habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {
@@ -119,7 +119,7 @@ class HabitsControllerBajaTest < ActionDispatch::IntegrationTest
     assert_equal 404, status # Bad Request
   end
   test 'BajaHabito: should have correct Format' do
-    patch '/me/habits/' + @individual_habit.id.to_s, headers: {
+    patch '/habits/' + @individual_habit.id.to_s, headers: {
       'Authorization': 'Bearer ' + @user_token
     }, params: {
       'data': {

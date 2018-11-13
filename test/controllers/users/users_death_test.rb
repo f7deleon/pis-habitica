@@ -44,7 +44,7 @@ class UserDeathTest < ActionDispatch::IntegrationTest
 
   test 'Test death function' do
     @user.death
-    get '/me/habits/' + @individual_habit.id.to_s, headers: { 'Authorization': 'Bearer ' + @user_token.to_s }
+    get '/habits/' + @individual_habit.id.to_s, headers: { 'Authorization': 'Bearer ' + @user_token.to_s }
     body = JSON.parse(response.body)
     assert body['included'][0]['attributes']['stat']['data']['calendar'] == []
   end
