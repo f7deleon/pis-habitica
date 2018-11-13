@@ -1,20 +1,26 @@
 # frozen_string_literal: true
 
 require 'time'
+require 'will_paginate/array'
 
 class UsersController < ApplicationController
   skip_before_action :authenticate_user, only: %i[create]
   before_action :create_user, only: %i[create]
   before_action :set_user, only: %i[show update destroy]
-  before_action :define_method, only: %i[index]
 
   # GET /users
   def index
-    render json: UserSerializer.new(User.all.select do |item|
-                                      item.id != current_user.id &&
-                                      item.nickname.downcase.include?(params[:filter].downcase)
-                                    end, params: { current_user: current_user },
-                                         include: [:individual_habits]).serialized_json, status: :ok
+    my_friends = current_user.friends.select do |item|
+      item.nickname.downcase.include?(params[:filter].downcase)
+    end
+    my_friends.sort_by! { |e| e[:nickname].downcase } unless my_friends.length.zero?
+    other_users = User.all.select do |item|
+      item.id != current_user.id && item.nickname.downcase.include?(params[:filter].downcase) &&
+        !current_user.friends.include?(item)
+    end
+    other_users.sort_by! { |e| e[:nickname].downcase } unless other_users.length.zero?
+    users = paginate my_friends.concat(other_users), per_page: params['per_page'].to_i
+    render json: UserInfoSerializer.new(users, params: { current_user: current_user }).serialized_json, status: :ok
   end
 
   # GET /users/1
@@ -76,9 +82,5 @@ class UsersController < ApplicationController
   def user_params
     params.require(:user).permit(:nickname, :email, :password)
     raise ActionController::ParameterMissing
-  end
-
-  def define_method
-    params.require(:filter)
   end
 end

@@ -124,11 +124,6 @@ class UsersViewOtherPerfilControllerTest < ActionDispatch::IntegrationTest
     assert_equal response.body, @no_friend
   end
 
-  test 'Ver Perfil de otro usuario: invalid format request' do
-    result = get '/users/', headers: { 'Authorization': 'Bearer ' + @user2_token }
-    assert result == 400
-  end
-
   test 'Ver Perfil de otro usuario: user not found' do
     result = get '/users/123', headers: { 'Authorization': 'Bearer ' + @user2_token }
     assert result == 404

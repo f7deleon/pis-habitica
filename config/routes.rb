@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   resources :memberships
   post 'user_token' => 'user_token#create'
   resources :types
+  get '/groups', to: 'groups#find_group'
   resources :users do
     resources :friends, only: %i[index]
     resources :habits, only: %i[show index]

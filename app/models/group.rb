@@ -14,6 +14,10 @@ class Group < ApplicationRecord
   self.primary_key = :id
   validates :name, presence: true # string
 
+  def member_in_group(member_id)
+    !memberships.find_by_user_id(member_id).nil?
+  end
+
   def erase_member(user_id)
     memberships.find_by_user_id(user_id).delete
     return true if memberships.length.zero?

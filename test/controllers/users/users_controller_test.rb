@@ -184,38 +184,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert result == 400 # :bad_request
   end
 
-  test 'Buscar Usuario: find an existing user (returns 1)' do
-    result = get '/users?filter=Ozu', headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 200
-    body = JSON.parse(response.body)
-    assert body['data'].length == 1
-    assert body['data'][0]['relationships']['requests_sent']
-  end
-
-  test 'Buscar Usuario: find an existing user (returns 2). Also checks ignoreCase' do
-    result = get '/users?filter=BaRaCk', headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 200
-    body = JSON.parse(response.body)
-    assert body['data'].length == 1
-  end
-
-  test 'Buscar Usuario: send empty filter (returns all users)' do
-    result = get '/users?filter=', headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 400
-  end
-
-  test 'Buscar Usuario: find a non existent user (data returns empty)' do
-    result = get '/users?filter=lennylove', headers: { 'Authorization': 'Bearer ' + @user_token }
-    assert result == 200
-    body = JSON.parse(response.body)
-    assert body['data'].length.zero?
-  end
-
-  test 'Buscar Usuario: dont attach Authorization token (unauthorized returned)' do
-    result = get '/users?filter=Ozu'
-    assert result == 401
-  end
-
   test 'Create user' do
     parameters = { "data": {
       "type": 'user',
