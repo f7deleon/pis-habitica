@@ -10,6 +10,7 @@ class GroupsController < ApplicationController
   def index
     options = {}
     options[:params] = { current_user: current_user }
+
     groups = paginate @user.groups.where(privacy: false).order('name ASC'), per_page: params[:per_page].to_i
     render json: GroupInfoSerializer.new(groups, options).serialized_json
   end
@@ -45,7 +46,7 @@ class GroupsController < ApplicationController
     memberships.each_with_index do |membership, i|
       data[i] = { id: membership.user_id, score: membership.score }
     end
-    parameters = { id: current_user.id, time_zone: params['time_zone'] }
+    parameters = { current_user: current_user, time_zone: params['time_zone'] }
     render json: GroupAndScoresSerializer.json(data, @group, options, parameters), status: :ok
   end
 

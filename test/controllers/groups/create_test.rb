@@ -12,6 +12,7 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
           'name': 'El Barzon',
           'description': 'Directo al barro',
           'privacy': 0
+
         },
         'relationships': {
           'members': {
@@ -73,7 +74,8 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
         'attributes': {
           'name': 'El Barzon',
           'description': 'Directo al barro',
-          'privacy': false
+          'privacy': false,
+          'group_status': 3
         },
         'relationships': {
           'members': {
@@ -192,6 +194,7 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
           'name': 'El Barzon',
           'description': 'Directo al barro',
           'privacy': 0
+
         },
         'relationships': {
           'members': {

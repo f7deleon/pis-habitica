@@ -22,7 +22,7 @@ class Me::GroupsController < Me::ApplicationController
     memberships.each_with_index do |membership, i|
       data[i] = { id: membership.user_id, score: membership.score }
     end
-    parameters = { id: current_user.id, time_zone: params['time_zone'] }
+    parameters = { current_user: current_user }
     render json: GroupAndScoresSerializer.json(data, @group, options, parameters), status: :ok
   end
 
@@ -43,7 +43,7 @@ class Me::GroupsController < Me::ApplicationController
     end
     options = {}
     options[:include] = %i[members admin]
-    options[:params] = { id: current_user.id }
+    options[:params] = { current_user: current_user }
     render json: GroupSerializer.new(group, options).serialized_json, status: :ok
   end
 
@@ -55,7 +55,9 @@ class Me::GroupsController < Me::ApplicationController
 
   def update_members
     @group.update_members(params[:data], current_user)
-    render json: GroupSerializer.new(@group).serialized_json, status: :created
+    options = {}
+    options[:params] = { current_user: current_user }
+    render json: GroupSerializer.new(@group, options).serialized_json, status: :created
   end
 
   def destroy

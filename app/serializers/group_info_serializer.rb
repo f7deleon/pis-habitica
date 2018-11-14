@@ -2,10 +2,6 @@
 
 class GroupInfoSerializer
   include FastJsonapi::ObjectSerializer
-  REQUEST_NO_SEND = 0
-  REQUEST_SEND = 1
-  IS_MEMBER = 2
-  IS_ADMIN = 3
   set_type :group
   set_id :id
 
@@ -17,13 +13,13 @@ class GroupInfoSerializer
 
   attributes :group_status do |object, params|
     if params[:current_user].group_requests_sent.find_by(group_id: object.id)
-      REQUEST_SEND
+      GROUP_REQUEST_SEND
     elsif object.memberships.find_by_admin(true).user.id == params[:current_user].id
-      IS_ADMIN
+      GROUP_IS_ADMIN
     elsif object.users.find_by(id: params[:current_user].id)
-      IS_MEMBER
+      GROUP_IS_MEMBER
     else
-      REQUEST_NO_SEND
+      GROUP_REQUEST_NO_SEND
     end
   end
 end
