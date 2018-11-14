@@ -43,6 +43,7 @@ Rails.application.routes.draw do
     member do
       post 'requests', to: 'request_group#send_request'
       get 'requests', to: 'request_group#requests'
+      post 'requests/:request', to: 'request_group#add_member'
     end
   end
   # - FOR DEVELOPMENT ONLY
