@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class RequestGroupController < ApplicationController
-  before_action :set_group, only: %i[send_request requests add_member]
-  before_action :set_request, only: %i[add_member]
+  before_action :set_group, only: %i[send_request requests add_member not_add_member]
+  before_action :set_request, only: %i[add_member not_add_member]
 
   def requests
     admin = @group.memberships.find_by!(admin: true).user
@@ -44,6 +44,16 @@ class RequestGroupController < ApplicationController
     group_notification.save!
 
     render json: MemberSerializer.new(@request.user).serialized_json, status: :created
+  end
+
+  def not_add_member
+    request_notification = current_user.notifications.find_by!(group_request_id: @request.id)
+
+    request_notification.destroy
+
+    @request.destroy
+
+    render json: {}, status: :no_content
   end
 
   private

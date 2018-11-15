@@ -44,6 +44,7 @@ Rails.application.routes.draw do
       post 'requests', to: 'request_group#send_request'
       get 'requests', to: 'request_group#requests'
       post 'requests/:request', to: 'request_group#add_member'
+      delete 'requests/:request', to: 'request_group#not_add_member'
     end
   end
   # - FOR DEVELOPMENT ONLY
