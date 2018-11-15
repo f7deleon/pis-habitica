@@ -5,36 +5,16 @@ require 'test_helper'
 class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
   def setup
     @user1 = User.create(nickname: 'Example1', email: 'example1@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @user1.email,
-        'password': @user1.password
-      }
-    }
+    sign_in(@user1)
     @user_token1 = JSON.parse(response.body)['jwt']
     @user2 = User.create(nickname: 'Example2', email: 'example2@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @user2.email,
-        'password': @user2.password
-      }
-    }
+    sign_in(@user2)
     @user_token2 = JSON.parse(response.body)['jwt']
     @user3 = User.create(nickname: 'Example3', email: 'example3@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @user3.email,
-        'password': @user3.password
-      }
-    }
+    sign_in(@user3)
     @user_token3 = JSON.parse(response.body)['jwt']
     @groupless_user = User.create(nickname: 'groupless_user', email: 'groupless@example.com', password: 'Example123')
-    post '/user_token', params: {
-      'auth': {
-        'email': @groupless_user.email,
-        'password': @groupless_user.password
-      }
-    }
+    sign_in(@groupless_user)
     @groupless_user_token = JSON.parse(response.body)['jwt']
 
     @group = Group.create(name: 'example', privacy: true)
@@ -88,6 +68,15 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
     }, params: req
   end
 
+  def sign_in(user)
+    post '/user_token', params: {
+      'auth': {
+        'email': user.email,
+        'password': user.password
+      }
+    }
+  end
+
   test 'should be valid' do
     assert @user1.valid?
     assert @user2.valid?
@@ -128,6 +117,27 @@ class HabitsControllerGroupFulfillTest < ActionDispatch::IntegrationTest
     }
     assert expected.to_json == response.body
     assert_equal 201, status # Created
+    assert TrackGroupHabit.find_by(id: JSON.parse(response.body)['data']['id'])
+    assert @user1.track_group_habits.find_by(id: JSON.parse(response.body)['data']['id'])
+    assert @habit.track_group_habits.find_by(id: JSON.parse(response.body)['data']['id'])
+  end
+
+  test 'level up serializer shows score_difference' do
+    past_level = @user1.level
+    @user1.experience = @user1.max_experience - 1
+    @user1.save!
+    post '/habits/' + @habit.id.to_s + '/fulfill', headers: {
+      'Authorization': 'Bearer ' + @user_token1
+    }, params: { 'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:27+00:00' } } }
+    assert_equal 201, status # Created
+    body = JSON.parse(response.body)
+    assert body['data']['attributes']['health'].eql? User.find_by_id(@user1.id).max_health
+    assert body['data']['attributes']['experience'].eql? 15
+    assert body['data']['attributes']['max_experience'].eql? User.find_by_id(@user1.id).max_experience
+    assert body['data']['attributes']['score_difference'].eql? @habit.score_difference
+    assert body['data']['attributes']['level_up']
+    assert body['data']['attributes']['level'].eql? past_level + 1
+    assert body['data']['relationships']['group_habit']['data']['id'].eql? @habit.id.to_s
     assert TrackGroupHabit.find_by(id: JSON.parse(response.body)['data']['id'])
     assert @user1.track_group_habits.find_by(id: JSON.parse(response.body)['data']['id'])
     assert @habit.track_group_habits.find_by(id: JSON.parse(response.body)['data']['id'])

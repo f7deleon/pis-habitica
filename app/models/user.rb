@@ -108,6 +108,17 @@ class User < ApplicationRecord
     amount
   end
 
+  def health_hypothetical_difference(amount)
+    hypothetical_health = self.health
+    if amount.positive?
+      amount = max_health - hypothetical_health if amount + hypothetical_health > max_health
+    else # Penalize
+      hypothetical_health += amount
+      amount -= hypothetical_health if hypothetical_health <= 0
+    end
+    amount
+  end
+
   def modify_experience(amount)
     self.experience = self.experience + amount
     if self.experience >= max_experience
@@ -131,11 +142,21 @@ class User < ApplicationRecord
     self.experience = 0
     update_attributes(experience: experience)
 
+    memberships.each do |membership|
+      next if membership.score <= 0
+
+      membership.score = 0
+      membership.save!
+    end
+
     time = Time.zone.now
     individual_habits.each do |habit|
       habit.track_individual_habits.each do |track|
         track.destroy if TimeDifference.between(time.to_date, track.date.to_date).in_days < 1
       end
+    end
+    track_group_habits.each do |track_group|
+      track_group.destroy if TimeDifference.between(time.to_date, track_group.date.to_date).in_days < 1
     end
   end
 

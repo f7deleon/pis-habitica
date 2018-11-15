@@ -3,19 +3,29 @@
 class LevelUpSerializer
   include FastJsonapi::ObjectSerializer
   set_type :track
-  attribute :health
-  attribute :experience
-  attribute :max_experience, &:max_experience
+  attribute :health do |_object, params|
+    params[:user].health
+  end
+  attribute :experience do |_object, params|
+    params[:user].experience
+  end
+  attribute :max_experience do |_object, params|
+    params[:user].max_experience
+  end
+  attribute :score_difference, if: proc { |object| object.class.name.eql?('TrackGroupHabit') }
   attribute :level_up do |_object|
     true
   end
-  attribute :level
+  attribute :level do |_object, params|
+    params[:user].level
+  end
 
-  has_one :group_habit, if: proc { |_object, params| params[:habit].class.name.eql?('GroupHabit') } do |object, params|
-    object.groups.find(params[:habit].group.id).group_habits.find(params[:habit])
-  end
-  has_one :individual_habit,
-          if: proc { |object, params| object.individual_habits.exists?(params[:habit]) } do |object, params|
-    object.individual_habits.find(params[:habit])
-  end
+  belongs_to :group_habit, record_type: :group_habit, serializer: :group_habit, id_method_name: :habit_id,
+                           if: proc { |object| object.try(:group_habit) }
+
+  belongs_to :individual_habit,
+             record_type: :individual_habit,
+             serializer: :individual_habit,
+             id_method_name: :habit_id,
+             if: proc { |object| object.try(:individual_habit) }
 end

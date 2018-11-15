@@ -88,8 +88,8 @@ class HabitsController < ApplicationController
     user = User.find_by_id(current_user.id)
     if previous_level < user.level
       render json: LevelUpSerializer.new(
-        user,
-        params: { habit: @habit.id }
+        track_habit,
+        params: { habit: @habit.id, user: user }
       ).serialized_json, status: :created
     else
       render json: TrackHabitSerializer.new(

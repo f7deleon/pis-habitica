@@ -16,9 +16,11 @@ class GroupHabit < Habit
         habit_id: id,
         date: date,
         experience_difference: 0,
-        health_difference: current_user.modify_health(decrement_of_health(current_user)),
+        health_difference: current_user.health_hypothetical_difference(decrement_of_health(current_user)),
         score_difference: score_difference
       )
+      track_habit.save!
+      current_user.modify_health(decrement_of_health(current_user))
     else # Positive Habit
       # Positive Habit frequency is daily and it has been fulfilled today
       if frequency == 2 && !been_tracked_today_by?(current_user, date).empty?
@@ -31,12 +33,13 @@ class GroupHabit < Habit
         habit_id: id,
         date: date,
         experience_difference: current_user.modify_experience(increment_of_experience(current_user)),
-        health_difference: current_user.modify_health(increment_of_health(current_user)),
+        health_difference: current_user.health_hypothetical_difference(increment_of_health(current_user)),
         score_difference: score_difference
       )
+      track_habit.save!
+      current_user.modify_health(increment_of_health(current_user))
     end
     group.memberships.find_by!(user_id: current_user.id).modify_score(score_difference)
-    track_habit.save!
     track_habit
   end
 

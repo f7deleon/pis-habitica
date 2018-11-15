@@ -110,8 +110,10 @@ class IndividualHabit < Habit
         habit_id: id,
         date: date,
         experience_difference: 0,
-        health_difference: user.modify_health(decrement_of_health(user))
+        health_difference: user.health_hypothetical_difference(decrement_of_health(user))
       )
+      track_individual_habit.save!
+      user.modify_health(decrement_of_health(user))
     else # Positive Habit
       # Positive Habit frequency is daily and it has been fulfilled today
       if frequency == 2 && !been_tracked_today?(date).empty?
@@ -123,10 +125,11 @@ class IndividualHabit < Habit
         habit_id: id,
         date: date,
         experience_difference: user.modify_experience(increment_of_experience(user)),
-        health_difference: user.modify_health(increment_of_health(user))
+        health_difference: user.health_hypothetical_difference(increment_of_health(user))
       )
+      track_individual_habit.save!
+      user.modify_health(increment_of_health(user))
     end
-    track_individual_habit.save!
     track_individual_habit
   end
 
