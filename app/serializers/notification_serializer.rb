@@ -17,7 +17,16 @@ class NotificationSerializer
     end
   end
 
-  belongs_to :group, if: proc { |record| record.type.eql? 'GroupNotification' }
+  belongs_to :group, if: proc { |record|
+                           record.type.eql?('GroupNotification') ||
+                             record.type.eql?('GroupRequestNotification')
+                         } do |record|
+    if record.type.eql? 'GroupRequestNotification'
+      record.group_request.group
+    else
+      record.group
+    end
+  end
 
   belongs_to :request, record_type: :request,
                        serializer: :request, if: proc { |record| record.type.eql? 'FriendRequestNotification' }

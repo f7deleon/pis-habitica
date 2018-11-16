@@ -6,7 +6,10 @@ class RequestGroupController < ApplicationController
 
   def requests
     admin = @group.memberships.find_by!(admin: true).user
-    render json: GroupRequestSerializer.new(admin.group_requests_received).serialized_json, status: :ok
+    options = {}
+    options[:include] = %i[sender group_request group]
+    options[:params] = { current_user: admin }
+    render json: NotificationSerializer.new(admin.notifications, options).serialized_json, status: :ok
   end
 
   def send_request

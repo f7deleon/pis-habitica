@@ -54,13 +54,16 @@ class GroupNotificationTest < ActionDispatch::IntegrationTest
       group_id: @group2.id
     )
 
-    @request.save
-
-    @request_serializer = GroupRequestSerializer.new([@request]).serialized_json
+    @request.save!
 
     @group_request_notification = GroupRequestNotification.new(user_id: @user2.id, group_request_id: @request.id)
 
-    @group_request_notification.save
+    @group_request_notification.save!
+
+    options = {}
+    options[:include] = %i[sender group_request group]
+    options[:params] = { current_user: @user2 }
+    @request_serializer = NotificationSerializer.new([@group_request_notification], options).serialized_json
   end
 
   test 'List Group Request Notification' do
@@ -69,8 +72,8 @@ class GroupNotificationTest < ActionDispatch::IntegrationTest
     assert result == 200
     body = JSON.parse(response.body)
     body['data'][0]['relationships']['sender']['data']['id'].eql? @user3.id.to_s
-    body['included'][0]['relationships']['group']['data']['id'].eql? @group2.id.to_s
-    body['included'][0]['relationships']['receiver']['data']['id'].eql? @user2.id.to_s
+    body['included'][1]['relationships']['group']['data']['id'].eql? @group2.id.to_s
+    body['included'][1]['relationships']['receiver']['data']['id'].eql? @user2.id.to_s
   end
 
   test 'Send antoher group request to group2' do
