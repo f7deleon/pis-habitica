@@ -11,7 +11,8 @@ class GroupsController < ApplicationController
   def index
     options = {}
     options[:params] = { current_user: current_user }
-
+    puts params
+    @user = User.find_by_id(params[:user_id])
     groups = paginate @user.groups.where(privacy: false).order('name ASC'), per_page: params[:per_page].to_i
     render json: GroupInfoSerializer.new(groups, options).serialized_json
   end
