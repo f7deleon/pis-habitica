@@ -78,86 +78,11 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
           'group_status': 3
         },
         'relationships': {
-          'members': {
-            'data': [
-              {
-                'id': @user_admin.id.to_s,
-                'type': 'user'
-              },
-              {
-                'id': @member1.id.to_s,
-                'type': 'user'
-              },
-              {
-                'id': @member2.id.to_s,
-                'type': 'user'
-              }
-            ]
-          },
-          'admin': {
-            'data': {
-              'id': @user_admin.id.to_s,
-              'type': 'user'
-            }
-          },
-          'group_habits': {
-            'data': []
-          },
           'group_types': {
             'data': []
           }
         }
-      },
-      'included': [
-        {
-          'id': @user_admin.id.to_s,
-          'type': 'user',
-          'attributes': {
-            'nickname': 'Example',
-            'level': 1
-          },
-          'relationships': {
-            'character': {
-              'data': {
-                'id': @character1.id.to_s,
-                'type': 'character'
-              }
-            }
-          }
-        },
-        {
-          'id': @member1.id.to_s,
-          'type': 'user',
-          'attributes': {
-            'nickname': 'member1',
-            'level': 1
-          },
-          'relationships': {
-            'character': {
-              'data': {
-                'id': @character.id.to_s,
-                'type': 'character'
-              }
-            }
-          }
-        },
-        {
-          'id': @member2.id.to_s,
-          'type': 'user',
-          'attributes': {
-            'nickname': 'member2',
-            'level': 1
-          },
-          'relationships': {
-            'character': {
-              'data': {
-                'id': @character1.id.to_s,
-                'type': 'character'
-              }
-            }
-          }
-        }
-      ]
+      }
     }
   end
 

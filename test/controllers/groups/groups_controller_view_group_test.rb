@@ -93,7 +93,7 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
   end
 
   test 'View @user1s public @group being @user3' do
-    url = '/users/' + @user1.id.to_s + '/groups/' + @group.id.to_s
+    url = '/groups/' + @group.id.to_s
     result = get url, headers: { 'Authorization': 'Bearer ' + @user3_token }
     assert result == 200
     body = JSON.parse(response.body)
@@ -103,21 +103,10 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['name'] == @group.name
     assert body['data']['attributes']['description'] == @group.description
     assert body['data']['attributes']['privacy'] == @group.privacy
-    assert body['data']['relationships']['members']['data'].length == 3
-    assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
-    assert body['data']['relationships']['group_habits']['data'].length == 2
-
-    # included data - 2 members and 1 admin, 2 group_habits, 1 leaderboard
-    assert body['included'].length == 6
-    assert body['included'][0]['type'] == 'group_habit'
-    assert body['included'][1]['type'] == 'group_habit'
-    assert body['included'][2]['type'] == 'user'
-    assert body['included'][3]['type'] == 'user'
-    assert body['included'][4]['type'] == 'user'
   end
 
   test 'View @user3s private @group1 being @user1' do
-    url = '/users/' + @user3.id.to_s + '/groups/' + @group1.id.to_s
+    url = '/groups/' + @group1.id.to_s
     result = get url, headers: { 'Authorization': 'Bearer ' + @user1_token }
     assert result == 403
     body = JSON.parse(response.body)
@@ -126,17 +115,16 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
   end
 
   test 'View group that does not exist' do
-    url = '/users/' + @user3.id.to_s + '/groups/' + '4'
+    url = '/groups/' + '4'
     result = get url, headers: { 'Authorization': 'Bearer ' + @user1_token }
     assert result == 404
     body = JSON.parse(response.body)
-    assert body['errors'][0]['message'] == 'There is no group with the given id'
     assert body['errors'][0]['title'] == 'Not found'
   end
 
   test 'View @users3 private @group1, but now @user1 is a member' do
     Membership.create(user_id: @user1.id, admin: false, group_id: @group1.id)
-    url = '/users/' + @user3.id.to_s + '/groups/' + @group1.id.to_s
+    url = '/groups/' + @group1.id.to_s
     result = get url, headers: { 'Authorization': 'Bearer ' + @user1_token }
     assert result == 200
     body = JSON.parse(response.body)
@@ -145,15 +133,5 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert body['data']['attributes']['name'] == @group1.name
     assert body['data']['attributes']['description'] == @group1.description
     assert body['data']['attributes']['privacy'] == @group1.privacy
-    assert body['data']['relationships']['members']['data'].length == 3
-    assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
-    assert body['data']['relationships']['group_habits']['data'].length == 1
-
-    # included data - 2 members and 1 admin, 1 group_habit, 1 leaderboard
-    assert body['included'].length == 5
-    assert body['included'][0]['type'] == 'group_habit'
-    assert body['included'][1]['type'] == 'user'
-    assert body['included'][2]['type'] == 'user'
-    assert body['included'][3]['type'] == 'user'
   end
 end

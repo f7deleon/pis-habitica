@@ -13,19 +13,6 @@ class Me::GroupsController < Me::ApplicationController
     render json: GroupInfoSerializer.new(groups, options).serialized_json
   end
 
-  # GET /me/groups/gid
-  def show
-    options = %i[group_habits members]
-
-    memberships = @group.memberships.ordered_by_score_and_name
-    data = []
-    memberships.each_with_index do |membership, i|
-      data[i] = { id: membership.user_id, score: membership.score }
-    end
-    parameters = { current_user: current_user }
-    render json: GroupAndScoresSerializer.json(data, @group, options, parameters), status: :ok
-  end
-
   # POST /me/groups
   def create
     params[:data][:relationships][:members][:data].each do |member|
@@ -42,15 +29,8 @@ class Me::GroupsController < Me::ApplicationController
       Membership.create(user_id: member[:id], group_id: group.id, admin: false)
     end
     options = {}
-    options[:include] = %i[members admin]
     options[:params] = { current_user: current_user }
     render json: GroupSerializer.new(group, options).serialized_json, status: :ok
-  end
-
-  # GET /me/groups/id/habits
-  def habits
-    habits = @group.group_habits.order('name ASC').select(&:active)
-    render json: GroupHabitInfoSerializer.new(habits, params: { id: current_user.id }).serialized_json, status: :ok
   end
 
   def update_members

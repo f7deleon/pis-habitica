@@ -13,7 +13,6 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
       }
     }
     @admin_token = JSON.parse(response.body)['jwt']
-
     @user1 = User.create(nickname: 'Example1', email: 'example1@example.com', password: 'Example123')
     post '/user_token', params: {
       'auth': {
@@ -22,7 +21,6 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
       }
     }
     @user1_token = JSON.parse(response.body)['jwt']
-
     @user2 = User.create(nickname: 'Example2', email: 'example2@example.com', password: 'Example123')
     post '/user_token', params: {
       'auth': {
@@ -31,7 +29,6 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
       }
     }
     @user2_token = JSON.parse(response.body)['jwt']
-
     @user3 = User.create(nickname: 'Example3', email: 'example3@example.com', password: 'Example123')
     post '/user_token', params: {
       'auth': {
@@ -40,7 +37,6 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
       }
     }
     @user3_token = JSON.parse(response.body)['jwt']
-
     # Characters
     @char = Character.create(name: 'Mago', description: I18n.t('mage_description'))
     req = {
@@ -63,18 +59,14 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     post '/me/characters', headers: {
       'Authorization': 'Bearer ' + @admin_token
     }, params: req
-
     # Create groups:
     @group = Group.create(name: 'Tournament', description: 'Let the games begin', privacy: false)
-
     # Add admins
     @membership = Membership.create(user_id: @admin.id, admin: true, group_id: @group.id)
-
     # Add members (not admins)
     @membership1 = Membership.create(user_id: @user1.id, admin: false, group_id: @group.id)
     @membership2 = Membership.create(user_id: @user2.id, admin: false, group_id: @group.id)
     @membership3 = Membership.create(user_id: @user3.id, admin: false, group_id: @group.id)
-
     # Add group_habits to groups
     @hard = GroupHabit.create(name: 'Correr', description: 'Corer mucho', difficulty: 3,
                               privacy: 1, frequency: 1, active: true,
@@ -85,34 +77,7 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     @negative = GroupHabit.create(name: 'Comer en McDonalds', description: 'Comer',
                                   difficulty: 2, privacy: 1, frequency: 1, active: true,
                                   group_id: @group.id, negative: true)
-
-    # Leaderboard should be: User1: 15, Admin: 5, User3: 0, User2: -10
-    @expected1 = {
-      'type': 'leaderboard',
-      'attributes': {
-        'leaderboard': [
-          { 'id': @user1.id, 'score': 15 },
-          { 'id': @admin.id, 'score': 5 },
-          { 'id': @user3.id, 'score': 0 },
-          { 'id': @user2.id, 'score': -10 }
-        ]
-      }
-    }
-
-    # Leaderboard should be: User3: 20, Admin: 5, User1: 0, User2: -5
-    @expected2 = {
-      'type': 'leaderboard',
-      'attributes': {
-        'leaderboard': [
-          { 'id': @user3.id, 'score': 20 },
-          { 'id': @admin.id, 'score': 5 },
-          { 'id': @user1.id, 'score': 0 },
-          { 'id': @user2.id, 'score': -5 }
-        ]
-      }
-    }
   end
-
   test 'should be valid' do
     assert @admin.valid?
     assert @user1.valid?
@@ -128,7 +93,6 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     assert @easy.valid?
     assert @negative.valid?
   end
-
   def fulfill(user_token, group_habit)
     post '/habits/' + group_habit.id.to_s + '/fulfill', headers: {
       'Authorization': 'Bearer ' + user_token
@@ -144,11 +108,10 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
   end
 
   def show_group(user_token = @admin_token, group = @group)
-    get '/me/groups/' + group.id.to_s, headers: {
+    get '/groups/' + group.id.to_s + '/members', headers: {
       'Authorization': 'Bearer ' + user_token
     }
   end
-
   test 'Fulfillments and undos should impact the leaderboard' do
     fulfill(@admin_token, @easy)
     fulfill(@user1_token, @hard)
@@ -156,24 +119,24 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     # Leaderboard should be: User1: 15, Admin: 5, User3: 0, User2: -10
     show_group
     body = JSON.parse(response.body)
-    leaderboard = body['included'].find { |i| i['type'] == 'leaderboard' }
-    assert leaderboard.to_json == @expected1.to_json
-
+    collection = Group.find(@group.id).memberships.ordered_by_score_and_name.map(&:user)
+    body['data'].each_with_index do |user, index|
+      assert collection[index].id.to_s == user['id']
+    end
     undo(@admin_token, @easy)
     fulfill(@admin_token, @easy)
     undo(@admin_token, @easy)
     fulfill(@admin_token, @easy)
-
     undo(@user1_token, @hard)
-
     fulfill(@user2_token, @easy)
-
     fulfill(@user3_token, @hard)
     fulfill(@user3_token, @easy)
     # Leaderboard should be: User3: 20, Admin: 5, User1: 0, User2: -5
     show_group
     body = JSON.parse(response.body)
-    leaderboard = body['included'].find { |i| i['type'] == 'leaderboard' }
-    assert leaderboard.to_json == @expected2.to_json
+    collection = Group.find(@group.id).memberships.ordered_by_score_and_name.map(&:user)
+    body['data'].each_with_index do |user, index|
+      assert collection[index].id.to_s == user['id']
+    end
   end
 end

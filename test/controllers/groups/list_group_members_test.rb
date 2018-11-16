@@ -83,56 +83,28 @@ class ListGroupMembersTest < ActionDispatch::IntegrationTest
     Membership.create(user_id: @user2.id, admin: false, group_id: @group3.id)
   end
   # Endpoint /me/groups/id
-  test 'List my group members and admin alphabetically' do
-    url = '/me/groups/' + @group.id.to_s
+  test 'List my group members score order' do
+    url = '/groups/' + @group.id.to_s + '/members'
     result = get url, headers: { 'Authorization': 'Bearer ' + @user_token }
     assert result == 200
     body = JSON.parse(response.body)
-    assert body['data']['id'] == @group.id.to_s
-    assert body['data']['relationships']['members']['data'].length == 3
-    assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
-
-    # included data - 2 members, 1 admin
-    assert body['included'][0]['type'] == 'user'
-    # admin:
-    assert body['included'][0]['attributes']['nickname'] == @user.nickname
-    # members:
-    assert body['included'][1]['type'] == 'user'
-    assert body['included'][1]['attributes']['nickname'] == @user2.nickname
-    assert body['included'][2]['type'] == 'user'
-    assert body['included'][2]['attributes']['nickname'] == @user1.nickname
+    assert body['data'].length == @group.users.length
   end
 
   test 'My group where the only member is the admin' do
-    url = '/me/groups/' + @group1.id.to_s
+    url = '/groups/' + @group1.id.to_s + '/members'
     result = get url, headers: { 'Authorization': 'Bearer ' + @user_token }
     assert result == 200
     body = JSON.parse(response.body)
-    assert body['data']['id'] == @group1.id.to_s
-
-    # included data - 0 members, 1 admin
-    assert body['data']['relationships']['members']['data'].length == 1
-    assert body['data']['relationships']['admin']['data']['id'] == @user.id.to_s
+    assert body['data'].length == @group1.users.length
   end
 
   # Endpoint /users/user_id/groups/id
   test 'List other users group members and admin alphabetically' do
-    url = '/users/' + @user1.id.to_s + '/groups/' + @group3.id.to_s
+    url = '/groups/' + @group3.id.to_s + '/members'
     result = get url, headers: { 'Authorization': 'Bearer ' + @user3_token }
     assert result == 200
     body = JSON.parse(response.body)
-    assert body['data']['id'] == @group3.id.to_s
-    assert body['data']['relationships']['members']['data'].length == 3
-    assert body['data']['relationships']['admin']['data']['id'] == @user1.id.to_s
-
-    # included data - 2 members, 1 admin
-    assert body['included'][0]['type'] == 'user'
-    # admin:
-    assert body['included'][0]['attributes']['nickname'] == @user.nickname
-    # members:
-    assert body['included'][1]['type'] == 'user'
-    assert body['included'][1]['attributes']['nickname'] == @user2.nickname
-    assert body['included'][2]['type'] == 'user'
-    assert body['included'][2]['attributes']['nickname'] == @user1.nickname
+    assert body['data'].length == @group3.users.length
   end
 end

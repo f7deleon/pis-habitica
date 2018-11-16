@@ -90,54 +90,48 @@ class ListGroupsHabitsTest < ActionDispatch::IntegrationTest
   end
   # Endpoint /me/groups/id
   test 'List my group group_habits alphabetically' do
-    url = '/me/groups/' + @group.id.to_s
+    url = '/groups/' + @group.id.to_s + '/habits'
     result = get url, headers: { 'Authorization': 'Bearer ' + @user_token }
     assert result == 200
     body = JSON.parse(response.body)
-    assert body['data']['id'] == @group.id.to_s
-    assert body['data']['relationships']['group_habits']['data'].length == 3
 
-    assert body['included'][0]['type'] == 'group_habit'
-    assert body['included'][0]['attributes']['name'] == @gh1.name
-    assert body['included'][1]['type'] == 'group_habit'
-    assert body['included'][1]['attributes']['name'] == @gh2.name
-    assert body['included'][2]['type'] == 'group_habit'
-    assert body['included'][2]['attributes']['name'] == @gh.name
+    assert body['data'][0]['type'] == 'group_habit'
+    assert body['data'][0]['attributes']['name'] == @gh1.name
+    assert body['data'][1]['type'] == 'group_habit'
+    assert body['data'][1]['attributes']['name'] == @gh2.name
+    assert body['data'][2]['type'] == 'group_habit'
+    assert body['data'][2]['attributes']['name'] == @gh.name
   end
 
   # Endpoint /me/groups/id
   test 'My group without group_habits' do
-    url = '/me/groups/' + @group1.id.to_s
+    url = '/groups/' + @group1.id.to_s + '/habits'
     result = get url, headers: { 'Authorization': 'Bearer ' + @user_token }
     assert result == 200
     body = JSON.parse(response.body)
-    assert body['data']['id'] == @group1.id.to_s
-    assert body['data']['relationships']['group_habits']['data'].empty?
+    assert body['data'].empty?
   end
 
   # Endpoint /users/user_id/groups/id
   test 'List other users group group_habits alphabetically' do
-    url = '/users/' + @user1.id.to_s + '/groups/' + @group.id.to_s
+    url = '/groups/' + @group.id.to_s + '/habits'
     result = get url, headers: { 'Authorization': 'Bearer ' + @user2_token }
     assert result == 200
     body = JSON.parse(response.body)
-    assert body['data']['id'] == @group.id.to_s
-    assert body['data']['relationships']['group_habits']['data'].length == 3
 
-    assert body['included'][0]['type'] == 'group_habit'
-    assert body['included'][0]['attributes']['name'] == @gh1.name
-    assert body['included'][1]['type'] == 'group_habit'
-    assert body['included'][1]['attributes']['name'] == @gh2.name
-    assert body['included'][2]['type'] == 'group_habit'
-    assert body['included'][2]['attributes']['name'] == @gh.name
+    assert body['data'][0]['type'] == 'group_habit'
+    assert body['data'][0]['attributes']['name'] == @gh1.name
+    assert body['data'][1]['type'] == 'group_habit'
+    assert body['data'][1]['attributes']['name'] == @gh2.name
+    assert body['data'][2]['type'] == 'group_habit'
+    assert body['data'][2]['attributes']['name'] == @gh.name
   end
 
   test 'Group without group_habits' do
-    url = '/users/' + @user1.id.to_s + '/groups/' + @group3.id.to_s
+    url = '/groups/' + @group3.id.to_s + '/habits'
     result = get url, headers: { 'Authorization': 'Bearer ' + @user_token }
     assert result == 200
     body = JSON.parse(response.body)
-    assert body['data']['id'] == @group3.id.to_s
-    assert body['data']['relationships']['group_habits']['data'].empty?
+    assert body['data'].length == @group3.group_habits.length
   end
 end

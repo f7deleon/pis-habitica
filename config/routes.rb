@@ -8,35 +8,35 @@ Rails.application.routes.draw do
     get 'habits', to: 'habits#index'
     resources :notifications
     resources :characters
-    resources :requests
+    resources :requests do 
+      member do 
+        post '', to: 'requests#add_friend'
+      end  
+    end
     resources :friends, controller: 'friends'
     resources :groups do
       member do
-        get 'habits', to: 'groups#habits'
         post 'members', to: 'groups#update_members'
       end
     end
-    post 'requests/:id', to: 'requests#add_friend'
   end
+  
   resources :types
   resources :characters
+  
   resources :habits, except: :index do
     member do
       post 'fulfill', to: 'habits#fulfill'
       delete 'fulfill', to: 'habits#undo_habit'
     end
   end
+
   resources :users do
     resources :friends, only: %i[index]
     member do
       get 'habits', to: 'users#index_habits'
     end
-    resources :groups, only: %i[show index] do
-      member do
-        get 'habits', to: 'groups#habits'
-        get 'habits/:habit', to: 'groups#habit'
-      end
-    end
+    resources :groups, only: %i[show index]
   end
 
   resources :groups do
@@ -45,10 +45,9 @@ Rails.application.routes.draw do
       get 'requests', to: 'request_group#requests'
       post 'requests/:request', to: 'request_group#add_member'
       delete 'requests/:request', to: 'request_group#not_add_member'
+      get 'habits', to: 'groups#habits'
+      get 'members', to: 'groups#members'
     end
   end
-  # - FOR DEVELOPMENT ONLY
-  get '/killme', to: 'users#killme'
 
-  # For details on the DSL available wihthin this file, see http://guides.rubyonrails.org/routing.htm
 end

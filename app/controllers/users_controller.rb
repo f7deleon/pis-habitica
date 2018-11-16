@@ -65,14 +65,6 @@ class UsersController < ApplicationController
     @user.destroy
   end
 
-  # BORRAR BEFORE RELEASE
-  def killme
-    current_user.death
-    current_user.health = 0
-    current_user.save
-    render json: current_user.dead?, status: :ok
-  end
-
   private
 
   def create_user

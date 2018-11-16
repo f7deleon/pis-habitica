@@ -3,9 +3,7 @@
 require 'will_paginate/array'
 
 class GroupsController < ApplicationController
-  before_action :set_group, only: %i[habits habit]
-  before_action :set_user, only: %i[index show habits habit]
-
+  before_action :set_group, only: %i[habits members show]
   # GET /users/:user_id/groups
   def index
     options = {}
@@ -31,47 +29,41 @@ class GroupsController < ApplicationController
     render json: GroupInfoSerializer.new(groups, options).serialized_json, status: :ok
   end
 
-  # GET /users/:user_id/groups/:id
+  # GET /groups/:id
   def show
-    raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
-      (@group = Group.find_by(id: params[:id]))
-
-    raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.group_is_private')) unless
-      !@group.privacy || current_user.groups.find_by(id: params[:id])
-
-    options = %i[group_habits members]
-
     memberships = @group.memberships.ordered_by_score_and_name
     data = []
     memberships.each_with_index do |membership, i|
       data[i] = { id: membership.user_id, score: membership.score }
     end
     parameters = { current_user: current_user, time_zone: params['time_zone'] }
-    render json: GroupAndScoresSerializer.json(data, @group, options, parameters), status: :ok
+    render json: GroupSerializer.new(@group, params: parameters).serialized_json, status: :ok
   end
 
-  # GET /users/:user_id/groups/:id/habits
+  # GET /groups/:id/habits
   def habits
-    unless @group.memberships.find_by(user_id: current_user.id) || !@group.privacy?
-      raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.not_belong'))
-    end
-
     habits = @group.group_habits.order('name ASC').select(&:active)
     options = {}
     options[:include] = %i[types]
-    options[:params] = { id: @user.id }
+    options[:params] = { id: current_user.id }
     render json: GroupHabitSerializer.new(habits, options).serialized_json, status: :ok
+  end
+
+  # GET /groups/:id/members
+  def members
+    members = paginate @group.memberships.ordered_by_score_and_name.map(&:user), per_page: params[:per_page]
+    options = {}
+    options[:params] = { current_user: current_user, group_id: @group.id }
+    render json: MemberInfoSerializer.new(members, options).serialized_json, status: :ok
   end
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_user
-    @user = User.find(params[:user_id])
-  end
-
   def set_group
     @group = Group.find(params[:id])
+
+    raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.group_is_private')) if
+     !@group.memberships.find_by(user_id: current_user.id) && @group.privacy?
   end
 
   # Only allow a trusted parameter "white list" through.
