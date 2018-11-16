@@ -4,6 +4,9 @@ require 'will_paginate/array'
 
 class GroupsController < ApplicationController
   before_action :set_group, only: %i[habits members show]
+  before_action :create_group, only: %i[create]
+  before_action :update_members_requirements, only: %i[update_members]
+
   # GET /users/:user_id/groups
   def index
     options = {}
@@ -57,10 +60,38 @@ class GroupsController < ApplicationController
     render json: MemberInfoSerializer.new(members, options).serialized_json, status: :ok
   end
 
+  # POST /groups
+  def create
+    params[:data][:relationships][:members][:data].each do |member|
+      unless User.exists?(member[:id])
+        raise Error::CustomError.new(I18n.t(:bad_request), '404', I18n.t('errors.messages.member_not_exist'))
+      end
+    end
+    params_attributte = params[:data][:attributes]
+    group = Group.create(name: params_attributte[:name],
+                         description: params_attributte[:description],
+                         privacy: params_attributte[:privacy])
+    Membership.create(user_id: current_user.id, group_id: group.id, admin: true)
+    params[:data][:relationships][:members][:data].each do |member|
+      Membership.create(user_id: member[:id], group_id: group.id, admin: false)
+    end
+    options = {}
+    options[:params] = { current_user: current_user }
+    render json: GroupSerializer.new(group, options).serialized_json, status: :ok
+  end
+
+  def update_members
+    @group.update_members(params[:data], current_user)
+    options = {}
+    options[:params] = { current_user: current_user }
+    render json: GroupSerializer.new(@group, options).serialized_json, status: :created
+  end
+
   private
 
   def set_group
-    @group = Group.find(params[:id])
+    raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
+    (@group = Group.find_by(id: params[:id]))
 
     raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.group_is_private')) if
      !@group.memberships.find_by(user_id: current_user.id) && @group.privacy?
@@ -69,5 +100,23 @@ class GroupsController < ApplicationController
   # Only allow a trusted parameter "white list" through.
   def group_params
     params.require(:group).permit(:name, :description)
+  end
+
+  def update_members_requirements
+    raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
+    (@group = current_user.groups.find_by(id: params[:id]))
+
+    unless @group.memberships.find_by(user_id: current_user.id).admin?
+      raise Error::CustomError.new(I18n.t(:forbidden), '403', I18n.t('errors.messages.not_admin'))
+    end
+
+    params.require(:data)
+
+    raise Error::CustomError.new(I18n.t(:bad_request), '400', I18n.t('errors.messages.no_users_to_add')) if
+      params[:data][0].blank?
+  end
+
+  def create_group
+    params.require(:data).require(:attributes).require(%i[name privacy])
   end
 end

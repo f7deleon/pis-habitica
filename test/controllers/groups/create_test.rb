@@ -166,12 +166,12 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
     @user_admin.add_character(@character1.id, '2018-09-07T12:00:00Z')
   end
   test 'CreateGroup correct form' do
-    post '/me/groups/', headers: { 'Authorization': 'Bearer ' + @user_token }, params: params_correct
+    post '/groups/', headers: { 'Authorization': 'Bearer ' + @user_token }, params: params_correct
     expected = expected_correct
     assert response.body == expected.to_json
   end
   test 'CreateGroup not Exist' do
-    post '/me/groups/', headers: { 'Authorization': 'Bearer ' + @user_token }, params:
+    post '/groups/', headers: { 'Authorization': 'Bearer ' + @user_token }, params:
     param_not_user
     expected = {
       'errors': [

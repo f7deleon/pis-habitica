@@ -83,8 +83,8 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
 
   test 'Update members: [user1*,user2] -- > [user1*,user3]' do
     parameters = { "data": [{ "id": @user3.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                                                       params: parameters
     assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user3.id]
@@ -98,8 +98,8 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     parameters = { "data": [{ "id": @user.id.to_s, "type": 'user' },
                             { "id": @user2.id.to_s, "type": 'user' },
                             { "id": @user3.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                                                       params: parameters
     assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user3.id, @user.id, @user2.id]
@@ -117,8 +117,8 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
     parameters = { "data": [{ "id": @user3.id.to_s, "type": 'user' },
                             { "id": @user3.id.to_s, "type": 'user' },
                             { "id": @user3.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                                                       params: parameters
     assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user3.id]
@@ -132,8 +132,8 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
   test 'Update members: [user1*,user2] -- > [user1*, user2, user3] -- > [user1*,user2]' do
     parameters = { "data": [{ "id": @user2.id.to_s, "type": 'user' },
                             { "id": @user3.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                                                       params: parameters
     assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user2.id, @user3.id]
@@ -146,8 +146,8 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
 
     # case: [user1*, user2, user3] -- > [user1*,user2]
     parameters = { "data": [{ "id": @user2.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                                                       params: parameters
     assert r.eql? 201
     memberships = Membership.select { |m| m[:group_id] == @group.id }
     members_id_expected = [@user1.id, @user2.id]
@@ -158,52 +158,52 @@ class UpdateGroupMembersTest < ActionDispatch::IntegrationTest
 
   test 'Update members: post with empty group' do
     parameters = { "data": [] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                                                       params: parameters
     assert r.eql? 400
   end
 
   test 'Update members: post without authentication token' do
     parameters = { "data": [{ "id": @user4.id.to_s, "type": 'user' },
                             { "id": @user2.id.to_s, "type": 'user' }] }
-    res = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer DTF!!!!!' },
-                                                            params: parameters
+    res = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer DTF!!!!!' },
+                                                         params: parameters
     assert res.eql? 401
   end
 
   test 'Update members: post with bad format' do
     parameters = { "da": [{ "id": @user.id.to_s, "type": 'user' },
                           { "id": @user2.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                                                       params: parameters
     assert r.eql? 400
   end
 
   test 'Update members: post with a non existent user' do
     parameters = { "data": [{ "id": '44', "type": 'user' },
                             { "id": @user2.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s },
+                                                       params: parameters
     assert r.eql? 404
   end
 
   test 'Update members: post made by a non admin member of the group' do
     parameters = { "data": [{ "id": @user3.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user2_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user2_token.to_s },
+                                                       params: parameters
     assert r.eql? 403
   end
 
   test 'Update members: post made by a non admin and not member of the group' do
     parameters = { "data": [{ "id": @user3.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user5_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user5_token.to_s },
+                                                       params: parameters
     assert r.eql? 404
   end
   test 'Update members: post made by a non member but is admin in other group' do
     parameters = { "data": [{ "id": @user3.id.to_s, "type": 'user' }] }
-    r = post '/me/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user4_token.to_s },
-                                                          params: parameters
+    r = post '/groups/' + @group.id.to_s + '/members', headers: { 'Authorization': 'Bearer ' + @user4_token.to_s },
+                                                       params: parameters
     assert r.eql? 404
   end
 end

@@ -9,8 +9,8 @@ class MemberInfoSerializer < UserInfoSerializer
 
   attribute :is_admin,
             if: proc { |object, params|
-              object.memberships.find_by(group_id: params[:group_id]).admin
-            } do |object, params|
-    object.memberships.find_by(group_id: params[:group_id]).admin
+              object.memberships.find_by(group_id: params[:group_id], admin: true)
+            } do
+    true
   end
 end

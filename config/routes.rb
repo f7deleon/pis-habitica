@@ -14,11 +14,7 @@ Rails.application.routes.draw do
       end  
     end
     resources :friends, controller: 'friends'
-    resources :groups do
-      member do
-        post 'members', to: 'groups#update_members'
-      end
-    end
+    resources :groups, only: %i[index destroy]
   end
   
   resources :types
@@ -36,7 +32,7 @@ Rails.application.routes.draw do
     member do
       get 'habits', to: 'users#index_habits'
     end
-    resources :groups, only: %i[show index]
+    resources :groups, only: %i[index]
   end
 
   resources :groups do
@@ -47,6 +43,7 @@ Rails.application.routes.draw do
       delete 'requests/:request', to: 'request_group#not_add_member'
       get 'habits', to: 'groups#habits'
       get 'members', to: 'groups#members'
+      post 'members', to: 'groups#update_members'
     end
   end
 
