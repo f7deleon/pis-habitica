@@ -107,8 +107,14 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     }
   end
 
-  def show_group(user_token = @admin_token, group = @group)
+  def show_members(user_token = @admin_token, group = @group)
     get '/groups/' + group.id.to_s + '/members', headers: {
+      'Authorization': 'Bearer ' + user_token
+    }
+  end
+
+  def show_group(user_token = @admin_token, group = @group)
+    get '/groups/' + group.id.to_s, headers: {
       'Authorization': 'Bearer ' + user_token
     }
   end
@@ -117,7 +123,7 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     fulfill(@user1_token, @hard)
     fulfill(@user2_token, @negative)
     # Leaderboard should be: User1: 15, Admin: 5, User3: 0, User2: -10
-    show_group
+    show_members
     body = JSON.parse(response.body)
     collection = Group.find(@group.id).memberships.ordered_by_score_and_name.map(&:user)
     body['data'].each_with_index do |user, index|
@@ -132,11 +138,15 @@ class LeaderboardTest < ActionDispatch::IntegrationTest
     fulfill(@user3_token, @hard)
     fulfill(@user3_token, @easy)
     # Leaderboard should be: User3: 20, Admin: 5, User1: 0, User2: -5
-    show_group
+    show_members
     body = JSON.parse(response.body)
     collection = Group.find(@group.id).memberships.ordered_by_score_and_name.map(&:user)
     body['data'].each_with_index do |user, index|
       assert collection[index].id.to_s == user['id']
     end
+
+    # Show group shows your rank (Admin is #2)
+    show_group
+    JSON.parse(response.body)['included'][0]['attributes']['rank'].eql? '2'
   end
 end

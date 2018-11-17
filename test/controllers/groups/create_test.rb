@@ -40,6 +40,7 @@ class CreateTest < ActionDispatch::IntegrationTest
           'name': 'El Barzon',
           'description': 'Directo al barro',
           'privacy': false,
+          'has_requests': false,
           'group_status': 3
         },
         'relationships': {
@@ -82,6 +83,7 @@ class CreateTest < ActionDispatch::IntegrationTest
             'experience': 0,
             'max_health': 100,
             'max_experience': 100,
+            "rank": 1,
             "score": 0,
             "is_admin": true
           },

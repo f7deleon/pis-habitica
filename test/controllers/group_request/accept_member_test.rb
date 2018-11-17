@@ -64,11 +64,22 @@ class AcceptMemberTest < ActionDispatch::IntegrationTest
   end
 
   test 'Accept Member' do
-    url = '/groups/' + @group2.id.to_s + '/requests/' + @request.id.to_s
-    result = post url, headers: { 'Authorization': 'Bearer ' + @user2_token }
-    assert result == 201
+    url_post = '/groups/' + @group2.id.to_s + '/requests/' + @request.id.to_s
+
+    get '/groups/' + @group2.id.to_s, headers: { 'Authorization': 'Bearer ' + @user2_token }
+    assert_equal 200, status # Ok
+    body = JSON.parse(response.body)
+    assert body['data']['attributes']['has_requests']
+
+    post url_post, headers: { 'Authorization': 'Bearer ' + @user2_token }
+    assert_equal 201, status # Created
     body = JSON.parse(response.body)
     body['data']['id'].eql? @user3.id.to_s
+
+    get '/groups/' + @group2.id.to_s, headers: { 'Authorization': 'Bearer ' + @user2_token }
+    assert_equal 200, status # Ok
+    body = JSON.parse(response.body)
+    assert_not body['data']['attributes']['has_requests']
   end
 
   test 'Not Authorized' do

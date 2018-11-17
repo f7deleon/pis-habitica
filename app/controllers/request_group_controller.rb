@@ -9,7 +9,9 @@ class RequestGroupController < ApplicationController
     options = {}
     options[:include] = %i[sender group_request group]
     options[:params] = { current_user: admin }
-    render json: NotificationSerializer.new(admin.notifications, options).serialized_json, status: :ok
+    render json: NotificationSerializer.new(
+      admin.notifications.select { |notification| notification.type.eql?('GroupRequestNotification') }, options
+    ).serialized_json, status: :ok
   end
 
   def send_request

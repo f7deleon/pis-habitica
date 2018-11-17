@@ -7,6 +7,10 @@ class GroupSerializer
 
   attributes :name, :description, :privacy
 
+  attributes :has_requests do |object|
+    GroupRequest.exists?(group_id: object.id)
+  end
+
   has_many :group_types, serializer: :type do |object|
     object.group_types.order('name ASC')
   end
