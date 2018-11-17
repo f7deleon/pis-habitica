@@ -46,6 +46,12 @@ class CreateTest < ActionDispatch::IntegrationTest
           'group_types': {
             'data': []
           },
+          "current_user": {
+            "data": {
+              "id": @user_admin.id.to_s,
+              "type": 'current_user'
+            }
+          },
           'users': {
             'data': [{
               'id': @member1.id.to_s,
@@ -74,7 +80,8 @@ class CreateTest < ActionDispatch::IntegrationTest
             'experience': 0,
             'max_health': 100,
             'max_experience': 100,
-            'friendship_status': 3
+            'friendship_status': 3,
+            "score": 0
           },
           'relationships': {
             'character': {
@@ -96,7 +103,8 @@ class CreateTest < ActionDispatch::IntegrationTest
             'experience': 0,
             'max_health': 100,
             'max_experience': 100,
-            'friendship_status': 3
+            'friendship_status': 3,
+            "score": 0
           },
           'relationships': {
             'character': {
@@ -117,7 +125,9 @@ class CreateTest < ActionDispatch::IntegrationTest
             'level': 1,
             'experience': 0,
             'max_health': 100,
-            'max_experience': 100
+            'max_experience': 100,
+            "score": 0,
+            "is_admin": true
           },
           'relationships': {
             'character': {

@@ -39,8 +39,8 @@ class GroupsController < ApplicationController
     memberships.each_with_index do |membership, i|
       data[i] = { id: membership.user_id, score: membership.score }
     end
-    parameters = { current_user: current_user, time_zone: params['time_zone'] }
-    render json: GroupSerializer.new(@group, params: parameters).serialized_json, status: :ok
+    parameters = { current_user: current_user, time_zone: params['time_zone'], group_id: @group.id }
+    render json: GroupSerializer.new(@group, include: %i[current_user], params: parameters).serialized_json, status: :ok
   end
 
   # GET /groups/:id/habits
@@ -76,7 +76,7 @@ class GroupsController < ApplicationController
       Membership.create(user_id: member[:id], group_id: group.id, admin: false)
     end
     options = {}
-    options[:params] = { current_user: current_user, is_create_group: true }
+    options[:params] = { current_user: current_user, is_create_group: true, group_id: group.id }
     options[:include] = %i[users]
     render json: GroupSerializer.new(group, options).serialized_json, status: :ok
   end

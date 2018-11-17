@@ -11,7 +11,12 @@ class GroupSerializer
     object.group_types.order('name ASC')
   end
 
-  has_many :users, serializer: :user_info, if: proc { |_, params| params[:is_create_group] }
+  has_one :current_user, serializer: :member_info, if:
+   proc { |object, params| object.users.find_by(id: params[:current_user].id) } do |_object, params|
+    params[:current_user]
+  end
+
+  has_many :users, serializer: :member_info, if: proc { |_, params| params[:is_create_group] }
 
   attributes :group_status do |object, params|
     if params[:current_user].group_requests_sent.find_by(group_id: object.id)
