@@ -45,7 +45,7 @@ class GroupsController < ApplicationController
 
   # GET /groups/:id/habits
   def habits
-    habits = @group.group_habits.order('name ASC').select(&:active)
+    habits = paginate @group.group_habits.order('name ASC').select(&:active), per_page: params['per_page']
     options = {}
     options[:include] = %i[types]
     options[:params] = { id: current_user.id }
