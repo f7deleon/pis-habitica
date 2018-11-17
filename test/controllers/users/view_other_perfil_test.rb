@@ -107,10 +107,8 @@ class UsersViewOtherPerfilControllerTest < ActionDispatch::IntegrationTest
     @user1.individual_habits << @individual_habit2
     @user1.individual_habits << @individual_habit3
 
-    @no_friend = UserWithFriendSerializer.new(@user1, params: { current_user: @user },
-                                                      include: %i[individual_habits friends]).serialized_json
-    @friend = UserWithFriendSerializer.new(@user1, params: { current_user: @user2 },
-                                                   include: %i[individual_habits friends]).serialized_json
+    @no_friend = UserWithFriendSerializer.new(@user1, params: { current_user: @user }).serialized_json
+    @friend = UserWithFriendSerializer.new(@user1, params: { current_user: @user2 }).serialized_json
   end
   test 'Ver Perfil de otro usuario: friend all OK ' do
     result = get '/users/' + @user1.id.to_s, headers: { 'Authorization': 'Bearer ' + @user2_token }

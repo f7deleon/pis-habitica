@@ -234,8 +234,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal 200, status
     body = JSON.parse(response.body)
     assert body['data']['relationships']['groups']['data'].length.eql? 2
-    assert body['included'][0]['type'].eql? 'group'
-    assert body['included'][1]['type'].eql? 'group'
   end
 
   test 'Ver perfil: user with 1 group' do
@@ -243,7 +241,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal 200, status
     body = JSON.parse(response.body)
     assert body['data']['relationships']['groups']['data'].length.eql? 1
-    assert body['included'][0]['type'].eql? 'group'
   end
 
   test 'Ver perfil: user without groups' do
@@ -266,6 +263,5 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_equal 200, status
     body = JSON.parse(response.body)
     assert body['data']['relationships']['groups']['data'].length.eql? 1
-    assert body['included'][0]['type'].eql? 'group'
   end
 end
