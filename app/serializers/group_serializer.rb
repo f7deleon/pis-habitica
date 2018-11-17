@@ -16,7 +16,10 @@ class GroupSerializer
     params[:current_user]
   end
 
-  has_many :users, serializer: :member_info, if: proc { |_, params| params[:is_create_group] }
+  has_many :users, serializer: :member_info, if:
+   proc { |_, params| params[:is_create_group] } do |object|
+    object.memberships.ordered_by_score_and_name.map(&:user)
+  end
 
   attributes :group_status do |object, params|
     if params[:current_user].group_requests_sent.find_by(group_id: object.id)

@@ -53,22 +53,47 @@ class CreateTest < ActionDispatch::IntegrationTest
             }
           },
           'users': {
-            'data': [{
-              'id': @member1.id.to_s,
-              'type': 'user'
-            },
-                     {
-                       'id': @member2.id.to_s,
-                       'type': 'user'
-                     },
-                     {
-                       'id': @user_admin.id.to_s,
-                       'type': 'user'
-                     }]
+            'data': [
+              {
+                'id': @user_admin.id.to_s,
+                'type': 'user'
+              },
+              {
+                'id': @member1.id.to_s,
+                'type': 'user'
+              },
+              {
+                'id': @member2.id.to_s,
+                'type': 'user'
+              }
+            ]
           }
         }
       },
       'included': [
+        {
+          'id': @user_admin.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'example',
+            'email': 'example@example.com',
+            'health': 100,
+            'level': 1,
+            'experience': 0,
+            'max_health': 100,
+            'max_experience': 100,
+            "score": 0,
+            "is_admin": true
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': @character1.id.to_s,
+                'type': 'character'
+              }
+            }
+          }
+        },
         {
           'id': @member1.id.to_s,
           'type': 'user',
@@ -105,29 +130,6 @@ class CreateTest < ActionDispatch::IntegrationTest
             'max_experience': 100,
             'friendship_status': 3,
             "score": 0
-          },
-          'relationships': {
-            'character': {
-              'data': {
-                'id': @character1.id.to_s,
-                'type': 'character'
-              }
-            }
-          }
-        },
-        {
-          'id': @user_admin.id.to_s,
-          'type': 'user',
-          'attributes': {
-            'nickname': 'Example',
-            'email': 'example@example.com',
-            'health': 100,
-            'level': 1,
-            'experience': 0,
-            'max_health': 100,
-            'max_experience': 100,
-            "score": 0,
-            "is_admin": true
           },
           'relationships': {
             'character': {
@@ -191,7 +193,7 @@ class CreateTest < ActionDispatch::IntegrationTest
   end
 
   def setup
-    @user_admin = User.create(nickname: 'Example', email: 'example@example.com', password: 'Example123')
+    @user_admin = User.create(nickname: 'example', email: 'example@example.com', password: 'Example123')
     post '/user_token', params: {
       'auth': {
         'email': @user_admin.email,
