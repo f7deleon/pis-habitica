@@ -91,6 +91,10 @@ group = Group.create(name: 'Propio', description: 'Propio Grupo', privacy: false
 group2 = Group.create(name: 'Grupo de lectura', description: 'Esto es un grupo de lectura', privacy: false)
 group3 = Group.create(name: 'Grupo deamigas', description: '', privacy: false)
 
+50.times do |i|
+  GroupHabit.create(group_id: group2.id, name: "habito: #{i}", description: i.to_s, difficulty: 2, privacy: 1, frequency: 2, created_at: from_date)
+end
+
 membership = Membership.create(user_id: user.id, group_id: group.id, admin: true)
 membership2 = Membership.create(user_id: user2.id , group_id: group.id, admin: false)
 
