@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_10_12_011348) do
+ActiveRecord::Schema.define(version: 2018_10_25_230546) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,6 +41,7 @@ ActiveRecord::Schema.define(version: 2018_10_12_011348) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "privacy"
   end
 
   create_table "habits", force: :cascade do |t|
@@ -65,6 +66,16 @@ ActiveRecord::Schema.define(version: 2018_10_12_011348) do
     t.bigint "type_id"
     t.index ["habit_id"], name: "index_individual_habit_has_types_on_habit_id"
     t.index ["type_id"], name: "index_individual_habit_has_types_on_type_id"
+  end
+
+  create_table "memberships", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "group_id"
+    t.boolean "admin"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["group_id"], name: "index_memberships_on_group_id"
+    t.index ["user_id"], name: "index_memberships_on_user_id"
   end
 
   create_table "notifications", force: :cascade do |t|
@@ -93,6 +104,8 @@ ActiveRecord::Schema.define(version: 2018_10_12_011348) do
     t.bigint "user_id"
     t.bigint "habit_id"
     t.datetime "date"
+    t.integer "health_difference"
+    t.integer "experience_difference"
     t.index ["habit_id"], name: "index_track_group_habits_on_habit_id"
     t.index ["user_id"], name: "index_track_group_habits_on_user_id"
   end
@@ -148,6 +161,8 @@ ActiveRecord::Schema.define(version: 2018_10_12_011348) do
   add_foreign_key "friendships", "users"
   add_foreign_key "habits", "groups"
   add_foreign_key "habits", "users"
+  add_foreign_key "memberships", "groups"
+  add_foreign_key "memberships", "users"
   add_foreign_key "notifications", "requests", on_delete: :cascade
   add_foreign_key "notifications", "track_individual_habits", on_delete: :cascade
   add_foreign_key "requests", "users"

@@ -176,6 +176,13 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
 
     # Add friend to user4
     @user4.friendships.create(friend_id: @user2)
+
+    # groups for testing
+    @group = Group.create(name: 'Propio', description: 'Propio description', privacy: false)
+    @group1 = Group.create(name: 'Propio1', description: 'Propio1 description', privacy: false)
+    Membership.create(user_id: @user.id, group_id: @group.id, admin: false)
+    Membership.create(user_id: @user.id, group_id: @group1.id, admin: true)
+    Membership.create(user_id: @user1.id, group_id: @group.id, admin: true)
   end
 
   # Tests /me - Ir a home
@@ -190,9 +197,9 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert body['data']['relationships']['individual_habits']['data'].length == 2
 
     # included data - 1 friend and 2 individual_habits
-    assert body['included'][0]['type'] == 'friend'
-    assert body['included'][1]['type'] == 'habit'
-    assert body['included'][2]['type'] == 'habit'
+    assert body['included'][0]['type'] == 'user'
+    assert body['included'][2]['type'] == 'individual_habit'
+    assert body['included'][3]['type'] == 'individual_habit'
   end
 
   # Tests /me - Ir a home
@@ -210,9 +217,9 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert body['data']['relationships']['individual_habits']['data'].length == 2
 
     # included data - 1 friend and 2 individual_habits
-    assert body['included'][0]['type'] == 'friend'
-    assert body['included'][1]['type'] == 'habit'
-    assert body['included'][2]['type'] == 'habit'
+    assert body['included'][0]['type'] == 'user'
+    assert body['included'][2]['type'] == 'individual_habit'
+    assert body['included'][3]['type'] == 'individual_habit'
   end
 
   test 'Ir a home: user2 with no created character' do
@@ -248,5 +255,29 @@ class UsersHomeControllerTest < ActionDispatch::IntegrationTest
     assert_equal 200, status
     body = JSON.parse(response.body)
     assert body['data']['attributes']['has_notifications'] == 3
+  end
+
+  test 'Ir a home: user with 2 groups' do
+    get '/me', headers: { 'Authorization': 'Bearer ' + @user_token.to_s }
+    assert_equal 200, status
+    body = JSON.parse(response.body)
+    assert body['data']['relationships']['groups']['data'].length.eql? 2
+    assert body['included'][0]['type'].eql? 'group'
+    assert body['included'][1]['type'].eql? 'group'
+  end
+
+  test 'Ir a home: user with 1 group' do
+    get '/me', headers: { 'Authorization': 'Bearer ' + @user1_token.to_s }
+    assert_equal 200, status
+    body = JSON.parse(response.body)
+    assert body['data']['relationships']['groups']['data'].length.eql? 1
+    assert body['included'][1]['type'].eql? 'group'
+  end
+
+  test 'Ir a home: user without groups' do
+    get '/me', headers: { 'Authorization': 'Bearer ' + @user3_token.to_s }
+    assert_equal 200, status
+    body = JSON.parse(response.body)
+    assert body['data']['relationships']['groups']['data'].length.eql? 0
   end
 end

@@ -2,7 +2,7 @@
 
 class FriendSerializer
   include FastJsonapi::ObjectSerializer
-
+  set_type :user
   attributes :nickname, :level
 
   has_one :character do |object|

@@ -74,14 +74,14 @@ class HabitsControllerPenalizeTest < ActionDispatch::IntegrationTest
         'type': 'track',
         'attributes': {
           'max_health': User.find_by_id(@user.id).max_health,
-          'health_difference': @user.decrement_of_health(@habit1.difficulty),
+          'health_difference': @habit1.decrement_of_health(@user),
           'max_experience': User.find_by_id(@user.id).max_experience
         },
         'relationships': { 'individual_habit': { 'data': { 'id': @habit1.id.to_s, 'type': 'individual_habit' } } }
       }
     }
     assert response.body == expected.to_json
-    assert_equal((User.find(@user.id).health - @user.max_health), @user.decrement_of_health(@habit1.difficulty))
+    assert_equal((User.find(@user.id).health - @user.max_health), @habit1.decrement_of_health(@user))
   end
 
   test 'PenalizarHabito: Health diminish after fulfilling negative habit: Medium' do
@@ -96,14 +96,14 @@ class HabitsControllerPenalizeTest < ActionDispatch::IntegrationTest
         'type': 'track',
         'attributes': {
           'max_health': User.find_by_id(@user.id).max_health,
-          'health_difference': @user.decrement_of_health(@habit2.difficulty),
+          'health_difference': @habit2.decrement_of_health(@user),
           'max_experience': User.find_by_id(@user.id).max_experience
         },
         'relationships': { 'individual_habit': { 'data': { 'id': @habit2.id.to_s, 'type': 'individual_habit' } } }
       }
     }
     assert response.body == expected.to_json
-    assert_equal((User.find(@user.id).health - @user.max_health), @user.decrement_of_health(@habit2.difficulty))
+    assert_equal((User.find(@user.id).health - @user.max_health), @habit2.decrement_of_health(@user))
   end
 
   test 'PenalizarHabito: Health diminish after fulfilling negative habit: Hard' do
@@ -118,14 +118,14 @@ class HabitsControllerPenalizeTest < ActionDispatch::IntegrationTest
         'type': 'track',
         'attributes': {
           'max_health': User.find_by_id(@user.id).max_health,
-          'health_difference': @user.decrement_of_health(@habit3.difficulty),
+          'health_difference': @habit3.decrement_of_health(@user),
           'max_experience': User.find_by_id(@user.id).max_experience
         },
         'relationships': { 'individual_habit': { 'data': { 'id': @habit3.id.to_s, 'type': 'individual_habit' } } }
       }
     }
     assert response.body == expected.to_json
-    assert_equal((User.find(@user.id).health - @user.max_health), @user.decrement_of_health(@habit3.difficulty))
+    assert_equal((User.find(@user.id).health - @user.max_health), @habit3.decrement_of_health(@user))
   end
 
   test 'PenalizarHabito: Character dies when health diminishes to zero. After death is not able to fulfill habits' do

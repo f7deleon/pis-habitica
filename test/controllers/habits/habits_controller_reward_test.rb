@@ -63,9 +63,9 @@ class HabitsControllerRewardTest < ActionDispatch::IntegrationTest
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:29+00:00' } }
     }
     body = JSON.parse(response.body)
-    h_diff = @user.increment_of_health(@individual_habit_to_track1.difficulty)
+    h_diff = @individual_habit_to_track1.increment_of_health(@user)
     assert body['data']['attributes']['health_difference'].eql? h_diff
-    exp_diff = @user.increment_of_experience(@individual_habit_to_track1.difficulty)
+    exp_diff = @individual_habit_to_track1.increment_of_experience(@user)
     assert body['data']['attributes']['experience_difference'].eql? exp_diff
     assert body['data']['relationships']['individual_habit']['data']['id'].eql? @individual_habit_to_track1.id.to_s
   end
@@ -76,7 +76,7 @@ class HabitsControllerRewardTest < ActionDispatch::IntegrationTest
       'data': { 'type': 'date', 'attributes': { 'date': '2018-09-05T21:39:37+00:00' } }
     }
     body = JSON.parse(response.body)
-    h_diff = @user.increment_of_health(@individual_habit_to_track2.difficulty)
+    h_diff = @individual_habit_to_track2.increment_of_health(@user)
     assert body['data']['attributes']['health_difference'].eql? h_diff
     assert body['data']['relationships']['individual_habit']['data']['id'].eql? @individual_habit_to_track2.id.to_s
   end

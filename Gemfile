@@ -31,6 +31,8 @@ gem 'knock'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
+gem 'loofah', '>= 2.2.3'
+
 # gem 'rack-cors'
 
 group :development, :test do

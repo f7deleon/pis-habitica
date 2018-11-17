@@ -129,7 +129,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
           'max_health': User.find_by_id(@user.id).max_health,
           'health_difference': 0, # Is at full health
           'max_experience': User.find_by_id(@user.id).max_experience,
-          'experience_difference': @user.increment_of_experience(@individual_habit_to_track.difficulty)
+          'experience_difference': @individual_habit_to_track.increment_of_experience(@user)
         },
         'relationships': {
           'individual_habit': {

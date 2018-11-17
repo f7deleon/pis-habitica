@@ -73,9 +73,9 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
         'type': 'track',
         'attributes': {
           'max_health': User.find_by_id(@user.id).max_health,
-          'health_difference': -@user.increment_of_health(@individual_habit.difficulty),
+          'health_difference': -@individual_habit.increment_of_health(@user),
           'max_experience': User.find_by_id(@user.id).max_experience,
-          'experience_difference': -@user.increment_of_experience(@individual_habit.difficulty)
+          'experience_difference': -@individual_habit.increment_of_experience(@user)
         }
       }
     }
@@ -95,7 +95,7 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
         'type': 'track',
         'attributes': {
           'max_health': User.find_by_id(@user.id).max_health,
-          'health_difference': -@user.decrement_of_health(@individual_habit_negative.difficulty),
+          'health_difference': -@individual_habit_negative.decrement_of_health(@user),
           'max_experience': User.find_by_id(@user.id).max_experience,
           'experience_difference': 0
         }
@@ -130,7 +130,7 @@ class HabitsControllerUndoTest < ActionDispatch::IntegrationTest
           'max_health': User.find_by_id(@user.id).max_health,
           'health_difference': 0,
           'max_experience': User.find_by_id(@user.id).max_experience,
-          'experience_difference': -(User.find(@user.id).increment_of_experience(@individual_habit.difficulty) - 1)
+          'experience_difference': -(@individual_habit.increment_of_experience(User.find(@user.id)) - 1)
         }
       }
     }

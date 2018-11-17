@@ -15,7 +15,7 @@ task penalize_habits: :environment do
       date: yesterday_date
     )
     track_individual_habit.experience_difference = 0
-    track_individual_habit.health_difference = habit.user.penalize(habit.difficulty)
+    track_individual_habit.health_difference = habit.user.modify_health(habit.decrement_of_health(habit.user))
     track_individual_habit.save!
     notification = PenalizeNotification.new(receiver: habit.user, track_individual_habit: track_individual_habit)
     notification.save!

@@ -53,7 +53,9 @@ class TaskPenalizeHabitsTest < ActionDispatch::IntegrationTest
       created_at: from_date
     )
 
+    # rubocop:disable Style/DateTime:
     @habit2.track_individual_habits.create(date: DateTime.yesterday.change(hour: 23, min: 59, sec: 0))
+    # rubocop:enable Style/DateTime:
 
     post '/user_token', params: {
       'auth': {
@@ -74,7 +76,7 @@ class TaskPenalizeHabitsTest < ActionDispatch::IntegrationTest
 
   test 'rake task executed and user alive' do
     assert PenalizeNotification.find_by(receiver: @user)
-    assert User.first.health == (@user.max_health + @user.decrement_of_health(@habit.difficulty))
+    assert_equal(User.find(@user.id).health, @user.max_health + @habit.decrement_of_health(@user))
   end
 
   test 'rake task executed user dead' do

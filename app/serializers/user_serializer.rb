@@ -6,6 +6,7 @@ class UserSerializer
   STATUS_REQUEST_SENT = 1
   STATUS_REQUEST_RECEIVED = 2
   STATUS_FRIENDS = 3
+  set_type :user
   attributes :nickname, :email, :health, :level, :experience
 
   attributes :max_health, &:max_health
@@ -25,23 +26,18 @@ class UserSerializer
     end
   end
 
-  attributes :requests_sent, if: proc { |object, params| object.id != params[:current_user].id } do |object, params|
-    if object.requests_sent.exists?(receiver_id: params[:current_user].id)
-      true
-    else
-      false
-    end
-  end
-
-  has_one :requests_sent do |object, params|
-    object.requests_sent.find_by(receiver_id: params[:current_user].id)
-  end
-
   has_one :character do |object|
     object.user_characters&.find_by_is_alive(true)&.character
   end
 
-  has_many :individual_habits do |object, params|
+  has_many :individual_habits, serializer: :individual_habit_info do |object, params|
     object.get_habits_from_user(params[:current_user])
+  end
+
+  has_one :requests_sent,
+          if: proc { |object, params|
+                object.requests_sent.exists?(receiver_id: params[:current_user].id)
+              } do |object, params|
+    object.requests_sent.find_by(receiver_id: params[:current_user].id)
   end
 end

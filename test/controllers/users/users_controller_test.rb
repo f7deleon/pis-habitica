@@ -29,11 +29,29 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
         'password': @user2.password
       }
     }
+
     @user2_token = JSON.parse(response.body)['jwt']
 
     @user3 = User.create(nickname: 'Ozuna', email: 'latino@negritojosclaro.com', password: 'dontcare')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user3.email,
+        'password': @user3.password
+      }
+    }
+
+    Request.create(user_id: @user3.id, receiver_id: @user.id)
+
+    @user3_token = JSON.parse(response.body)['jwt']
     @user4 = User.create(nickname: 'barack', email: 'notpresidentanymore@usa.com', password: 'dontcare23')
     @user5 = User.create(nickname: 'aaaaabaracaaaaa', email: 'notpresidentanymore1@usa.com', password: 'dontcare1')
+    post '/user_token', params: {
+      'auth': {
+        'email': @user5.email,
+        'password': @user5.password
+      }
+    }
+    @user5_token = JSON.parse(response.body)['jwt']
 
     ### friends
     @friendship = Friendship.create(user_id: @user1.id, friend_id: @user2.id)
@@ -67,6 +85,12 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                            is_alive: true)
 
     @user1.user_characters << @user_character
+
+    @user_character2 = UserCharacter.create(user_id: @user4.id,
+                                            character_id: @character1.id,
+                                            creation_date: '2018-09-03T12:00:00Z',
+                                            is_alive: true)
+    @user4.user_characters << @user_character2
 
     # Add habits to user
     @individual_habit = IndividualHabit.create(
@@ -109,6 +133,15 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @user1.individual_habits << @individual_habit
     @user1.individual_habits << @individual_habit2
     @user1.individual_habits << @individual_habit3
+
+    # groups for testing
+    @group = Group.create(name: 'Propio', description: 'Propio description', privacy: false)
+    @group1 = Group.create(name: 'Propio1', description: 'Propio1 description', privacy: false)
+    @group2_private = Group.create(name: 'Propio2', description: 'Propio2 description', privacy: true)
+    Membership.create(user_id: @user.id, group_id: @group.id, admin: false)
+    Membership.create(user_id: @user.id, group_id: @group1.id, admin: true)
+    Membership.create(user_id: @user4.id, group_id: @group.id, admin: true)
+    Membership.create(user_id: @user3.id, group_id: @group2_private.id, admin: true)
   end
 
   # Alta Personaje
@@ -157,6 +190,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert result == 200
     body = JSON.parse(response.body)
     assert body['data'].length == 1
+    assert body['data'][0]['relationships']['requests_sent']
   end
 
   test 'Buscar Usuario: find an existing user (returns 2). Also checks ignoreCase' do
@@ -226,5 +260,45 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test 'Ver mis amigos: dont attach Authorization token (unauthorized returned)' do
     result = get '/me/friends'
     assert result == 401
+  end
+
+  test 'Ver perfil: user with 2 groups' do
+    get '/users/' + @user.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
+    assert_equal 200, status
+    body = JSON.parse(response.body)
+    assert body['data']['relationships']['groups']['data'].length.eql? 2
+    assert body['included'][0]['type'].eql? 'group'
+    assert body['included'][1]['type'].eql? 'group'
+  end
+
+  test 'Ver perfil: user with 1 group' do
+    get '/users/' + @user4.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
+    assert_equal 200, status
+    body = JSON.parse(response.body)
+    assert body['data']['relationships']['groups']['data'].length.eql? 1
+    assert body['included'][0]['type'].eql? 'group'
+  end
+
+  test 'Ver perfil: user without groups' do
+    get '/users/' + @user2.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
+    assert_equal 200, status
+    body = JSON.parse(response.body)
+    assert body['data']['relationships']['groups']['data'].length.eql? 0
+  end
+
+  test 'Ver perfil: user5 wants to see private group of user3, sees zero' do
+    get '/users/' + @user3.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
+    assert_equal 200, status
+    body = JSON.parse(response.body)
+    assert body['data']['relationships']['groups']['data'].length.eql? 0
+  end
+
+  test 'Ver perfil: user5 is added to user2 group and now he can see the group besides it is private' do
+    Membership.create(user_id: @user5.id, group_id: @group2_private.id, admin: false)
+    get '/users/' + @user3.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
+    assert_equal 200, status
+    body = JSON.parse(response.body)
+    assert body['data']['relationships']['groups']['data'].length.eql? 1
+    assert body['included'][0]['type'].eql? 'group'
   end
 end
