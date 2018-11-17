@@ -2,10 +2,9 @@
 
 require 'test_helper'
 
-class GroupCreateControllerTest < ActionDispatch::IntegrationTest
+class CreateTest < ActionDispatch::IntegrationTest
   def params_correct
     {
-
       'data': {
         'type': 'group',
         'attributes': {
@@ -28,41 +27,7 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
             ]
           }
         }
-      },
-      'included': [
-        {
-          'id': @member1.id.to_s,
-          'type': 'user',
-          'attributes': {
-            'nickname': 'Demogorgon',
-            'level': 4
-          },
-          'relationships': {
-            'character': {
-              'data': {
-                'id': '4',
-                'type': 'character'
-              }
-            }
-          }
-        },
-        {
-          'id': @member2.id.to_s,
-          'type': 'user',
-          'attributes': {
-            'nickname': 'Feli',
-            'level': 1
-          },
-          'relationships': {
-            'character': {
-              'data': {
-                'id': '1',
-                'type': 'character'
-              }
-            }
-          }
-        }
-      ]
+      }
     }
   end
 
@@ -80,15 +45,95 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
         'relationships': {
           'group_types': {
             'data': []
+          },
+          'users': {
+            'data': [{
+              'id': @member1.id.to_s,
+              'type': 'user'
+            },
+                     {
+                       'id': @member2.id.to_s,
+                       'type': 'user'
+                     },
+                     {
+                       'id': @user_admin.id.to_s,
+                       'type': 'user'
+                     }]
           }
         }
-      }
+      },
+      'included': [
+        {
+          'id': @member1.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'member1',
+            'email': 'member1@member1.com',
+            'health': 100,
+            'level': 1,
+            'experience': 0,
+            'max_health': 100,
+            'max_experience': 100,
+            'friendship_status': 3
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': @character.id.to_s,
+                'type': 'character'
+              }
+            }
+          }
+        },
+        {
+          'id': @member2.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'member2',
+            'email': 'member2@member2.com',
+            'health': 100,
+            'level': 1,
+            'experience': 0,
+            'max_health': 100,
+            'max_experience': 100,
+            'friendship_status': 3
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': @character1.id.to_s,
+                'type': 'character'
+              }
+            }
+          }
+        },
+        {
+          'id': @user_admin.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'Example',
+            'email': 'example@example.com',
+            'health': 100,
+            'level': 1,
+            'experience': 0,
+            'max_health': 100,
+            'max_experience': 100
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': @character1.id.to_s,
+                'type': 'character'
+              }
+            }
+          }
+        }
+      ]
     }
   end
 
   def param_not_friend
     {
-
       'data': {
         'type': 'group',
         'attributes': {
@@ -158,7 +203,7 @@ class GroupCreateControllerTest < ActionDispatch::IntegrationTest
     Friendship.create(user_id: @user_admin.id, friend_id: @member3.id)
     Friendship.create(user_id: @user_admin.id, friend_id: @member4.id)
 
-    # Characters
+    # Characterssss
     @character = Character.create(name: 'Humano', description: 'Descripcion humano')
     @character1 = Character.create(name: 'Brujo', description: 'Descripcion brujo')
     @member1.add_character(@character.id, '2018-09-07T12:00:00Z')

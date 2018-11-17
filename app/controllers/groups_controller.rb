@@ -11,7 +11,6 @@ class GroupsController < ApplicationController
   def index
     options = {}
     options[:params] = { current_user: current_user }
-    puts params
     @user = User.find_by_id(params[:user_id])
     groups = paginate @user.groups.where(privacy: false).order('name ASC'), per_page: params[:per_page].to_i
     render json: GroupInfoSerializer.new(groups, options).serialized_json
@@ -77,7 +76,8 @@ class GroupsController < ApplicationController
       Membership.create(user_id: member[:id], group_id: group.id, admin: false)
     end
     options = {}
-    options[:params] = { current_user: current_user }
+    options[:params] = { current_user: current_user, is_create_group: true }
+    options[:include] = %i[users]
     render json: GroupSerializer.new(group, options).serialized_json, status: :ok
   end
 
