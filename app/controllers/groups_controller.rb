@@ -76,6 +76,8 @@ class GroupsController < ApplicationController
     Membership.create(user_id: current_user.id, group_id: group.id, admin: true)
     params[:data][:relationships][:members][:data].each do |member|
       Membership.create(user_id: member[:id], group_id: group.id, admin: false)
+      friend_request_notification = GroupNotification.new(user_id: member[:id], group_id: group.id)
+      friend_request_notification.save!
     end
     options = {}
     options[:params] = { current_user: current_user, is_create_group: true, group_id: group.id }

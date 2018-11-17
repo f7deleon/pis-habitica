@@ -3,15 +3,22 @@
 class RequestGroupController < ApplicationController
   before_action :set_group, only: %i[send_request requests add_member not_add_member]
   before_action :set_request, only: %i[add_member not_add_member]
+  before_action :check_admin, only: %i[add_member not_add_member requests]
 
   def requests
     admin = @group.memberships.find_by!(admin: true).user
     options = {}
     options[:include] = %i[sender group_request group]
     options[:params] = { current_user: admin }
-    render json: NotificationSerializer.new(
-      admin.notifications.select { |notification| notification.type.eql?('GroupRequestNotification') }, options
-    ).serialized_json, status: :ok
+    notification_list = admin.notifications.select { |notification| notification.type.eql?('GroupRequestNotification') }
+    render json: NotificationSerializer.new(notification_list, options).serialized_json, status: :ok
+    # update as seen
+    notification_list.each do |notification|
+      unless notification.seen
+        notification.seen = true
+        notification.save
+      end
+    end
   end
 
   def send_request
@@ -69,5 +76,10 @@ class RequestGroupController < ApplicationController
 
   def set_request
     @request = current_user.group_requests_received.find(params[:request])
+  end
+
+  def check_admin
+    raise Error::CustomError.new(I18n.t(:forbidden), '403', I18n.t('errors.messages.not_admin')) unless
+      @group.memberships.find_by(user_id: current_user.id).admin?
   end
 end
