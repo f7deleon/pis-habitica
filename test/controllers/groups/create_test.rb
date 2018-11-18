@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Metrics/ClassLength
+
 require 'test_helper'
 
 class CreateTest < ActionDispatch::IntegrationTest
@@ -72,6 +74,30 @@ class CreateTest < ActionDispatch::IntegrationTest
         }
       },
       'included': [
+        {
+          'id': @user_admin.id.to_s,
+          'type': 'user',
+          'attributes': {
+            'nickname': 'example',
+            'email': 'example@example.com',
+            'health': 100,
+            'level': 1,
+            'experience': 0,
+            'max_health': 100,
+            'max_experience': 100,
+            "rank": 1,
+            "score": 0,
+            "is_admin": true
+          },
+          'relationships': {
+            'character': {
+              'data': {
+                'id': @character1.id.to_s,
+                'type': 'character'
+              }
+            }
+          }
+        },
         {
           'id': @user_admin.id.to_s,
           'type': 'user',
@@ -203,20 +229,17 @@ class CreateTest < ActionDispatch::IntegrationTest
       }
     }
     @user_token = JSON.parse(response.body)['jwt']
-
     # Members
     @member1 = User.create(nickname: 'member1', email: 'member1@member1.com', password: 'member1')
     @member2 = User.create(nickname: 'member2', email: 'member2@member2.com', password: 'member2')
     @member3 = User.create(nickname: 'member3', email: 'member3@member3.com', password: 'member3')
     @member4 = User.create(nickname: 'member4', email: 'member4@member4.com', password: 'member4')
     @nor_friend = User.create(nickname: 'nor_friend', email: 'nor_friend@nor_friend.com', password: 'nor_friend')
-
     # FriendShips
     Friendship.create(user_id: @user_admin.id, friend_id: @member1.id)
     Friendship.create(user_id: @user_admin.id, friend_id: @member2.id)
     Friendship.create(user_id: @user_admin.id, friend_id: @member3.id)
     Friendship.create(user_id: @user_admin.id, friend_id: @member4.id)
-
     # Characterssss
     @character = Character.create(name: 'Humano', description: 'Descripcion humano')
     @character1 = Character.create(name: 'Brujo', description: 'Descripcion brujo')
@@ -244,3 +267,4 @@ class CreateTest < ActionDispatch::IntegrationTest
     assert response.body == expected.to_json
   end
 end
+# rubocop:enable Metrics/ClassLength

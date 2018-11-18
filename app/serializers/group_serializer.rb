@@ -22,7 +22,7 @@ class GroupSerializer
 
   has_many :users, serializer: :member_info, if:
    proc { |_, params| params[:is_create_group] } do |object|
-    object.memberships.ordered_by_score_and_name.map(&:user)
+    object.memberships.limit(10).ordered_by_score_and_name.map(&:user)
   end
 
   attributes :group_status do |object, params|

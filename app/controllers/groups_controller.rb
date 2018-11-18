@@ -81,8 +81,8 @@ class GroupsController < ApplicationController
     end
     options = {}
     options[:params] = { current_user: current_user, is_create_group: true, group_id: group.id }
-    options[:include] = %i[users]
-    render json: GroupSerializer.new(group, options).serialized_json, status: :created
+    options[:include] = %i[current_user users]
+    render json: GroupSerializer.new(group, options).serialized_json, status: :ok
   end
 
   def update_members
