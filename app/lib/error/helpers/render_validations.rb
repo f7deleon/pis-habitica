@@ -11,8 +11,7 @@ module Error::Helpers
         attribute = message.first
         {
           status: get_status(type),
-          code: get_error_code(errors.record, attribute, type),
-          title: (attribute.to_s + ' ' + type.to_s),
+          title: get_title(type),
           details: messages[attribute].first
         }.as_json
       end
@@ -22,9 +21,18 @@ module Error::Helpers
     def self.get_status(message)
       case message
       when :taken
-        409
+        '409'
       else
-        400
+        '400'
+      end
+    end
+
+    def self.get_title(message)
+      case message
+      when :taken
+        'Conflict'
+      else
+        'Bad Request'
       end
     end
 

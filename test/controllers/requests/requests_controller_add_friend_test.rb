@@ -22,20 +22,26 @@ class RequestsControllerAddFriendTest < ActionDispatch::IntegrationTest
     @receiver_token = JSON.parse(response.body)['jwt']
   end
 
+  def send_request(sender_token = @sender_token, receiver = @receiver)
+    post '/me/requests/', headers: {
+      'Authorization': 'Bearer ' + sender_token
+    }, params: {
+      'data': {
+        'type': 'request',
+        'relationships': {
+          'receiver': { 'data': { 'id': receiver.id.to_s, 'type': 'user' } }
+        }
+      }
+    }
+  end
+
   test 'should be valid' do
     assert @sender.valid?
     assert @receiver.valid?
   end
 
   test 'AgregarAmigo: should send friend request' do
-    post '/me/requests/', headers: {
-      'Authorization': 'Bearer ' + @sender_token
-    }, params: {
-      'data': {
-        'type': 'request',
-        'relationships': { 'receiver': { 'data': { 'id': @receiver.id.to_s, 'type': 'user' } } }
-      }
-    }
+    send_request
     expected = {
       'data': {
         'id': JSON.parse(response.body)['data']['id'],
@@ -93,79 +99,49 @@ class RequestsControllerAddFriendTest < ActionDispatch::IntegrationTest
     assert_equal 404, status # Not Found
   end
   test 'AgregarAmigo: receiver should not be you' do
-    post '/me/requests/', headers: {
-      'Authorization': 'Bearer ' + @sender_token
-    }, params: {
-      'data': {
-        'type': 'request',
-        'relationships': {
-          'receiver': { 'data': { 'id': @sender.id.to_s, 'type': 'user' } }
-        }
-      }
-    }
+    send_request(@sender_token, @sender)
     assert_equal 409, status # Conflict
+    expected = {
+      "errors": [{
+        "status": '409', "title": 'Conflict', "message": "You can't send a friend request to yourself"
+      }]
+    }
+    assert_equal response.body, expected.to_json
   end
   test 'AgregarAmigo: receiver should not be your friend' do
     @friendship = Friendship.create(user_id: @sender.id, friend_id: @receiver.id)
     @sender.friendships << @friendship
-    post '/me/requests/', headers: {
-      'Authorization': 'Bearer ' + @sender_token
-    }, params: {
-      'data': {
-        'type': 'request',
-        'relationships': {
-          'receiver': { 'data': { 'id': @receiver.id.to_s, 'type': 'user' } }
-        }
-      }
-    }
+    send_request
     assert_equal 409, status # Conflict
+    expected = {
+      "errors": [{
+        "status": '409', "title": 'Conflict', "message": 'This user is already your friend'
+      }]
+    }
+    assert_equal response.body, expected.to_json
   end
   test 'AgregarAmigo: receiver should not have a pending request from you' do
-    post '/me/requests/', headers: {
-      'Authorization': 'Bearer ' + @sender_token
-    }, params: {
-      'data': {
-        'type': 'request',
-        'relationships': {
-          'receiver': { 'data': { 'id': @receiver.id.to_s, 'type': 'user' } }
-        }
-      }
-    }
+    send_request
     assert_equal 201, status # Created
-    post '/me/requests/', headers: {
-      'Authorization': 'Bearer ' + @sender_token
-    }, params: {
-      'data': {
-        'type': 'request',
-        'relationships': {
-          'receiver': { 'data': { 'id': @receiver.id.to_s, 'type': 'user' } }
-        }
-      }
-    }
+    send_request
     assert_equal 409, status # Conflict
+    expected = {
+      "errors": [{
+        "status": '409', "title": 'Conflict', "details": 'You already sent a friend request to this user'
+      }]
+    }
+    assert_equal response.body, expected.to_json
   end
   test 'AgregarAmigo: you should not have a pending request from receiver' do
-    post '/me/requests/', headers: {
-      'Authorization': 'Bearer ' + @receiver_token
-    }, params: {
-      'data': {
-        'type': 'request',
-        'relationships': {
-          'receiver': { 'data': { 'id': @sender.id.to_s, 'type': 'user' } }
-        }
-      }
-    }
+    send_request(@receiver_token, @sender)
     assert_equal 201, status # Created
-    post '/me/requests/', headers: {
-      'Authorization': 'Bearer ' + @sender_token
-    }, params: {
-      'data': {
-        'type': 'request',
-        'relationships': {
-          'receiver': { 'data': { 'id': @receiver.id.to_s, 'type': 'user' } }
-        }
-      }
-    }
+    send_request
     assert_equal 409, status # Conflict
+    expected = {
+      "errors": [{
+        "status": '409', "title": 'Conflict', "details": 'This user has already sent you a friend request'
+      }]
+    }
+    assert_equal response.body, expected.to_json
   end
 end

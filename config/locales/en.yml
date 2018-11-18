@@ -39,7 +39,7 @@ en:
   unauthorized_details: "Invalid token"
   standard_error: "Internal error"
   standard_error_details: "Something went wrong"
-  conflict: "conflict"
+  conflict: "Conflict"
   taken_string: "There is already an user with that "
   mage_description: "Hace magia para cumplir sus hábitos, nadie le cree ni saben cómo hace."
   elf_description: "Ser fantástico con figura de enana y poderes mágicos; vive en los bosques, las aguas y en las proximidades de las casas y trabaja como herrera."
@@ -73,6 +73,7 @@ en:
       habit_is_not_from_user: "This habit does not belong to you"
       group_habit_is_not_from_user: "This habit does not belong to any of your groups"
       not_permission_to_show: "You do not have permission to view this habit"
+      alive_character: "User already has an alive character"
 
   activerecord:
     models:

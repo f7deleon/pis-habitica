@@ -72,8 +72,8 @@ class GroupNotificationTest < ActionDispatch::IntegrationTest
     assert result == 200
     body = JSON.parse(response.body)
     body['data'][0]['relationships']['sender']['data']['id'].eql? @user3.id.to_s
-    body['included'][1]['relationships']['group']['data']['id'].eql? @group2.id.to_s
-    body['included'][1]['relationships']['receiver']['data']['id'].eql? @user2.id.to_s
+    body['included'][0]['id'].eql? @group2.id.to_s
+    body['included'][1]['id'].eql? @user2.id.to_s
   end
 
   test 'Send antoher group request to group2' do

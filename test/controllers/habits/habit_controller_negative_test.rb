@@ -86,8 +86,8 @@ class HabitsControllerNegativeTest < ActionDispatch::IntegrationTest
         }
       }
     }
-    error_expected = { "errors": [{ "status": 400, "code": 605,
-                                    "title": 'frequency invalid',
+    error_expected = { "errors": [{ "status": '400',
+                                    "title": 'Bad Request',
                                     "details": "You can't create negative habit with daily frequency" }] }
     assert response.body == error_expected.to_json
   end

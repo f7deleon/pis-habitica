@@ -4,7 +4,7 @@ class NotificationSerializer
   include FastJsonapi::ObjectSerializer
   attributes :type, :created_at, :seen
 
-  belongs_to :sender, record_type: :user, serializer: :user,
+  belongs_to :sender, record_type: :user, serializer: :user_info,
                       if: proc { |record| !record.type.eql? 'PenalizeNotification' } do |record|
     if record.type.eql? 'FriendRequestNotification'
       record.request.user
@@ -17,10 +17,11 @@ class NotificationSerializer
     end
   end
 
-  belongs_to :group, if: proc { |record|
-                           record.type.eql?('GroupNotification') ||
-                             record.type.eql?('GroupRequestNotification')
-                         } do |record|
+  belongs_to :group, record_type: :group, serializer: :group_info,
+                     if: proc { |record|
+                       record.type.eql?('GroupNotification') ||
+                         record.type.eql?('GroupRequestNotification')
+                     } do |record|
     if record.type.eql? 'GroupRequestNotification'
       record.group_request.group
     else

@@ -125,14 +125,6 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     @individual_type = IndividualType.create(user_id: @user1.id, name: 'Example_seed', description: 'Example_seed')
     @habit_type = IndividualHabitHasType.create(habit_id: @individual_habit.id, type_id: @individual_type.id)
 
-    @user1.individual_types << @individual_type
-    @individual_habit.individual_habit_has_types << @habit_type
-    @individual_habit2.individual_habit_has_types << @habit_type
-    @individual_habit3.individual_habit_has_types << @habit_type
-    @user1.individual_habits << @individual_habit
-    @user1.individual_habits << @individual_habit2
-    @user1.individual_habits << @individual_habit3
-
     # groups for testing
     @group = Group.create(name: 'Propio', description: 'Propio description', privacy: false)
     @group1 = Group.create(name: 'Propio1', description: 'Propio1 description', privacy: false)
@@ -152,7 +144,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert result0 == 201 # :created
     result = post url, headers: { 'Authorization': 'Bearer ' + @user_token },
                        params: @parameters2
-    assert result == 400 # :bad_request
+    assert result == 409 # Conflict
   end
 
   test 'AltaPersonaje:  request without jwt' do
@@ -169,7 +161,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
                                   "attributes": { "date": '2018-09-07T12:00:00Z' } }] }
     result = post '/me/characters', headers: { 'Authorization': 'Bearer ' + @user_token },
                                     params: parameters
-    assert result == 400 # :bad_request
+    assert result == 404 # Not Found
   end
 
   test 'AltaPersonaje: wrong date format' do

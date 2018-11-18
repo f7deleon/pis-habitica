@@ -19,13 +19,12 @@ class Me::RequestsController < Me::ApplicationController
 
     # You can't send a friend request to yourself
     if current_user.id == receiver.id
-      raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.self_friend_request'))
+      raise Error::CustomError.new(I18n.t('conflict'), '409', I18n.t('errors.messages.self_friend_request'))
     end
 
-    # TODO: Agregar codigos de error?
     # This user is already your friend
     if current_user.friends.find_by(id: receiver.id)
-      raise Error::CustomError.new(I18n.t('conflict'), :conflict, I18n.t('errors.messages.already_friend'))
+      raise Error::CustomError.new(I18n.t('conflict'), '409', I18n.t('errors.messages.already_friend'))
     end
 
     request = Request.new(
@@ -36,11 +35,6 @@ class Me::RequestsController < Me::ApplicationController
 
     friend_request_notification = FriendRequestNotification.new(user_id: receiver.id, request_id: request.id)
     raise ActiveRecord::RecordInvalid unless friend_request_notification.save!
-
-    receiver.notifications << friend_request_notification
-
-    receiver.requests_received << request
-    current_user.requests_sent << request
 
     render json: RequestSerializer.new(request).serialized_json, status: :created
   end
@@ -60,8 +54,6 @@ class Me::RequestsController < Me::ApplicationController
   end
 
   def set_received_request
-    raise ActiveRecord::RecordNotFound unless (
-      @request = current_user.requests_received.find_by!(id: params[:id])
-    )
+    @request = current_user.requests_received.find_by!(id: params[:id])
   end
 end

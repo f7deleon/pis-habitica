@@ -1,45 +1,42 @@
 # frozen_string_literal: true
 
 class Me::CharactersController < Me::ApplicationController
+  before_action :check_not_alive, only: %i[create]
   before_action :check_params, only: %i[create]
+  before_action :set_character, only: %i[create]
 
   # POST /me/characters
   def create
-    # Check if the creation_date follows iso8601 format
-    begin
-      Time.iso8601(params[:included][0][:attributes][:date])
-    rescue StandardError
-      render json: { "errors": [{ "status": 400,
-                                  "title": 'Bad request',
-                                  "details": 'Invalid creation date format' }] }, status: :bad_request
-      return
-    end
-
-    # check character existence
-    begin
-      character_chosen = Character.find(params[:data][:id])
-    rescue StandardError
-      render json: { "errors": [{ "status": 400,
-                                  "title": 'Bad request',
-                                  "details": 'Invalid character id' }] }, status: :bad_request
-      return
-    end
-
-    user_character = current_user.add_character(params[:data][:id], params[:included][0][:attributes][:date])
-    if user_character
-      character_chosen.user_characters << user_character
-      render json: character_chosen, status: :created
-    else
-      render json: { "errors": [{ "status": 400,
-                                  "title": 'Bad request',
-                                  "details": 'User already have an alive character' }] }, status: :bad_request
-    end
+    user_character = current_user.add_character(@character.id, @date)
+    render json: CharacterSerializer.new(@character).serialized_json, status: :created if user_character.save!
   end
 
   private
 
+  def check_not_alive
+    message = I18n.t('errors.messages.alive_character')
+    raise Error::CustomError.new(I18n.t('conflict'), '409', message) unless current_user.dead?
+  end
+
   def check_params
     params.require(:data).require(:id)
+    params.require(:data).require(:attributes).require(%i[name description])
     params.require(:included)
+    date_params = params[:included][0][:attributes][:date]
+    unless check_iso8601(date_params)
+      raise Error::CustomError.new(I18n.t('bad_request'), :bad_request, I18n.t('errors.messages.date_formatting'))
+    end
+
+    @date = Time.zone.parse(date_params)
+  end
+
+  def set_character
+    @character = Character.find_by!(id: params[:data][:id])
+  end
+
+  def check_iso8601(date)
+    Time.iso8601(date)
+  rescue ArgumentError
+    nil
   end
 end

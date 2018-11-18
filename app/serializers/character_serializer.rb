@@ -3,5 +3,5 @@
 class CharacterSerializer
   include FastJsonapi::ObjectSerializer
   set_type :character
-  attributes :id, :name, :description
+  attributes :name, :description
 end
