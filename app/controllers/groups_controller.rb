@@ -66,7 +66,7 @@ class GroupsController < ApplicationController
   def create
     params[:data][:relationships][:members][:data].each do |member|
       unless User.exists?(member[:id])
-        raise Error::CustomError.new(I18n.t(:bad_request), '404', I18n.t('errors.messages.member_not_exist'))
+        raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.member_not_exist'))
       end
     end
     params_attributte = params[:data][:attributes]
@@ -82,7 +82,7 @@ class GroupsController < ApplicationController
     options = {}
     options[:params] = { current_user: current_user, is_create_group: true, group_id: group.id }
     options[:include] = %i[users]
-    render json: GroupSerializer.new(group, options).serialized_json, status: :ok
+    render json: GroupSerializer.new(group, options).serialized_json, status: :created
   end
 
   def update_members

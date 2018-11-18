@@ -26,7 +26,7 @@ class HabitsController < ApplicationController
 
     # At least one type
     if type_ids_params[0].blank?
-      raise Error::CustomError.new(I18n.t('bad_request'), :bad_request, I18n.t('errors.messages.typeless_habit'))
+      raise Error::CustomError.new(I18n.t('bad_request'), '400', I18n.t('errors.messages.typeless_habit'))
     end
 
     type_ids = []
@@ -193,7 +193,7 @@ class HabitsController < ApplicationController
     date_params = params[:data][:attributes][:date]
     # date is not in ISO 8601
     unless check_iso8601(date_params)
-      raise Error::CustomError.new(I18n.t('bad_request'), :bad_request, I18n.t('errors.messages.date_formatting'))
+      raise Error::CustomError.new(I18n.t('bad_request'), '400', I18n.t('errors.messages.date_formatting'))
     end
 
     @date_passed = Time.zone.parse(date_params)

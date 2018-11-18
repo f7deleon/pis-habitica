@@ -236,7 +236,7 @@ class CreateTest < ActionDispatch::IntegrationTest
       'errors': [
         {
           'status': '404',
-          'title': 'Bad request',
+          'title': 'Not found',
           'message': 'Members do not exist'
         }
       ]
