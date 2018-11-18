@@ -6,7 +6,7 @@ task penalize_habits: :environment do
   habits_to_penalize = IndividualHabit
                        .select { |habit| habit.active == true && habit.frequency == 2 }
                        .reject do |habit|
-    habit.track_individual_habits.find_by(date: yesterday_date) || habit.user.dead?
+    habit.track_individual_habits.find_by(date: yesterday_date.all_day) || habit.user.dead?
   end
 
   habits_to_penalize.each do |habit|
