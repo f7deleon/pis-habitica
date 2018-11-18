@@ -17,10 +17,13 @@ user = User.create(nickname: "Demogorgon", email: "demo@demo.com", password: "12
 
 Character.create([
   { name: 'Mago', description: I18n.t('mage_description') },
+  { name: 'Guerrero', description: I18n.t('warrior_description') },
   { name: 'Elfa', description: I18n.t('elf_description') },
-  { name: 'Fantasma', description: I18n.t('gost_description') },
-  { name: 'No muerto', description: I18n.t('dead_description') },
-  { name: 'Cazador', description: I18n.t('hunter_description') }
+  { name: 'Cazador', description: I18n.t('hunter_description') },
+  { name: 'Fantasma', description: I18n.t('ghost_description') },
+  { name: 'No muerto', description: I18n.t('undead_description') },
+  { name: 'Mini Robot', description: I18n.t('robot_description') },
+  { name: 'Llama', description: I18n.t('llama_description') }
 ])
 
 
