@@ -40,7 +40,7 @@ class IndividualHabit < Habit
     time_begin = created_at
     all_percent = TimeDifference.between(time_begin, time_new).in_days.round + 1
     # caso de el mismo dia que creo el habito y consulto estadistica
-    all_percent = 1 if TimeDifference.between(time_begin, time_new).in_days.round.zero?
+    all_percent = 1 if TimeDifference.between(time_begin, time_new).in_days.truncate.zero?
     count_all = 0
     percent = 0
     track_list.each do |track_habit|

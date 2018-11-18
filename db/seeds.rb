@@ -7,7 +7,7 @@
 
 DefaultType.create([
   {name: 'Ejercicio', description: 'Hacer ejercicio'},
-  {name: 'Nutricion', description: 'Seguir determinada dieta'},
+  {name: 'Nutrición', description: 'Seguir determinada dieta'},
   {name: 'Estudio', description: 'Estudiar por mas de 1 hora'},
   {name: 'Social', description: 'Ir al bar'},
   {name: 'Ocio', description: 'Jugar a la switch'}
