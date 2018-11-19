@@ -111,7 +111,7 @@ end
 membership = Membership.create(user_id: user.id, group_id: group.id, admin: true)
 membership2 = Membership.create(user_id: user2.id , group_id: group.id, admin: false)
 
-Membership.create(user: User.find_by_nickname('Pai'), group_id: group3.id, admin: true)
+Membership.create(user: User.last, group_id: group3.id, admin: true)
 User.all.limit(12).each do |user|
   Membership.create(user: user, group_id: group3.id, admin: false)
 end
@@ -181,6 +181,7 @@ end
 userwithGroups = User.create(nickname: "abrazo", email: "abrazo@habitica.com", password: "12341234")
  userwithGroups.add_character(1, Time.zone.now)
 20.times do |i|
- Group.create(name: 'Groups {i}', description: 'Grupo {i}', privacy: false)
+ Group.create(name: "Grupo #{i}", description: "Grupo #{i}", privacy: false)
  Membership.create(user: userwithGroups, group_id: Group.last.id, admin: true)
+ Membership.create(user: user, group_id: Group.last.id, admin: false)
 end
