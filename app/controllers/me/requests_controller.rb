@@ -13,9 +13,7 @@ class Me::RequestsController < Me::ApplicationController
   # POST /me/requests/
   # Agregar Amigo
   def create
-    raise ActiveRecord::RecordNotFound unless (
-      receiver = User.find_by!(id: params[:data][:relationships][:receiver][:data][:id])
-    )
+    receiver = User.find_by!(id: params[:data][:relationships][:receiver][:data][:id])
 
     # You can't send a friend request to yourself
     if current_user.id == receiver.id
