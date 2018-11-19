@@ -169,7 +169,7 @@ TrackGroupHabit.create(
 )
 
 userwithFriends = User.create(nickname: "momento", email: "momento@habitica.com", password: "12341234")
-
+ userwithFriends.add_character(2, Time.zone.now)
 
 User.all.limit(12).each do |user|
     _friend = Friendship.new(user: userwithFriends, friend: user)
@@ -179,7 +179,7 @@ User.all.limit(12).each do |user|
 end
 
 userwithGroups = User.create(nickname: "abrazo", email: "abrazo@habitica.com", password: "12341234")
-
+ userwithGroups.add_character(1, Time.zone.now)
 20.times do |i|
  Group.create(name: 'Groups {i}', description: 'Grupo {i}', privacy: false)
  Membership.create(user: userwithGroups, group_id: Group.last.id, admin: true)
