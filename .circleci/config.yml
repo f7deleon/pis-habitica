@@ -73,7 +73,7 @@ jobs:
           name: Tests
           command: |
             heroku config --app $HEROKU_APP_NAME | sed 's/:  */=/g; /^=/d' >> .env  
-            sed -i '/SECRET_KEY_BASE/d' .env     
+            sed -i '/SECRET_KEY_BASE/d' .env
             sed -i '/DATABASE_URL/d' .env     
             heroku local:run bundle exec rake RAILS_ENV=test test 
             rm .env

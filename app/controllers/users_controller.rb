@@ -25,7 +25,7 @@ class UsersController < ApplicationController
 
   # GET /users/1
   def show
-    render json: UserWithFriendSerializer.new(
+    render json: UserSerializer.new(
       @user, params: { current_user: current_user }
     ).serialized_json, status: :ok
   end

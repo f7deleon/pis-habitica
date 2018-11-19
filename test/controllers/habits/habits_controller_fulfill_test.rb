@@ -227,7 +227,7 @@ class HabitsControllerFulfillTest < ActionDispatch::IntegrationTest
 
     expected = { "errors":
       [
-        { "status": '404', "title": 'Not found', "message": 'This user has not created a character yet' }
+        { "status": 404, "title": 'Not found', "message": 'This user has not created a character yet' }
       ] }
     assert expected.to_json == response.body
     assert_equal 404, status # Accepted

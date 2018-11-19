@@ -27,10 +27,6 @@ class UserSerializer
     object.user_characters&.find_by_is_alive(true)&.character
   end
 
-  has_many :individual_habits, serializer: :individual_habit_info do |object, params|
-    object.get_habits_from_user(params[:current_user])
-  end
-
   has_one :requests_sent,
           if: proc { |object, params|
                 object.requests_sent.exists?(receiver_id: params[:current_user].id)

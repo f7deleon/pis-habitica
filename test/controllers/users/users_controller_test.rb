@@ -224,36 +224,5 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test 'Ver perfil: user with 2 groups' do
     get '/users/' + @user.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
     assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['groups']['data'].length.eql? 2
-  end
-
-  test 'Ver perfil: user with 1 group' do
-    get '/users/' + @user4.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
-    assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['groups']['data'].length.eql? 1
-  end
-
-  test 'Ver perfil: user without groups' do
-    get '/users/' + @user2.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
-    assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['groups']['data'].length.eql? 0
-  end
-
-  test 'Ver perfil: user5 wants to see private group of user3, sees zero' do
-    get '/users/' + @user3.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
-    assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['groups']['data'].length.eql? 0
-  end
-
-  test 'Ver perfil: user5 is added to user2 group and now he can see the group besides it is private' do
-    Membership.create(user_id: @user5.id, group_id: @group2_private.id, admin: false)
-    get '/users/' + @user3.id.to_s, headers: { 'Authorization': 'Bearer ' + @user5_token.to_s }
-    assert_equal 200, status
-    body = JSON.parse(response.body)
-    assert body['data']['relationships']['groups']['data'].length.eql? 1
   end
 end

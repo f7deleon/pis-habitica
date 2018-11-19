@@ -111,7 +111,6 @@ class GroupsControllerViewGroupTest < ActionDispatch::IntegrationTest
     assert result == 403
     body = JSON.parse(response.body)
     assert body['errors'][0]['message'] == 'Current user does not belong to this group'
-    assert body['errors'][0]['title'] == 'Unauthorized'
   end
 
   test 'View group that does not exist' do

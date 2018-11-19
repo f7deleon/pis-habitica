@@ -37,7 +37,17 @@ User.create([
   { nickname: 'Marco', email: 'marcopablo@habitica.com', password: '12341234' },
   { nickname: 'Berna', email: 'bernardo@habitica.com', password: '12341234' },
   { nickname: 'ElRodra', email: 'rodra@habitica.com', password: '12341234' },
-  { nickname: 'Mufasa', email: 'mufasa@habitica.com', password: '12341234'}
+  { nickname: 'Mufasa', email: 'mufasa@habitica.com', password: '12341234'},
+  { nickname: 'Larry', email: 'larry@habitica.com', password: '12341234' },
+  { nickname: 'Noelia', email: 'noelia@habitica.com', password: '12341234' },
+  { nickname: 'Nicolas', email: 'nicolas@habitica.com', password: '12341234' },
+  { nickname: 'wye', email: 'wye@habitica.com', password: '12341234' },
+  { nickname: 'works', email: 'works@habitica.com', password: '12341234' },
+  { nickname: 'juan', email: 'juan@habitica.com', password: '12341234' },
+  { nickname: 'rodrigo', email: 'rodrigo@habitica.com', password: '12341234' },
+  { nickname: 'bernanoria', email: 'bernanoria@habitica.com', password: '12341234' },
+  { nickname: 'andrespercas', email: 'andrespercas@habitica.com', password: '12341234' },
+  { nickname: 'bug', email: 'bug@habitica.com', password: '12341234'}
 ])
 
 user_ocd = User.create(nickname: "OCD_Champion", email: "ocd@demo.com", password: "12341234")
@@ -102,9 +112,10 @@ membership = Membership.create(user_id: user.id, group_id: group.id, admin: true
 membership2 = Membership.create(user_id: user2.id , group_id: group.id, admin: false)
 
 Membership.create(user: User.find_by_nickname('Pai'), group_id: group3.id, admin: true)
-Membership.create(user: User.find_by_nickname('ElRodra'), group_id: group3.id, admin: false)
-Membership.create(user: User.find_by_nickname('Berna'), group_id: group3.id, admin: false)
-Membership.create(user: user, group_id: group3.id, admin: false)
+User.all.limit(12).each do |user|
+  Membership.create(user: user, group_id: group3.id, admin: false)
+end
+
 
 Membership.create(user: User.find_by_nickname('ElRodra'), group_id: group2.id, admin: true)
 Membership.create(user: User.find_by_nickname('Lala'), group_id: group2.id, admin: false)
@@ -156,3 +167,20 @@ TrackGroupHabit.create(
   experience_difference: user2.modify_experience(20),
   health_difference: user2.modify_health(100)
 )
+
+userwithFriends = User.create(nickname: "momento", email: "momento@habitica.com", password: "12341234")
+
+
+User.all.limit(12).each do |user|
+    _friend = Friendship.new(user: userwithFriends, friend: user)
+    if _friend.valid? 
+      _friend.save
+    end
+end
+
+userwithGroups = User.create(nickname: "abrazo", email: "abrazo@habitica.com", password: "12341234")
+
+20.times do |i|
+ Group.create(name: 'Groups {i}', description: 'Grupo {i}', privacy: false)
+ Membership.create(user: userwithGroups, group_id: Group.last.id, admin: true)
+end

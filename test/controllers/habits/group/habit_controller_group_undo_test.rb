@@ -196,7 +196,7 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
     }
     expected = {
       "errors": [
-        { "status": 'not_found', "title": 'Not found', "message": 'This habit has not been fulfilled today' }
+        { "status": 404, "title": 'Not found', "message": 'This habit has not been fulfilled today' }
       ]
     }
     assert expected.to_json == response.body
@@ -213,7 +213,7 @@ class HabitsControllerGroupUndoTest < ActionDispatch::IntegrationTest
 
     expected = { "errors":
       [
-        { "status": '404', "title": 'Not found', "message": 'This user has not created a character yet' }
+        { "status": 404, "title": 'Not found', "message": 'This user has not created a character yet' }
       ] }
     assert expected.to_json == response.body
     assert_equal 404, status # Accepted

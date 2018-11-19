@@ -39,11 +39,11 @@ class HabitsController < ApplicationController
       group = Group.find_by!(id: params[:data][:relationships][:group][:id])
       unless (membership = group.memberships.find_by(user_id: current_user.id))
         message = I18n.t('errors.messages.not_admin_of_group')
-        raise Error::CustomError.new(I18n.t('forbidden'), :forbidden, message)
+        raise Error::CustomError.new(I18n.t('forbidden'), 403, message)
       end
 
       message = I18n.t('errors.messages.not_admin_of_group')
-      raise Error::CustomError.new(I18n.t('forbidden'), :forbidden, message) unless membership.admin
+      raise Error::CustomError.new(I18n.t('forbidden'), 403, message) unless membership.admin
 
       habit = GroupHabit.new(
         group_id: group.id,
@@ -144,7 +144,7 @@ class HabitsController < ApplicationController
                         @habit.track_individual_habits.order(:date).last
                       end
     unless track_to_delete && track_to_delete.date.to_date == Time.zone.now.to_date
-      raise Error::CustomError.new(I18n.t('not_found'), :not_found, I18n.t('errors.messages.habit_not_fulfilled'))
+      raise Error::CustomError.new(I18n.t('not_found'), 404, I18n.t('errors.messages.habit_not_fulfilled'))
     end
 
     if @habit.type.eql?('GroupHabit')
@@ -173,7 +173,7 @@ class HabitsController < ApplicationController
 
   def check_alive
     message = I18n.t('errors.messages.no_character_created')
-    raise Error::CustomError.new(I18n.t('not_found'), '404', message) if current_user.dead?
+    raise Error::CustomError.new(I18n.t('not_found'), 404, message) if current_user.dead?
   end
 
   def create_habit
@@ -193,12 +193,12 @@ class HabitsController < ApplicationController
     date_params = params[:data][:attributes][:date]
     # date is not in ISO 8601
     unless check_iso8601(date_params)
-      raise Error::CustomError.new(I18n.t('bad_request'), '400', I18n.t('errors.messages.date_formatting'))
+      raise Error::CustomError.new(I18n.t('bad_request'), 400, I18n.t('errors.messages.date_formatting'))
     end
 
     @date_passed = Time.zone.parse(date_params)
     message = I18n.t('errors.messages.no_character_created')
-    raise Error::CustomError.new(I18n.t('not_found'), '404', message) if current_user.dead?
+    raise Error::CustomError.new(I18n.t('not_found'), 404, message) if current_user.dead?
   end
 
   def check_admin
@@ -210,17 +210,17 @@ class HabitsController < ApplicationController
   def check_user
     if @habit.type.eql?('GroupHabit')
       message = I18n.t('errors.messages.group_habit_is_not_from_user')
-      raise Error::CustomError.new(I18n.t('forbidden'), '403', message) unless
+      raise Error::CustomError.new(I18n.t('forbidden'), 403, message) unless
         current_user.groups.find_by(id: @habit.group_id)
     else # Individual
       message = I18n.t('errors.messages.habit_is_not_from_user')
-      raise Error::CustomError.new(I18n.t('forbidden'), '403', message) unless current_user.id.equal?(@habit.user_id)
+      raise Error::CustomError.new(I18n.t('forbidden'), 403, message) unless current_user.id.equal?(@habit.user_id)
     end
   end
 
   def check_privacy
     message = I18n.t('errors.messages.not_permission_to_show')
-    raise Error::CustomError.new(I18n.t('forbidden'), '403', message) unless @habit.can_be_seen_by(current_user)
+    raise Error::CustomError.new(I18n.t('forbidden'), 403, message) unless @habit.can_be_seen_by(current_user)
   end
 
   # Only allow a trusted parameter 'white list' through.

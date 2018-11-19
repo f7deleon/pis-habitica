@@ -98,7 +98,7 @@ class GroupsController < ApplicationController
     raise Error::CustomError.new(I18n.t('not_found'), '404', I18n.t('errors.messages.group_not_found')) unless
     (@group = Group.find_by(id: params[:id]))
 
-    raise Error::CustomError.new(I18n.t(:unauthorized), '403', I18n.t('errors.messages.group_is_private')) if
+    raise Error::CustomError.new(I18n.t(:forbidden), '403', I18n.t('errors.messages.group_is_private')) if
      !@group.memberships.find_by(user_id: current_user.id) && @group.privacy?
   end
 

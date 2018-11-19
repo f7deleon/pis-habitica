@@ -97,10 +97,8 @@ class HabitGeneralControllerTest < ActionDispatch::IntegrationTest
     @individual_type = IndividualType.create(user_id: @user1.id, name: 'Example_seed', description: 'Example_seed')
     @habit_type = IndividualHabitHasType.create(habit_id: @individual_habit.id, type_id: @individual_type.id)
 
-    @no_friend = UserWithFriendSerializer.new(@user1, params: { current_user: @user },
-                                                      include: %i[individual_habits friends]).serialized_json
-    @friend = UserWithFriendSerializer.new(@user1, params: { current_user: @user2 },
-                                                   include: %i[individual_habits friends]).serialized_json
+    @no_friend = UserSerializer.new(@user1, params: { current_user: @user }).serialized_json
+    @friend = UserSerializer.new(@user1, params: { current_user: @user2 }).serialized_json
   end
 
   test 'get Habits' do
